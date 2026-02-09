@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Interview - Senior Interview Mentor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../layout.css">
+  <link rel="stylesheet" href="../animations.css">
+  <style>
+    /* Interview Mode Specific Styles */
+
+    /* Dramatic Timer */
+    .interview-topnav {
+      background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-abyss) 100%);
+      border-bottom: 1px solid var(--neon-magenta);
+      box-shadow: 0 0 30px rgba(255, 0, 170, 0.15);
+    }
+
+    .interview-timer-dramatic {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-6);
+      background: linear-gradient(135deg, rgba(255, 0, 170, 0.1), rgba(153, 102, 255, 0.1));
+      border: 1px solid rgba(255, 0, 170, 0.3);
+      border-radius: var(--radius-xl);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interview-timer-dramatic::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 0, 170, 0.1), transparent);
+      animation: timerSweep 3s ease-in-out infinite;
+    }
+
+    @keyframes timerSweep {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .interview-timer-icon {
+      font-size: 28px;
+      animation: timerPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes timerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .interview-timer-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .interview-timer-value {
+      font-family: var(--font-mono);
+      font-size: var(--text-3xl);
+      font-weight: var(--font-extrabold);
+      letter-spacing: var(--tracking-wider);
+      line-height: 1;
+    }
+
+    .interview-timer-safe .interview-timer-value {
+      color: var(--neon-lime);
+      text-shadow: 0 0 20px var(--neon-lime-glow);
+    }
+
+    .interview-timer-warning .interview-timer-value {
+      color: var(--neon-amber);
+      text-shadow: 0 0 20px var(--neon-amber-glow);
+      animation: timerFlash 0.5s ease-in-out infinite;
+    }
+
+    .interview-timer-danger .interview-timer-value {
+      color: var(--neon-red);
+      text-shadow: 0 0 30px var(--neon-red-glow);
+      animation: timerFlash 0.25s ease-in-out infinite;
+    }
+
+    @keyframes timerFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .interview-timer-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-widest);
+      margin-top: var(--space-1);
+    }
+
+    /* Interview Stage Progress */
+    .interview-stages {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .interview-stage {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      color: var(--text-muted);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .interview-stage-active {
+      background: var(--neon-magenta-subtle);
+      border-color: var(--neon-magenta);
+      color: var(--neon-magenta);
+      box-shadow: 0 0 15px var(--neon-magenta-glow);
+    }
+
+    .interview-stage-complete {
+      background: var(--neon-lime-subtle);
+      border-color: rgba(163, 255, 0, 0.3);
+      color: var(--neon-lime);
+    }
+
+    .interview-stage-icon {
+      font-size: 14px;
+    }
+
+    .interview-stage-connector {
+      width: 20px;
+      height: 2px;
+      background: var(--border-default);
+    }
+
+    .interview-stage-connector-active {
+      background: var(--neon-magenta);
+    }
+
+    /* Interview Launcher Modal */
+    .interview-launcher {
+      max-width: 640px;
+    }
+
+    .interview-launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .interview-type-card {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-5);
+      background: var(--bg-elevated);
+      border: 2px solid var(--border-default);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interview-type-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--neon-cyan));
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    .interview-type-card:hover {
+      border-color: var(--card-accent, var(--neon-cyan));
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .interview-type-card:hover::before {
+      opacity: 1;
+    }
+
+    .interview-type-card-selected {
+      border-color: var(--card-accent, var(--neon-cyan));
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .interview-type-card-selected::before {
+      opacity: 1;
+    }
+
+    .interview-type-icon {
+      font-size: 36px;
+      margin-bottom: var(--space-3);
+    }
+
+    .interview-type-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--text-bright);
+      margin-bottom: var(--space-2);
+    }
+
+    .interview-type-desc {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    .interview-type-duration {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-3);
+      padding: var(--space-1) var(--space-2);
+      background: var(--bg-overlay);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    /* System Design Workspace */
+    .sd-workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      height: 100%;
+      padding: var(--space-4);
+      overflow: hidden;
+    }
+
+    .sd-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sd-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .sd-panel-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .sd-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+    }
+
+    .sd-section {
+      margin-bottom: var(--space-5);
+    }
+
+    .sd-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .sd-section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .sd-section-number {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--neon-cyan-subtle);
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: var(--font-bold);
+      color: var(--neon-cyan);
+    }
+
+    .sd-section-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .sd-section-content {
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      min-height: 120px;
+    }
+
+    .sd-section-content textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 120px;
+      padding: var(--space-3);
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      line-height: var(--leading-relaxed);
+      resize: none;
+    }
+
+    .sd-section-content textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Phase Progress Sidebar */
+    .phase-sidebar {
+      width: 240px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .phase-sidebar-header {
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .phase-sidebar-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .phase-sidebar-subtitle {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    .phase-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-3);
+    }
+
+    .phase-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      margin-bottom: var(--space-2);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .phase-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .phase-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    .phase-item-active {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+    }
+
+    .phase-item-complete {
+      border-color: rgba(163, 255, 0, 0.3);
+    }
+
+    .phase-item-indicator {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--bg-overlay);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: var(--font-bold);
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .phase-item-active .phase-item-indicator {
+      background: var(--neon-cyan);
+      color: var(--bg-void);
+      box-shadow: 0 0 12px var(--neon-cyan-glow);
+    }
+
+    .phase-item-complete .phase-item-indicator {
+      background: var(--neon-lime);
+      color: var(--bg-void);
+    }
+
+    .phase-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .phase-item-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-0-5);
+    }
+
+    .phase-item-active .phase-item-title {
+      color: var(--neon-cyan);
+    }
+
+    .phase-item-time {
+      font-family: var(--font-mono);
+      font-size: var(--text-xxs);
+      color: var(--text-muted);
+    }
+
+    /* Behavioral Interview Layout */
+    .behavioral-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .behavioral-question {
+      padding: var(--space-6);
+      background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .behavioral-question-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--neon-magenta);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-3);
+    }
+
+    .behavioral-question-text {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-bright);
+      line-height: var(--leading-relaxed);
+      max-width: 700px;
+    }
+
+    .behavioral-framework {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .behavioral-framework-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-overlay);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--text-secondary);
+    }
+
+    .behavioral-framework-item span {
+      color: var(--text-primary);
+    }
+
+    .behavioral-response {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+    }
+
+    .behavioral-response-label {
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-2);
+    }
+
+    .behavioral-response-editor {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .behavioral-response-editor textarea {
+      width: 100%;
+      height: 100%;
+      padding: var(--space-4);
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-loose);
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Interview Top Navigation -->
+    <nav class="topnav interview-topnav">
+      <div class="topnav-left">
+        <div class="topnav-brand">
+          <div class="topnav-logo">SM</div>
+        </div>
+        <div class="interview-stages">
+          <div class="interview-stage interview-stage-complete">
+            <span class="interview-stage-icon">✓</span>
+            Intro
+          </div>
+          <div class="interview-stage-connector interview-stage-connector-active"></div>
+          <div class="interview-stage interview-stage-active">
+            <span class="interview-stage-icon">💻</span>
+            Technical
+          </div>
+          <div class="interview-stage-connector"></div>
+          <div class="interview-stage">
+            <span class="interview-stage-icon">🗣</span>
+            Behavioral
+          </div>
+          <div class="interview-stage-connector"></div>
+          <div class="interview-stage">
+            <span class="interview-stage-icon">❓</span>
+            Q&A
+          </div>
+        </div>
+      </div>
+
+      <div class="topnav-center">
+        <div class="interview-timer-dramatic interview-timer-warning">
+          <span class="interview-timer-icon">⏱</span>
+          <div class="interview-timer-display">
+            <span class="interview-timer-value">12:34</span>
+            <span class="interview-timer-label">Remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topnav-right">
+        <span class="badge badge-pulse badge-interviewer">Interview Mode</span>
+        <button class="btn btn-danger btn-sm">End Interview</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="app-body">
+      <!-- Phase Sidebar -->
+      <div class="phase-sidebar">
+        <div class="phase-sidebar-header">
+          <div class="phase-sidebar-title">System Design</div>
+          <div class="phase-sidebar-subtitle">URL Shortener Service</div>
+        </div>
+        <div class="phase-list">
+          <div class="phase-item phase-item-complete">
+            <div class="phase-item-indicator">✓</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">Requirements</div>
+              <div class="phase-item-time">5:00 spent</div>
+            </div>
+          </div>
+          <div class="phase-item phase-item-complete">
+            <div class="phase-item-indicator">✓</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">API Design</div>
+              <div class="phase-item-time">4:30 spent</div>
+            </div>
+          </div>
+          <div class="phase-item phase-item-active">
+            <div class="phase-item-indicator">3</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">Data Model</div>
+              <div class="phase-item-time">In progress...</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-item-indicator">4</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">Architecture</div>
+              <div class="phase-item-time">~8 min</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-item-indicator">5</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">Deep Dives</div>
+              <div class="phase-item-time">~10 min</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-item-indicator">6</div>
+            <div class="phase-item-content">
+              <div class="phase-item-title">Scaling</div>
+              <div class="phase-item-time">~5 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Design Workspace -->
+      <div class="sd-workspace">
+        <!-- Design Panel -->
+        <div class="sd-panel">
+          <div class="sd-panel-header">
+            <span class="sd-panel-title">Design Workspace</span>
+            <button class="btn btn-ghost btn-sm">Expand</button>
+          </div>
+          <div class="sd-panel-body">
+            <div class="sd-section">
+              <div class="sd-section-header">
+                <div class="sd-section-number">1</div>
+                <div class="sd-section-title">Requirements & Scope</div>
+              </div>
+              <div class="sd-section-content">
+                <textarea placeholder="Define functional and non-functional requirements...">Functional Requirements:
+- Create short URL from long URL
+- Redirect short URL to original
+- Custom aliases (optional)
+- Analytics (click count, referrer)
+
+Non-Functional:
+- 100M URLs created/day
+- 10:1 read:write ratio (1B redirects/day)
+- Low latency (<100ms for redirect)
+- High availability (99.99%)
+- URLs should be short (7 chars)</textarea>
+              </div>
+            </div>
+
+            <div class="sd-section">
+              <div class="sd-section-header">
+                <div class="sd-section-number">2</div>
+                <div class="sd-section-title">API Design</div>
+              </div>
+              <div class="sd-section-content">
+                <textarea placeholder="Define your API endpoints...">POST /api/v1/urls
+  Request: { long_url, custom_alias?, expiry? }
+  Response: { short_url, created_at }
+
+GET /{short_code}
+  Response: 301 Redirect to long_url
+
+GET /api/v1/urls/{short_code}/stats
+  Response: { clicks, referrers[], created_at }
+
+DELETE /api/v1/urls/{short_code}
+  Response: 204 No Content</textarea>
+              </div>
+            </div>
+
+            <div class="sd-section">
+              <div class="sd-section-header">
+                <div class="sd-section-number">3</div>
+                <div class="sd-section-title">Data Model</div>
+              </div>
+              <div class="sd-section-content">
+                <textarea placeholder="Define your schema and storage choices..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div class="sd-panel">
+          <div class="sd-panel-header">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div class="avatar avatar-sm avatar-mentor">AI</div>
+              <span class="sd-panel-title">Interviewer</span>
+            </div>
+          </div>
+          <div class="sd-panel-body" style="display: flex; flex-direction: column;">
+            <div class="chat-messages" style="flex: 1; padding: 0;">
+              <div class="message message-mentor">
+                <div class="message-content">
+                  <p>Good work on the requirements and API design. Now let's move to the <strong>data model</strong>.</p>
+                  <p>A few questions to consider:</p>
+                  <ul>
+                    <li>What's your primary key strategy?</li>
+                    <li>SQL vs NoSQL - what's your choice and why?</li>
+                    <li>How will you handle the 7-character short code generation?</li>
+                  </ul>
+                  <p>Walk me through your schema design.</p>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-area" style="padding: var(--space-3) 0 0 0;">
+              <div class="chat-input-wrapper">
+                <textarea class="chat-input" placeholder="Explain your data model..." rows="1"></textarea>
+                <button class="chat-send-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interview Launcher Modal (Hidden by default) -->
+  <div class="modal-backdrop" style="display: none;">
+    <div class="modal interview-launcher">
+      <div class="modal-header">
+        <h2 class="modal-title">Launch Mock Interview</h2>
+        <button class="modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+          Choose your interview format. Each session is 45 minutes with AI-powered feedback.
+        </p>
+        <div class="interview-launcher-grid">
+          <div class="interview-type-card interview-type-card-selected" style="--card-accent: var(--neon-cyan);">
+            <div class="interview-type-icon">💻</div>
+            <div class="interview-type-title">Technical Coding</div>
+            <div class="interview-type-desc">
+              LeetCode-style problems with real-time guidance and code review.
+            </div>
+            <div class="interview-type-duration">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              45 min
+            </div>
+          </div>
+
+          <div class="interview-type-card" style="--card-accent: var(--neon-purple);">
+            <div class="interview-type-icon">🏗</div>
+            <div class="interview-type-title">System Design</div>
+            <div class="interview-type-desc">
+              Design scalable systems with structured phases and expert feedback.
+            </div>
+            <div class="interview-type-duration">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              45 min
+            </div>
+          </div>
+
+          <div class="interview-type-card" style="--card-accent: var(--neon-magenta);">
+            <div class="interview-type-icon">🗣</div>
+            <div class="interview-type-title">Behavioral</div>
+            <div class="interview-type-desc">
+              Practice STAR format responses with leadership-focused questions.
+            </div>
+            <div class="interview-type-duration">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              30 min
+            </div>
+          </div>
+
+          <div class="interview-type-card" style="--card-accent: var(--neon-amber);">
+            <div class="interview-type-icon">📞</div>
+            <div class="interview-type-title">Phone Screen</div>
+            <div class="interview-type-desc">
+              Mixed format: intro, light coding, behavioral, and Q&A practice.
+            </div>
+            <div class="interview-type-duration">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              30 min
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Start Interview
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

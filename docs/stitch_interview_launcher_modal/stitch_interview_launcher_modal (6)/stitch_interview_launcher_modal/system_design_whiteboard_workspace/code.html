@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Design Whiteboard Workspace - Senior Interview Mentor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5797ff",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0d1117",
+                        "border-dark": "#30363d",
+                        "panel-dark": "#161b22",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .grid-bg {
+            background-image: radial-gradient(#30363d 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary/30 overflow-hidden h-screen flex flex-col">
+<header class="flex h-16 items-center justify-between border-b border-border-dark px-6 bg-background-dark/80 backdrop-blur-md z-50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-background-dark font-bold">account_tree</span>
+</div>
+<h2 class="text-white text-lg font-bold tracking-tight">Senior Interview Mentor</h2>
+</div>
+<div class="h-6 w-[1px] bg-border-dark"></div>
+<nav class="flex items-center gap-2">
+<a class="text-[#8da6ce] text-sm font-medium hover:text-white transition-colors" href="#">Workspace</a>
+<span class="text-border-dark text-sm">/</span>
+<a class="text-[#8da6ce] text-sm font-medium hover:text-white transition-colors" href="#">Design URL Shortener</a>
+<span class="text-border-dark text-sm">/</span>
+<span class="bg-red-500/10 text-red-400 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded font-bold border border-red-500/20">Hard</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 bg-panel-dark border border-border-dark px-4 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-primary text-sm">schedule</span>
+<div class="flex gap-1 font-mono text-lg font-medium tabular-nums">
+<span>00</span>:<span>42</span>:<span>18</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-[#8da6ce] hover:text-white hover:bg-white/5 rounded transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="bg-primary hover:bg-primary/90 text-background-dark px-5 py-2 rounded font-bold text-sm transition-all transform active:scale-95">
+                    Finish Interview
+                </button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<aside class="w-16 border-r border-border-dark bg-background-dark flex flex-col items-center py-6 gap-6 z-40">
+<div class="flex flex-col gap-2">
+<button class="size-10 flex items-center justify-center rounded bg-primary text-background-dark" title="Select">
+<span class="material-symbols-outlined">near_me</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Rectangle">
+<span class="material-symbols-outlined">rectangle</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Circle">
+<span class="material-symbols-outlined">circle</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Connector">
+<span class="material-symbols-outlined">arrow_outward</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Text">
+<span class="material-symbols-outlined">text_fields</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Cloud Component">
+<span class="material-symbols-outlined">cloud</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white" title="Database">
+<span class="material-symbols-outlined">database</span>
+</button>
+</div>
+<div class="mt-auto flex flex-col gap-4">
+<button class="size-10 flex items-center justify-center rounded text-[#8da6ce] hover:bg-white/5 hover:text-white">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</aside>
+<aside class="w-72 border-r border-border-dark bg-panel-dark flex flex-col z-30">
+<div class="p-4 border-b border-border-dark flex justify-between items-baseline">
+<h3 class="text-xs font-bold text-[#8da6ce] uppercase tracking-widest">Plan Overview</h3>
+<span class="text-[10px] text-green-400 font-mono">3/6 DONE</span>
+</div>
+<div class="flex-1 overflow-y-auto p-3 space-y-2.5">
+<div class="flex items-start gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20 group hover:bg-green-500/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-green-400 text-base mt-0.5">check_circle</span>
+<div>
+<div class="text-sm font-bold text-green-400 leading-tight mb-1">Requirements &amp; Scope</div>
+<div class="text-[10px] text-green-400/60 font-medium">Completed</div>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20 group hover:bg-green-500/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-green-400 text-base mt-0.5">check_circle</span>
+<div>
+<div class="text-sm font-bold text-green-400 leading-tight mb-1">API Design</div>
+<div class="text-[10px] text-green-400/60 font-medium">Completed</div>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20 group hover:bg-green-500/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-green-400 text-base mt-0.5">check_circle</span>
+<div>
+<div class="text-sm font-bold text-green-400 leading-tight mb-1">Data Model &amp; Storage</div>
+<div class="text-[10px] text-green-400/60 font-medium">Completed</div>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 rounded-lg bg-[#58a6ff]/10 border border-[#58a6ff] relative shadow-[0_0_15px_rgba(88,166,255,0.1)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#58a6ff] rounded-l"></div>
+<span class="material-symbols-outlined text-[#58a6ff] text-base mt-0.5 animate-pulse">radio_button_checked</span>
+<div>
+<div class="text-sm font-bold text-white leading-tight mb-1">High-Level Architecture</div>
+<div class="text-[10px] text-[#8da6ce]">In Progress...</div>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 rounded-lg border border-border-dark/50 bg-background-dark/30 opacity-60">
+<span class="material-symbols-outlined text-[#8b949e] text-base mt-0.5">lock</span>
+<div class="text-sm font-medium text-[#8b949e] leading-tight mt-0.5">Deep Dives &amp; Bottlenecks</div>
+</div>
+<div class="flex items-start gap-3 p-3 rounded-lg border border-border-dark/50 bg-background-dark/30 opacity-60">
+<span class="material-symbols-outlined text-[#8b949e] text-base mt-0.5">lock</span>
+<div class="text-sm font-medium text-[#8b949e] leading-tight mt-0.5">Scaling &amp; Reliability</div>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark bg-background-dark/30">
+<div class="flex justify-between text-[10px] text-[#8da6ce] mb-1.5 font-mono uppercase tracking-wider">
+<span>Total Progress</span>
+<span>50%</span>
+</div>
+<div class="h-1.5 w-full bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-green-400 w-1/2 rounded-full"></div>
+</div>
+</div>
+</aside>
+<main class="flex-1 relative bg-background-dark overflow-hidden grid-bg cursor-crosshair">
+<div class="absolute inset-0 flex items-center justify-center p-20">
+<div class="relative w-full h-full max-w-4xl">
+<div class="absolute top-1/4 left-0 group">
+<div class="w-32 h-20 border-2 border-border-dark bg-panel-dark flex flex-col items-center justify-center rounded gap-2 group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary">devices</span>
+<span class="text-xs font-medium uppercase tracking-tighter">Client Apps</span>
+</div>
+<div class="absolute top-1/2 left-full w-16 h-[2px] bg-border-dark -translate-y-1/2">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-border-dark"></div>
+</div>
+</div>
+<div class="absolute top-1/4 left-48 group">
+<div class="w-40 h-24 border-2 border-primary bg-panel-dark/50 flex flex-col items-center justify-center rounded gap-2 shadow-[0_0_15px_rgba(87,151,255,0.1)]">
+<span class="material-symbols-outlined text-primary">balance</span>
+<span class="text-xs font-medium uppercase tracking-tighter text-primary">Load Balancer</span>
+<div class="absolute -top-1 -left-1 size-2 bg-primary"></div>
+<div class="absolute -top-1 -right-1 size-2 bg-primary"></div>
+<div class="absolute -bottom-1 -left-1 size-2 bg-primary"></div>
+<div class="absolute -bottom-1 -right-1 size-2 bg-primary"></div>
+</div>
+<div class="absolute top-1/2 left-full w-12 h-20 border-t-2 border-r-2 border-border-dark rounded-tr-lg ml-2"></div>
+<div class="absolute bottom-1/2 left-full w-12 h-20 border-b-2 border-r-2 border-border-dark rounded-br-lg ml-2"></div>
+</div>
+<div class="absolute top-[calc(25%+12px)] left-[320px] group">
+<div class="w-48 h-20 border-2 border-border-dark bg-panel-dark flex flex-col items-center justify-center rounded gap-2 group-hover:border-primary">
+<span class="material-symbols-outlined text-[#ffcc00]">security</span>
+<span class="text-xs font-medium uppercase tracking-tighter">API Gateway</span>
+<div class="text-[10px] text-[#8da6ce] italic">Entry Point</div>
+</div>
+<div class="absolute top-full left-1/2 w-[2px] h-12 bg-border-dark -translate-x-1/2"></div>
+</div>
+<div class="absolute top-[calc(25%+112px)] left-[344px] group">
+<div class="w-36 h-16 border-2 border-dashed border-border-dark bg-panel-dark flex items-center justify-center rounded gap-3 group-hover:border-primary">
+<span class="material-symbols-outlined text-red-400">memory</span>
+<span class="text-xs font-medium uppercase tracking-tighter">Redis Cluster</span>
+</div>
+</div>
+<div class="absolute top-0 right-10 group">
+<div class="w-40 h-64 border-2 border-border-dark border-dashed rounded-xl p-4 bg-white/[0.02]">
+<span class="text-[10px] font-bold text-border-dark absolute -top-3 left-4 bg-background-dark px-2 uppercase tracking-widest">App Servers</span>
+<div class="flex flex-col gap-4 h-full justify-center">
+<div class="bg-panel-dark border border-border-dark h-12 rounded flex items-center px-3 gap-3">
+<div class="size-2 bg-green-500 rounded-full"></div>
+<span class="text-xs uppercase font-medium">URL Service</span>
+</div>
+<div class="bg-panel-dark border border-border-dark h-12 rounded flex items-center px-3 gap-3">
+<div class="size-2 bg-green-500 rounded-full"></div>
+<span class="text-xs uppercase font-medium">Analytics Svc</span>
+</div>
+<div class="bg-panel-dark border border-border-dark h-12 rounded flex items-center px-3 gap-3">
+<div class="size-2 bg-green-500 rounded-full animate-pulse"></div>
+<span class="text-xs uppercase font-medium">Key Gen Svc</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-panel-dark border border-border-dark p-1.5 rounded-xl shadow-2xl z-40">
+<div class="flex items-center gap-1 px-2 pr-4 border-r border-border-dark">
+<button class="p-2 hover:bg-white/5 rounded text-[#8da6ce]"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="text-xs font-bold w-10 text-center">85%</span>
+<button class="p-2 hover:bg-white/5 rounded text-[#8da6ce]"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<div class="flex items-center gap-1 px-2 border-r border-border-dark">
+<button class="p-2 hover:bg-white/5 rounded text-[#8da6ce]"><span class="material-symbols-outlined text-sm">undo</span></button>
+<button class="p-2 hover:bg-white/5 rounded text-[#8da6ce]"><span class="material-symbols-outlined text-sm">redo</span></button>
+</div>
+<div class="flex items-center gap-3 px-3">
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#8da6ce]">Snap to Grid</span>
+<button class="w-8 h-4 bg-primary rounded-full relative">
+<div class="absolute right-0.5 top-0.5 size-3 bg-background-dark rounded-full"></div>
+</button>
+</div>
+</div>
+</main>
+<aside class="w-[400px] border-l border-border-dark bg-[#0a0e14] flex flex-col z-40">
+<div class="p-4 border-b border-border-dark flex items-center justify-between bg-panel-dark/50">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<h3 class="text-sm font-bold uppercase tracking-wider">AI Mentor Terminal</h3>
+</div>
+<div class="flex gap-1.5">
+<div class="size-2.5 rounded-full bg-border-dark"></div>
+<div class="size-2.5 rounded-full bg-border-dark"></div>
+<div class="size-2.5 rounded-full bg-primary/40"></div>
+</div>
+</div>
+<div class="flex-1 p-6 overflow-y-auto font-mono text-sm space-y-6">
+<div class="flex flex-col gap-2">
+<div class="text-primary font-bold flex items-center gap-2">
+<span>[MENTOR]</span>
+<span class="h-0.5 w-4 bg-primary/30"></span>
+</div>
+<div class="bg-panel-dark/30 border-l-2 border-primary p-4 text-[#d1d5db] leading-relaxed">
+                        I've analyzed your current architecture. Using Redis for caching hot URLs is a solid choice for latency.
+                        <br/><br/>
+<span class="text-white font-bold">Follow-up:</span> How would you handle a sudden spike in traffic for this URL shortener? Specifically, how do we ensure we don't run out of unique keys?
+                    </div>
+</div>
+<div class="flex flex-col gap-2 opacity-50">
+<div class="text-[#8da6ce] font-bold">[YOU]</div>
+<div class="text-[#8da6ce]">...</div>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark bg-background-dark">
+<div class="relative flex items-center group">
+<span class="absolute left-3 text-primary font-bold">$</span>
+<input class="w-full bg-panel-dark/50 border border-border-dark rounded-lg py-3 pl-8 pr-4 text-sm font-mono focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-border-dark" placeholder="Type your response..." type="text"/>
+<div class="absolute right-3 w-2 h-5 bg-primary animate-[pulse_1s_infinite] rounded-sm"></div>
+</div>
+<div class="mt-3 flex justify-between items-center px-1">
+<span class="text-[10px] text-border-dark uppercase font-bold tracking-widest">Ctrl + Enter to send</span>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-xs text-border-dark">mic_none</span>
+<span class="material-symbols-outlined text-xs text-border-dark">attach_file</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

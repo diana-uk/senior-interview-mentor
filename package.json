@@ -1,0 +1,27 @@
+{
+  "name": "senior-interview-mentor",
+  "version": "1.0.0",
+  "description": "AI-powered LeetCode and senior interview coaching system",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "leetcode": "npx tsx lib/leetcode_problem_runner/index.ts",
+    "hint": "npx tsx lib/hint_ladder_engine/index.ts",
+    "score": "npx tsx lib/rubric_scorer/index.ts",
+    "mistakes": "npx tsx lib/mistake_tracker/index.ts",
+    "pattern": "npx tsx lib/pattern_detector/index.ts",
+    "interview": "npx tsx lib/mock_interview_session/index.ts",
+    "session": "npx tsx lib/session_manager/index.ts"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.4"
+  }
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Design Plan Overview</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#57a5ff",
+                        "primary-dark": "#0f1924",
+                        "surface": "#161b22",
+                        "surface-border": "#30363d",
+                        "accent-green": "#3fb950",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0d1117", // User requested background
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Space Grotesk", sans-serif;
+        }
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            border-left: 2px dashed #30363d;
+            height: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .step-connector::after {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-50 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#30363d] bg-[#0d1117]/90 backdrop-blur-md px-10 py-4">
+<div class="flex items-center gap-4 text-white">
+<div class="flex items-center justify-center rounded-lg bg-[#238636] p-1.5">
+<span class="material-symbols-outlined text-[20px] text-white">code_blocks</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">Senior Interview Mentor</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-9">
+<a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-white text-sm font-medium leading-normal" href="#">Practice</a>
+<a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">Mock Interviews</a>
+<a class="text-gray-400 hover:text-white transition-colors text-sm font-medium leading-normal" href="#">Profile</a>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-full size-10 bg-[#21262d] hover:bg-[#30363d] text-gray-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-[#30363d]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhBavW0CdhlHegIkJJyUKNcN5faQawM4mziYvHyqWkA1ZwiOcsT2yOAMyob9a95kbr7OmSCXO3vXud9RUGgLfJEZ-GJMc07l60Yd0JpTYioioqoxRDJqqM8gif8yY_iAylWCwh4nnezdNvSaFakgDKnviyqjlBbQ_Dk5vpvi-S_idfVkCZoqQ9emCMhbTwd3pR6ptf0XNBspC-CV0wECbOBjWlUaSGYdHIZjwJc6oVBCabnfvlQi4MKnbtKx85p-Ekr2ofimy1znM");'></div>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center px-4 py-8 md:py-12">
+<div class="w-full max-w-[960px] flex flex-col gap-8">
+<!-- Header Banner Card -->
+<div class="relative overflow-hidden rounded-xl border border-[#58a6ff] bg-[rgba(88,166,255,0.06)] p-6 md:p-8">
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<span class="rounded-full bg-[#f85149]/20 px-3 py-1 text-xs font-bold text-[#f85149] border border-[#f85149]/40">HARD</span>
+<span class="text-[#8b949e] text-sm font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                45 mins
+                            </span>
+</div>
+<h1 class="text-white text-2xl md:text-3xl font-bold leading-tight">System Design Challenge: URL Shortener</h1>
+<p class="text-[#8b949e] max-w-xl text-sm md:text-base">Design a highly scalable service like Bit.ly. Focus on unique ID generation, high read throughput, and database sharding strategies.</p>
+</div>
+<button class="group flex items-center justify-center gap-2 rounded-lg bg-[#21262d] border border-[#30363d] px-4 py-2 text-sm font-bold text-white transition-all hover:border-[#58a6ff] hover:text-[#58a6ff]">
+<span>View Requirements</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Abstract decorative background element -->
+<div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#58a6ff]/10 blur-3xl pointer-events-none"></div>
+</div>
+<!-- Progress Bar -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-end">
+<h2 class="text-white text-lg font-bold">Mission Roadmap</h2>
+<span class="text-[#3fb950] text-sm font-medium">0/6 phases ready</span>
+</div>
+<div class="h-1.5 w-full rounded-full bg-[#21262d]">
+<div class="h-1.5 rounded-full bg-[#3fb950] shadow-[0_0_10px_rgba(63,185,80,0.5)] transition-all duration-500" style="width: 2%;"></div>
+</div>
+</div>
+<!-- Steps Grid -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+<!-- Connector Line Visual (Only visible on MD+) -->
+<div aria-hidden="true" class="step-connector absolute inset-0 pointer-events-none opacity-20 hidden md:block"></div>
+<!-- Card 1: Requirements -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">checklist</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 01</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">Requirements &amp; Scope</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Define functional &amp; non-functional goals. Establish traffic estimates.</p>
+</div>
+</div>
+<!-- Card 2: API Design -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">api</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 02</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">API Design</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Outline REST/RPC endpoints, request parameters, and response structures.</p>
+</div>
+</div>
+<!-- Card 3: Data Model -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">database</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 03</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">Data Model &amp; Storage</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Design schema relationships and select SQL vs NoSQL based on access patterns.</p>
+</div>
+</div>
+<!-- Card 4: Architecture -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">schema</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 04</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">High-Level Architecture</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Diagram microservices, load balancers, and how components interact.</p>
+</div>
+</div>
+<!-- Card 5: Deep Dives -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 05</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">Deep Dives &amp; Bottlenecks</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Identify Single Points of Failure (SPOFs), race conditions, and latency issues.</p>
+</div>
+</div>
+<!-- Card 6: Scaling -->
+<div class="group relative flex flex-col gap-4 rounded-xl border border-[#30363d] bg-[#161b22] p-5 hover:border-[#58a6ff] transition-all duration-200 cursor-pointer z-10 hover:shadow-[0_0_20px_rgba(88,166,255,0.05)]">
+<div class="flex items-start justify-between">
+<div class="flex size-10 items-center justify-center rounded-lg bg-[#1f242c] text-[#8b949e] group-hover:bg-[#58a6ff]/20 group-hover:text-[#58a6ff] transition-colors">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<span class="text-[#8b949e] font-mono text-xs opacity-50 group-hover:opacity-100">STEP 06</span>
+</div>
+<div>
+<h3 class="text-white text-lg font-bold mb-1 group-hover:text-[#58a6ff] transition-colors">Scaling &amp; Reliability</h3>
+<p class="text-[#8b949e] text-sm leading-relaxed">Implement sharding, caching strategies, and replication for scale.</p>
+</div>
+</div>
+</div>
+<!-- Footer CTA -->
+<div class="sticky bottom-4 z-40 mt-4 flex justify-center">
+<button class="flex w-full md:w-auto items-center justify-center gap-3 rounded-xl bg-[#58a6ff] px-8 py-4 text-base font-bold text-[#0f1924] shadow-[0_0_20px_rgba(88,166,255,0.4)] transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(88,166,255,0.6)] active:scale-95">
+<span class="material-symbols-outlined">rocket_launch</span>
+                    Start Designing
+                </button>
+</div>
+</div>
+</main>
+</body></html>

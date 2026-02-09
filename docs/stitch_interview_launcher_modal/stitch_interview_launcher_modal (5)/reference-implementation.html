@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SystemDesignPlanOverview — Partial Progress (3/6)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── App CSS Variables (from web/src/index.css) ── */
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #a371f7;
+      --accent-orange: #d29922;
+      --accent-red: #f85149;
+      --border: #30363d;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ── sd-overview: full-screen container ── */
+    .sd-overview {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg-primary);
+      overflow-y: auto;
+    }
+
+    .sd-overview__content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ── Banner Card ── */
+    .sd-overview-banner {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--accent-blue);
+      background: rgba(88,166,255,0.06);
+      border-radius: 12px;
+      padding: 24px 32px;
+    }
+
+    .sd-overview-banner__inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .sd-overview-banner__info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sd-overview-banner__badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-overview-banner__difficulty {
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sd-overview-banner__difficulty--hard {
+      background: rgba(248,81,73,0.2);
+      color: var(--accent-red);
+      border: 1px solid rgba(248,81,73,0.4);
+    }
+    .sd-overview-banner__difficulty--medium {
+      background: rgba(210,153,34,0.2);
+      color: var(--accent-orange);
+      border: 1px solid rgba(210,153,34,0.4);
+    }
+    .sd-overview-banner__difficulty--easy {
+      background: rgba(63,185,80,0.2);
+      color: var(--accent-green);
+      border: 1px solid rgba(63,185,80,0.4);
+    }
+
+    .sd-overview-banner__duration {
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sd-overview-banner__duration .material-symbols-outlined { font-size: 16px; }
+
+    .sd-overview-banner__title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .sd-overview-banner__desc {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 560px;
+    }
+
+    .sd-overview-banner__action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .sd-overview-banner__action:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .sd-overview-banner__action .material-symbols-outlined { font-size: 18px; }
+
+    .sd-overview-banner__glow {
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 256px;
+      height: 256px;
+      border-radius: 9999px;
+      background: rgba(88,166,255,0.1);
+      filter: blur(48px);
+      pointer-events: none;
+    }
+
+    /* ── Progress Section ── */
+    .sd-overview-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sd-overview-progress__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .sd-overview-progress__label {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sd-overview-progress__counter {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-green);
+    }
+
+    .sd-overview-progress__track {
+      width: 100%;
+      height: 6px;
+      border-radius: 9999px;
+      background: var(--bg-tertiary);
+      overflow: hidden;
+    }
+
+    .sd-overview-progress__fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px rgba(63,185,80,0.5);
+      transition: width 0.5s ease;
+    }
+
+    /* ── Steps Grid ── */
+    .sd-overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* ── Step Card (shared) ── */
+    .sd-overview-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sd-overview-card__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .sd-overview-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .sd-overview-card__icon .material-symbols-outlined { font-size: 22px; }
+
+    .sd-overview-card__step-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .sd-overview-card__body { display: flex; flex-direction: column; gap: 4px; }
+
+    .sd-overview-card__title {
+      font-size: 17px;
+      font-weight: 700;
+      transition: color 0.15s ease;
+    }
+
+    .sd-overview-card__desc {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Card State: PENDING ── */
+    .sd-overview-card--pending {
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    .sd-overview-card--pending:hover {
+      border-color: var(--text-secondary);
+    }
+    .sd-overview-card--pending .sd-overview-card__icon {
+      background: #1f242c;
+      color: var(--text-secondary);
+    }
+    .sd-overview-card--pending:hover .sd-overview-card__icon {
+      background: rgba(139,148,158,0.1);
+      color: #c9d1d9;
+    }
+    .sd-overview-card--pending .sd-overview-card__step-label {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+    .sd-overview-card--pending:hover .sd-overview-card__step-label { opacity: 1; }
+    .sd-overview-card--pending .sd-overview-card__title { color: var(--text-secondary); }
+    .sd-overview-card--pending:hover .sd-overview-card__title { color: #c9d1d9; }
+    .sd-overview-card--pending .sd-overview-card__desc { color: var(--text-secondary); opacity: 0.7; }
+
+    /* ── Card State: IN_PROGRESS ── */
+    .sd-overview-card--in-progress {
+      border: 1px solid var(--accent-blue);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 15px rgba(88,166,255,0.1);
+    }
+    .sd-overview-card--in-progress:hover {
+      box-shadow: 0 0 20px rgba(88,166,255,0.15);
+    }
+    .sd-overview-card--in-progress .sd-overview-card__icon {
+      background: rgba(88,166,255,0.1);
+      color: var(--accent-blue);
+    }
+    .sd-overview-card--in-progress .sd-overview-card__step-label {
+      color: var(--accent-blue);
+      font-weight: 700;
+      animation: sd-pulse 2s ease-in-out infinite;
+    }
+    .sd-overview-card--in-progress .sd-overview-card__title { color: var(--accent-blue); }
+    .sd-overview-card--in-progress .sd-overview-card__desc { color: #c9d1d9; }
+
+    @keyframes sd-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* ── Card State: COMPLETED ── */
+    .sd-overview-card--completed {
+      border: 1px solid rgba(63,185,80,0.3);
+      background: rgba(63,185,80,0.1);
+    }
+    .sd-overview-card--completed:hover {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 20px rgba(63,185,80,0.1);
+    }
+    .sd-overview-card--completed .sd-overview-card__icon {
+      background: rgba(63,185,80,0.2);
+      color: var(--accent-green);
+    }
+    .sd-overview-card--completed .sd-overview-card__step-label {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+    .sd-overview-card--completed .sd-overview-card__title { color: var(--text-primary); }
+    .sd-overview-card--completed:hover .sd-overview-card__title { color: var(--accent-green); }
+    .sd-overview-card--completed .sd-overview-card__desc { color: #c9d1d9; }
+
+    /* ── CTA Button ── */
+    .sd-overview-cta {
+      position: sticky;
+      bottom: 16px;
+      z-index: 40;
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .sd-overview-cta__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--accent-blue);
+      color: #0f1924;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(88,166,255,0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .sd-overview-cta__btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(88,166,255,0.6);
+    }
+    .sd-overview-cta__btn:active { transform: scale(0.95); }
+    .sd-overview-cta__btn .material-symbols-outlined { font-size: 20px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 767px) {
+      .sd-overview__content { padding: 24px 16px; }
+      .sd-overview-banner { padding: 20px; }
+      .sd-overview-banner__inner { flex-direction: column; align-items: flex-start; }
+      .sd-overview-banner__title { font-size: 22px; }
+      .sd-overview-grid { grid-template-columns: 1fr; }
+      .sd-overview-cta__btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!--
+  STATE: PARTIAL PROGRESS (3/6 sections filled)
+  Steps 1-3 are COMPLETED, step 4 is IN_PROGRESS (first empty), steps 5-6 are PENDING.
+  CTA says "Continue Designing" instead of "Start Designing".
+-->
+
+<div class="sd-overview">
+  <div class="sd-overview__content">
+
+    <!-- Banner Card (identical to empty state) -->
+    <div class="sd-overview-banner">
+      <div class="sd-overview-banner__inner">
+        <div class="sd-overview-banner__info">
+          <div class="sd-overview-banner__badges">
+            <span class="sd-overview-banner__difficulty sd-overview-banner__difficulty--hard">HARD</span>
+            <span class="sd-overview-banner__duration">
+              <span class="material-symbols-outlined">schedule</span>
+              45 mins
+            </span>
+          </div>
+          <h1 class="sd-overview-banner__title">System Design Challenge: URL Shortener</h1>
+          <p class="sd-overview-banner__desc">Design a highly scalable service like Bit.ly. Focus on unique ID generation, high read throughput, and database sharding strategies.</p>
+        </div>
+        <button class="sd-overview-banner__action">
+          <span>View Requirements</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+      <div class="sd-overview-banner__glow"></div>
+    </div>
+
+    <!-- Progress: 3/6 = 50% -->
+    <div class="sd-overview-progress">
+      <div class="sd-overview-progress__row">
+        <h2 class="sd-overview-progress__label">Mission Roadmap</h2>
+        <span class="sd-overview-progress__counter">3/6 sections completed</span>
+      </div>
+      <div class="sd-overview-progress__track" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="6">
+        <div class="sd-overview-progress__fill" style="width: 50%;"></div>
+      </div>
+    </div>
+
+    <!-- Steps Grid: Mixed states -->
+    <div class="sd-overview-grid">
+
+      <!-- Step 1: Requirements & Scope — COMPLETED -->
+      <div class="sd-overview-card sd-overview-card--completed" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <span class="sd-overview-card__step-label">COMPLETED</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">Requirements &amp; Scope</div>
+          <div class="sd-overview-card__desc">Define functional &amp; non-functional goals. Establish traffic estimates.</div>
+        </div>
+      </div>
+
+      <!-- Step 2: API Design — COMPLETED -->
+      <div class="sd-overview-card sd-overview-card--completed" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <span class="sd-overview-card__step-label">COMPLETED</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">API Design</div>
+          <div class="sd-overview-card__desc">Outline REST/RPC endpoints, request parameters, and response structures.</div>
+        </div>
+      </div>
+
+      <!-- Step 3: Data Model & Storage — COMPLETED -->
+      <div class="sd-overview-card sd-overview-card--completed" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <span class="sd-overview-card__step-label">COMPLETED</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">Data Model &amp; Storage</div>
+          <div class="sd-overview-card__desc">Design schema relationships and select SQL vs NoSQL based on access patterns.</div>
+        </div>
+      </div>
+
+      <!-- Step 4: High-Level Architecture — IN_PROGRESS (first empty section) -->
+      <div class="sd-overview-card sd-overview-card--in-progress" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">circle</span>
+          </div>
+          <span class="sd-overview-card__step-label">IN PROGRESS</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">High-Level Architecture</div>
+          <div class="sd-overview-card__desc">Diagram microservices, load balancers, and how components interact.</div>
+        </div>
+      </div>
+
+      <!-- Step 5: Deep Dives & Bottlenecks — PENDING -->
+      <div class="sd-overview-card sd-overview-card--pending" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">radio_button_unchecked</span>
+          </div>
+          <span class="sd-overview-card__step-label">STEP 05</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">Deep Dives &amp; Bottlenecks</div>
+          <div class="sd-overview-card__desc">Identify Single Points of Failure (SPOFs), race conditions, and latency issues.</div>
+        </div>
+      </div>
+
+      <!-- Step 6: Scaling & Reliability — PENDING -->
+      <div class="sd-overview-card sd-overview-card--pending" role="button" tabindex="0">
+        <div class="sd-overview-card__top">
+          <div class="sd-overview-card__icon">
+            <span class="material-symbols-outlined">radio_button_unchecked</span>
+          </div>
+          <span class="sd-overview-card__step-label">STEP 06</span>
+        </div>
+        <div class="sd-overview-card__body">
+          <div class="sd-overview-card__title">Scaling &amp; Reliability</div>
+          <div class="sd-overview-card__desc">Implement sharding, caching strategies, and replication for scale.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA: "Continue" since sections are partially filled -->
+    <div class="sd-overview-cta">
+      <button class="sd-overview-cta__btn">
+        <span class="material-symbols-outlined">rocket_launch</span>
+        Continue Designing
+      </button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

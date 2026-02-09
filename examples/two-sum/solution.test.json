@@ -1,0 +1,30 @@
+{
+  "functionName": "twoSum",
+  "cases": [
+    {
+      "description": "Basic case - target at beginning",
+      "input": [[2, 7, 11, 15], 9],
+      "expected": [0, 1]
+    },
+    {
+      "description": "Target in middle of array",
+      "input": [[3, 2, 4], 6],
+      "expected": [1, 2]
+    },
+    {
+      "description": "Duplicate values",
+      "input": [[3, 3], 6],
+      "expected": [0, 1]
+    },
+    {
+      "description": "Negative numbers",
+      "input": [[-1, -2, -3, -4, -5], -8],
+      "expected": [2, 4]
+    },
+    {
+      "description": "Zero in array",
+      "input": [[0, 4, 3, 0], 0],
+      "expected": [0, 3]
+    }
+  ]
+}

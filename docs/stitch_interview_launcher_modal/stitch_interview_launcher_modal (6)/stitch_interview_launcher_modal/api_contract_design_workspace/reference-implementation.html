@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Contract Design Workspace</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ================================================================
+       CSS Custom Properties (App Theme)
+       ================================================================ */
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #a371f7;
+      --accent-orange: #d29922;
+      --accent-red: #f85149;
+      --border: #30363d;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    }
+
+    /* ================================================================
+       Reset & Base
+       ================================================================ */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    input {
+      font-family: inherit;
+      border: none;
+      background: none;
+      color: inherit;
+      outline: none;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      vertical-align: middle;
+    }
+
+    /* ================================================================
+       APP SHELL
+       ================================================================ */
+    .sd-api {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ================================================================
+       HEADER BAR (64px)
+       ================================================================ */
+    .sd-api__header {
+      height: 64px;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .sd-api__header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .sd-api__header-logo .material-symbols-outlined {
+      font-size: 28px;
+      color: var(--accent-blue);
+    }
+
+    .sd-api__header-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .sd-api__header-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      display: inline-block;
+    }
+
+    .sd-api__header-time {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .sd-api__header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-api__header-actions button {
+      color: var(--text-secondary);
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-api__header-actions button:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .sd-api__header-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    /* ================================================================
+       BODY (3-Column Layout)
+       ================================================================ */
+    .sd-api__body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ================================================================
+       LEFT SIDEBAR (256px)
+       ================================================================ */
+    .sd-api__sidebar {
+      width: 256px;
+      min-width: 256px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sd-api__sidebar-header {
+      padding: 20px 16px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .sd-api__steps {
+      list-style: none;
+      flex: 1;
+    }
+
+    .sd-api__step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: default;
+      position: relative;
+      transition: background 0.15s;
+    }
+
+    .sd-api__step--completed .sd-api__step-icon {
+      color: var(--accent-green);
+      font-size: 20px;
+    }
+
+    .sd-api__step--completed .sd-api__step-label {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .sd-api__step--completed .sd-api__step-number {
+      display: none;
+    }
+
+    .sd-api__step--active {
+      background: rgba(88, 166, 255, 0.06);
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .sd-api__step--active .sd-api__step-icon {
+      color: var(--accent-blue);
+      font-size: 20px;
+    }
+
+    .sd-api__step--active .sd-api__step-label {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .sd-api__step--active .sd-api__step-sub {
+      display: block;
+    }
+
+    .sd-api__step--locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .sd-api__step--locked .sd-api__step-icon {
+      color: var(--text-secondary);
+      font-size: 20px;
+    }
+
+    .sd-api__step-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sd-api__step-number {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .sd-api__step-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .sd-api__step-sub {
+      display: none;
+      font-size: 11px;
+      color: var(--accent-blue);
+      margin-top: 2px;
+    }
+
+    /* Timer */
+    .sd-api__timer {
+      margin: auto 12px 16px;
+      padding: 16px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .sd-api__timer-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .sd-api__timer-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .sd-api__timer-bar {
+      height: 4px;
+      background: var(--bg-primary);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .sd-api__timer-bar-fill {
+      height: 100%;
+      width: 45%;
+      background: var(--accent-blue);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* ================================================================
+       CENTER PANEL (flex-1)
+       ================================================================ */
+    .sd-api__center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .sd-api__editor {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    /* Endpoint List (256px) */
+    .sd-api__endpoints {
+      width: 256px;
+      min-width: 256px;
+      background: var(--bg-primary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sd-api__endpoints-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-api__endpoints-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .sd-api__endpoints-add {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-api__endpoints-add:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .sd-api__endpoint {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-left: 2px solid transparent;
+    }
+
+    .sd-api__endpoint:hover {
+      background: var(--bg-secondary);
+    }
+
+    .sd-api__endpoint--active {
+      background: var(--bg-secondary);
+      border-left-color: var(--accent-blue);
+      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .sd-api__endpoint-method {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .sd-api__endpoint-method--post {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .sd-api__endpoint-method--get {
+      background: rgba(88, 166, 255, 0.08);
+      color: rgba(88, 166, 255, 0.6);
+    }
+
+    .sd-api__endpoint-method--del {
+      background: rgba(248, 81, 73, 0.08);
+      color: rgba(248, 81, 73, 0.6);
+    }
+
+    .sd-api__endpoint--active .sd-api__endpoint-method--post {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--accent-blue);
+    }
+
+    .sd-api__endpoint-path {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sd-api__endpoint--active .sd-api__endpoint-path {
+      color: var(--text-primary);
+    }
+
+    /* Editor Main Area */
+    .sd-api__editor-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-y: auto;
+    }
+
+    /* Toolbar */
+    .sd-api__toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-primary);
+    }
+
+    .sd-api__toolbar-method {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+      letter-spacing: 0.5px;
+    }
+
+    .sd-api__toolbar-url {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sd-api__toolbar-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+
+    .sd-api__toolbar-btn:hover {
+      opacity: 0.85;
+    }
+
+    .sd-api__toolbar-btn--test {
+      background: var(--accent-green);
+      color: #fff;
+    }
+
+    .sd-api__toolbar-btn--save {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    /* Tabs */
+    .sd-api__tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-primary);
+    }
+
+    .sd-api__tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      position: relative;
+      transition: color 0.15s;
+    }
+
+    .sd-api__tab:hover {
+      color: var(--text-primary);
+    }
+
+    .sd-api__tab--active {
+      color: var(--accent-blue);
+      font-weight: 500;
+    }
+
+    .sd-api__tab--active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-blue);
+    }
+
+    .sd-api__tab-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* Content */
+    .sd-api__content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .sd-api__field {
+      margin-bottom: 24px;
+    }
+
+    .sd-api__field-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .sd-api__field-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .sd-api__field-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    /* Code Block */
+    .sd-api__code {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .sd-api__code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-api__code-header-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .sd-api__code-header-badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .sd-api__code-header-badge--success {
+      background: rgba(63, 185, 80, 0.12);
+      color: var(--accent-green);
+    }
+
+    .sd-api__code-body {
+      display: flex;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .sd-api__code-lines {
+      padding: 14px 0;
+      text-align: right;
+      user-select: none;
+      min-width: 40px;
+      border-right: 1px solid var(--border);
+    }
+
+    .sd-api__code-line-num {
+      display: block;
+      padding: 0 12px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      font-size: 12px;
+    }
+
+    .sd-api__code-content {
+      flex: 1;
+      padding: 14px 16px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Syntax colors */
+    .sd-api__syn-key { color: #79c0ff; }
+    .sd-api__syn-str { color: #a5d6ff; }
+    .sd-api__syn-brace { color: #e3b341; }
+    .sd-api__syn-punct { color: var(--text-secondary); }
+
+    /* ================================================================
+       COMMITMENT BAR
+       ================================================================ */
+    .sd-api__commitment {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      min-height: 52px;
+    }
+
+    .sd-api__commitment-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .sd-api__commitment-icon {
+      color: var(--accent-blue);
+      font-size: 20px;
+    }
+
+    .sd-api__commitment-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .sd-api__commitment-helper {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .sd-api__commitment-checks {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .sd-api__commitment-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sd-api__commitment-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .sd-api__commitment-checkbox .material-symbols-outlined {
+      font-size: 14px;
+      display: none;
+    }
+
+    .sd-api__commitment-check--checked .sd-api__commitment-checkbox {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .sd-api__commitment-check--checked .sd-api__commitment-checkbox .material-symbols-outlined {
+      display: block;
+      color: #fff;
+      font-variation-settings: 'FILL' 1;
+    }
+
+    .sd-api__commitment-check--checked {
+      color: var(--accent-blue);
+    }
+
+    .sd-api__commitment-btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent-blue);
+      color: #fff;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+
+    .sd-api__commitment-btn:hover {
+      opacity: 0.85;
+    }
+
+    /* ================================================================
+       RIGHT PANEL — AI MENTOR (320px)
+       ================================================================ */
+    .sd-api__mentor {
+      width: 320px;
+      min-width: 320px;
+      background: var(--bg-primary);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sd-api__mentor-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-api__mentor-icon {
+      color: var(--accent-purple);
+      font-size: 22px;
+    }
+
+    .sd-api__mentor-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .sd-api__mentor-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent-green);
+      background: rgba(63, 185, 80, 0.1);
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .sd-api__mentor-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    .sd-api__mentor-chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sd-api__mentor-msg {
+      max-width: 92%;
+    }
+
+    .sd-api__mentor-msg--ai {
+      align-self: flex-start;
+    }
+
+    .sd-api__mentor-msg--user {
+      align-self: flex-end;
+    }
+
+    .sd-api__mentor-bubble {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .sd-api__mentor-msg--ai .sd-api__mentor-bubble {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-top-left-radius: 2px;
+    }
+
+    .sd-api__mentor-msg--user .sd-api__mentor-bubble {
+      background: var(--accent-blue);
+      color: #fff;
+      border-top-right-radius: 2px;
+    }
+
+    .sd-api__mentor-suggestion-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      transition: background 0.15s;
+    }
+
+    .sd-api__mentor-suggestion-btn:hover {
+      background: rgba(88, 166, 255, 0.2);
+    }
+
+    .sd-api__mentor-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sd-api__mentor-input-field {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .sd-api__mentor-input-field::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    .sd-api__mentor-send {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      color: var(--accent-blue);
+      transition: background 0.15s;
+    }
+
+    .sd-api__mentor-send:hover {
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    /* ================================================================
+       SCROLLBAR STYLES
+       ================================================================ */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sd-api">
+    <!-- ============================================================
+         HEADER BAR
+         ============================================================ -->
+    <header class="sd-api__header">
+      <div class="sd-api__header-logo">
+        <span class="material-symbols-outlined">terminal</span>
+        Senior Interview Mentor
+      </div>
+
+      <div class="sd-api__header-center">
+        <span class="sd-api__header-dot"></span>
+        Session Active:
+        <span class="sd-api__header-time">14:02</span>
+      </div>
+
+      <div class="sd-api__header-actions">
+        <button title="Settings">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <div class="sd-api__header-avatar">DK</div>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         BODY (3-Column)
+         ============================================================ -->
+    <div class="sd-api__body">
+
+      <!-- ========================================================
+           LEFT SIDEBAR
+           ======================================================== -->
+      <aside class="sd-api__sidebar">
+        <div class="sd-api__sidebar-header">Interview Phases</div>
+
+        <ul class="sd-api__steps">
+          <!-- Step 1: Completed -->
+          <li class="sd-api__step sd-api__step--completed">
+            <span class="material-symbols-outlined sd-api__step-icon">check_circle</span>
+            <div class="sd-api__step-content">
+              <span class="sd-api__step-number">Step 1</span>
+              <span class="sd-api__step-label">Requirements</span>
+            </div>
+          </li>
+
+          <!-- Step 2: Active -->
+          <li class="sd-api__step sd-api__step--active">
+            <span class="material-symbols-outlined sd-api__step-icon">edit_note</span>
+            <div class="sd-api__step-content">
+              <span class="sd-api__step-number">Step 2</span>
+              <span class="sd-api__step-label">API Contract</span>
+              <span class="sd-api__step-sub">In Progress</span>
+            </div>
+          </li>
+
+          <!-- Step 3: Locked -->
+          <li class="sd-api__step sd-api__step--locked">
+            <span class="material-symbols-outlined sd-api__step-icon">lock</span>
+            <div class="sd-api__step-content">
+              <span class="sd-api__step-number">Step 3</span>
+              <span class="sd-api__step-label">Data Model</span>
+            </div>
+          </li>
+
+          <!-- Step 4: Locked -->
+          <li class="sd-api__step sd-api__step--locked">
+            <span class="material-symbols-outlined sd-api__step-icon">lock</span>
+            <div class="sd-api__step-content">
+              <span class="sd-api__step-number">Step 4</span>
+              <span class="sd-api__step-label">Scale Estimation</span>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Timer -->
+        <div class="sd-api__timer">
+          <div class="sd-api__timer-label">Time Remaining</div>
+          <div class="sd-api__timer-value">25:00</div>
+          <div class="sd-api__timer-bar">
+            <div class="sd-api__timer-bar-fill"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ========================================================
+           CENTER PANEL
+           ======================================================== -->
+      <main class="sd-api__center">
+        <div class="sd-api__editor">
+
+          <!-- Endpoint List -->
+          <div class="sd-api__endpoints">
+            <div class="sd-api__endpoints-header">
+              <span class="sd-api__endpoints-title">Endpoints</span>
+              <button class="sd-api__endpoints-add" title="Add endpoint">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
+
+            <div class="sd-api__endpoint sd-api__endpoint--active">
+              <span class="sd-api__endpoint-method sd-api__endpoint-method--post">POST</span>
+              <span class="sd-api__endpoint-path">/v1/shorten</span>
+            </div>
+
+            <div class="sd-api__endpoint">
+              <span class="sd-api__endpoint-method sd-api__endpoint-method--get">GET</span>
+              <span class="sd-api__endpoint-path">/v1/{alias}</span>
+            </div>
+
+            <div class="sd-api__endpoint">
+              <span class="sd-api__endpoint-method sd-api__endpoint-method--del">DEL</span>
+              <span class="sd-api__endpoint-path">/v1/{alias}</span>
+            </div>
+          </div>
+
+          <!-- Editor Main -->
+          <div class="sd-api__editor-main">
+            <!-- Toolbar -->
+            <div class="sd-api__toolbar">
+              <span class="sd-api__toolbar-method">POST</span>
+              <div class="sd-api__toolbar-url">https://api.tiny.url/v1/shorten</div>
+              <button class="sd-api__toolbar-btn sd-api__toolbar-btn--test">Test</button>
+              <button class="sd-api__toolbar-btn sd-api__toolbar-btn--save">Save</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="sd-api__tabs">
+              <button class="sd-api__tab">Params</button>
+              <button class="sd-api__tab">Authorization</button>
+              <button class="sd-api__tab sd-api__tab--active">
+                Body
+                <span class="sd-api__tab-dot"></span>
+              </button>
+              <button class="sd-api__tab">Headers</button>
+            </div>
+
+            <!-- Content -->
+            <div class="sd-api__content">
+              <!-- Description Field -->
+              <div class="sd-api__field">
+                <div class="sd-api__field-label">Description</div>
+                <input
+                  class="sd-api__field-input"
+                  type="text"
+                  placeholder="Shorten a URL with optional custom alias and expiration..."
+                />
+              </div>
+
+              <!-- Request Body -->
+              <div class="sd-api__field">
+                <div class="sd-api__code">
+                  <div class="sd-api__code-header">
+                    <span class="sd-api__code-header-label">Request Body (JSON)</span>
+                  </div>
+                  <div class="sd-api__code-body">
+                    <div class="sd-api__code-lines">
+                      <span class="sd-api__code-line-num">1</span>
+                      <span class="sd-api__code-line-num">2</span>
+                      <span class="sd-api__code-line-num">3</span>
+                      <span class="sd-api__code-line-num">4</span>
+                      <span class="sd-api__code-line-num">5</span>
+                      <span class="sd-api__code-line-num">6</span>
+                    </div>
+                    <div class="sd-api__code-content"><span class="sd-api__syn-brace">{</span>
+  <span class="sd-api__syn-key">"original_url"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"https://example.com/very/long/path"</span><span class="sd-api__syn-punct">,</span>
+  <span class="sd-api__syn-key">"custom_alias"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"my-link"</span><span class="sd-api__syn-punct">,</span>
+  <span class="sd-api__syn-key">"user_id"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"usr_abc123"</span><span class="sd-api__syn-punct">,</span>
+  <span class="sd-api__syn-key">"expiration_date"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"2025-12-31T23:59:59Z"</span>
+<span class="sd-api__syn-brace">}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Response -->
+              <div class="sd-api__field">
+                <div class="sd-api__code">
+                  <div class="sd-api__code-header">
+                    <span class="sd-api__code-header-label">Response</span>
+                    <span class="sd-api__code-header-badge sd-api__code-header-badge--success">201 Created</span>
+                  </div>
+                  <div class="sd-api__code-body">
+                    <div class="sd-api__code-lines">
+                      <span class="sd-api__code-line-num">1</span>
+                      <span class="sd-api__code-line-num">2</span>
+                      <span class="sd-api__code-line-num">3</span>
+                      <span class="sd-api__code-line-num">4</span>
+                    </div>
+                    <div class="sd-api__code-content"><span class="sd-api__syn-brace">{</span>
+  <span class="sd-api__syn-key">"short_link"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"https://tiny.url/my-link"</span><span class="sd-api__syn-punct">,</span>
+  <span class="sd-api__syn-key">"created_at"</span><span class="sd-api__syn-punct">:</span> <span class="sd-api__syn-str">"2025-01-15T10:30:00Z"</span>
+<span class="sd-api__syn-brace">}</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commitment Bar -->
+        <div class="sd-api__commitment">
+          <div class="sd-api__commitment-left">
+            <span class="material-symbols-outlined sd-api__commitment-icon">fact_check</span>
+            <span class="sd-api__commitment-label">API Commitment Gate</span>
+            <span class="sd-api__commitment-helper">Verify before proceeding</span>
+          </div>
+
+          <div class="sd-api__commitment-checks">
+            <label class="sd-api__commitment-check">
+              <span class="sd-api__commitment-checkbox">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              Rate Limiting
+            </label>
+
+            <label class="sd-api__commitment-check">
+              <span class="sd-api__commitment-checkbox">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              Idempotency
+            </label>
+
+            <label class="sd-api__commitment-check sd-api__commitment-check--checked">
+              <span class="sd-api__commitment-checkbox">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              Error Codes
+            </label>
+          </div>
+
+          <button class="sd-api__commitment-btn">Commit API</button>
+        </div>
+      </main>
+
+      <!-- ========================================================
+           RIGHT PANEL — AI MENTOR
+           ======================================================== -->
+      <aside class="sd-api__mentor">
+        <div class="sd-api__mentor-header">
+          <span class="material-symbols-outlined sd-api__mentor-icon">smart_toy</span>
+          <span class="sd-api__mentor-title">AI Mentor</span>
+          <div class="sd-api__mentor-status">
+            <span class="sd-api__mentor-status-dot"></span>
+            Reviewing
+          </div>
+        </div>
+
+        <div class="sd-api__mentor-chat">
+          <!-- AI message 1 -->
+          <div class="sd-api__mentor-msg sd-api__mentor-msg--ai">
+            <div class="sd-api__mentor-bubble">
+              I notice you have <code>user_id</code> in the request body. In REST best practices, authentication context like user identity is typically conveyed via headers (e.g., an <code>Authorization</code> bearer token) rather than the request payload. This avoids coupling authentication to the API contract.
+            </div>
+          </div>
+
+          <!-- User message -->
+          <div class="sd-api__mentor-msg sd-api__mentor-msg--user">
+            <div class="sd-api__mentor-bubble">
+              Good catch. I'll move it to headers.
+            </div>
+          </div>
+
+          <!-- AI message 2 -->
+          <div class="sd-api__mentor-msg sd-api__mentor-msg--ai">
+            <div class="sd-api__mentor-bubble">
+              Great call. One more thought: consider including <code>expiration_date</code> in the response as well. Clients often need confirmation of the TTL that was actually set, especially if the server applies defaults or caps.
+              <button class="sd-api__mentor-suggestion-btn">
+                <span class="material-symbols-outlined" style="font-size: 16px;">auto_fix_high</span>
+                Apply Suggestion
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sd-api__mentor-input">
+          <input
+            class="sd-api__mentor-input-field"
+            type="text"
+            placeholder="Ask about REST best practices..."
+          />
+          <button class="sd-api__mentor-send" title="Send message">
+            <span class="material-symbols-outlined">send</span>
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</body>
+</html>

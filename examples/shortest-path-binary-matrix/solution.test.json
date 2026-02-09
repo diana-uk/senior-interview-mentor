@@ -1,0 +1,35 @@
+{
+  "functionName": "shortestPathBinaryMatrix",
+  "cases": [
+    {
+      "description": "Diagonal path 2x2",
+      "input": [[[0, 1], [1, 0]]],
+      "expected": 2
+    },
+    {
+      "description": "3x3 grid with clear path",
+      "input": [[[0, 0, 0], [1, 1, 0], [1, 1, 0]]],
+      "expected": 4
+    },
+    {
+      "description": "Start cell blocked",
+      "input": [[[1, 0, 0], [1, 1, 0], [1, 1, 0]]],
+      "expected": -1
+    },
+    {
+      "description": "Single cell",
+      "input": [[[0]]],
+      "expected": 1
+    },
+    {
+      "description": "End cell blocked",
+      "input": [[[0, 0], [0, 1]]],
+      "expected": -1
+    },
+    {
+      "description": "All clear 3x3",
+      "input": [[[0, 0, 0], [0, 0, 0], [0, 0, 0]]],
+      "expected": 3
+    }
+  ]
+}

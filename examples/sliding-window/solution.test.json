@@ -1,0 +1,40 @@
+{
+  "functionName": "lengthOfLongestSubstring",
+  "cases": [
+    {
+      "description": "Mixed characters",
+      "input": ["abcabcbb"],
+      "expected": 3
+    },
+    {
+      "description": "All same characters",
+      "input": ["bbbbb"],
+      "expected": 1
+    },
+    {
+      "description": "Repeating pattern",
+      "input": ["pwwkew"],
+      "expected": 3
+    },
+    {
+      "description": "Empty string",
+      "input": [""],
+      "expected": 0
+    },
+    {
+      "description": "Single character",
+      "input": ["a"],
+      "expected": 1
+    },
+    {
+      "description": "All unique",
+      "input": ["abcdef"],
+      "expected": 6
+    },
+    {
+      "description": "Spaces and special chars",
+      "input": ["a b c"],
+      "expected": 3
+    }
+  ]
+}

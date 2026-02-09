@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Model Definition Workspace - Senior Interview Mentor</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <!-- Material Symbols Outlined -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ============================
+       CSS Custom Properties
+       ============================ */
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #a371f7;
+      --accent-orange: #d29922;
+      --accent-red: #f85149;
+      --border: #30363d;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    }
+
+    /* ============================
+       Reset & Base
+       ============================ */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    textarea {
+      font-family: var(--font-mono);
+      resize: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    input {
+      font-family: inherit;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    /* ============================
+       Layout Shell
+       ============================ */
+    .sd-data {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .sd-data__body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ============================
+       HEADER BAR
+       ============================ */
+    .sd-data__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      padding: 0 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sd-data__header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-data__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-blue);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .sd-data__logo .material-symbols-outlined {
+      font-size: 20px;
+      color: #ffffff;
+    }
+
+    .sd-data__brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .sd-data__brand-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .sd-data__brand-context {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.2;
+    }
+
+    .sd-data__header-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sd-data__step-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .sd-data__step-label strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .sd-data__progress-bar {
+      width: 160px;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .sd-data__progress-fill {
+      width: 40%;
+      height: 100%;
+      background: var(--accent-blue);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .sd-data__progress-text {
+      font-size: 12px;
+      color: var(--accent-blue);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .sd-data__header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-data__timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .sd-data__timer .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--text-secondary);
+    }
+
+    .sd-data__header-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .sd-data__header-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-secondary);
+    }
+
+    .sd-data__header-btn .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .sd-data__header-btn--end {
+      background: transparent;
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    .sd-data__header-btn--end:hover {
+      background: rgba(248, 81, 73, 0.1);
+    }
+
+    .sd-data__avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    /* ============================
+       LEFT SIDEBAR
+       ============================ */
+    .sd-data__sidebar {
+      width: 256px;
+      min-width: 256px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sd-data__sidebar-header {
+      padding: 20px 16px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .sd-data__steps {
+      list-style: none;
+      padding: 0 8px;
+      flex: 1;
+    }
+
+    .sd-data__step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 2px solid transparent;
+      cursor: default;
+      transition: background 0.15s;
+    }
+
+    .sd-data__step--completed {
+      opacity: 0.6;
+    }
+
+    .sd-data__step--completed .sd-data__step-name {
+      text-decoration: line-through;
+    }
+
+    .sd-data__step--completed .sd-data__step-icon {
+      color: var(--accent-green);
+    }
+
+    .sd-data__step--active {
+      border-left-color: var(--accent-blue);
+      background: rgba(88, 166, 255, 0.06);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .sd-data__step--active .sd-data__step-icon {
+      color: var(--accent-blue);
+      animation: sd-data-pulse 2s ease-in-out infinite;
+    }
+
+    .sd-data__step--active .sd-data__step-name {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .sd-data__step--pending {
+      cursor: not-allowed;
+    }
+
+    .sd-data__step--pending .sd-data__step-icon {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    .sd-data__step--pending .sd-data__step-name {
+      color: var(--text-secondary);
+    }
+
+    @keyframes sd-data-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .sd-data__step-icon {
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .sd-data__step-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sd-data__step-number {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .sd-data__step-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .sd-data__step-status {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sd-data__sidebar-tip {
+      margin: 16px 12px;
+      padding: 12px;
+      background: rgba(88, 166, 255, 0.06);
+      border: 1px solid rgba(88, 166, 255, 0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .sd-data__sidebar-tip .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--accent-blue);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .sd-data__sidebar-tip-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .sd-data__sidebar-tip-text strong {
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    /* ============================
+       CENTER PANEL (Editor)
+       ============================ */
+    .sd-data__editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* -- Schema Pane (Top) -- */
+    .sd-data__schema {
+      flex: 6;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .sd-data__pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sd-data__pane-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sd-data__pane-header-left .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--accent-blue);
+    }
+
+    .sd-data__pane-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .sd-data__pane-badge {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-tertiary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .sd-data__code-area {
+      flex: 1;
+      display: flex;
+      overflow: auto;
+      background: var(--bg-primary);
+    }
+
+    .sd-data__line-numbers {
+      width: 40px;
+      min-width: 40px;
+      background: rgba(22, 27, 34, 0.5);
+      padding: 12px 0;
+      text-align: right;
+      user-select: none;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sd-data__line-number {
+      display: block;
+      padding: 0 8px 0 0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    .sd-data__code-editor {
+      flex: 1;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    /* -- Resize Handle -- */
+    .sd-data__resize-handle {
+      height: 4px;
+      background: var(--border);
+      cursor: row-resize;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .sd-data__resize-handle:hover {
+      background: var(--accent-blue);
+    }
+
+    /* -- Choices Pane (Bottom) -- */
+    .sd-data__choices {
+      flex: 4;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .sd-data__choices-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sd-data__field-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sd-data__radio-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .sd-data__radio {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .sd-data__radio:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .sd-data__radio--selected {
+      border-color: var(--accent-blue);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sd-data__radio--selected:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .sd-data__radio-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+    }
+
+    .sd-data__radio--selected .sd-data__radio-dot {
+      border-color: var(--accent-blue);
+    }
+
+    .sd-data__radio--selected .sd-data__radio-dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+    }
+
+    .sd-data__radio-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .sd-data__justification-textarea {
+      width: 100%;
+      min-height: 72px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .sd-data__justification-textarea:focus {
+      border-color: var(--accent-blue);
+      outline: none;
+    }
+
+    .sd-data__choices-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+
+    .sd-data__btn-ghost {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      background: transparent;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .sd-data__btn-ghost:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .sd-data__btn-primary {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      background: var(--accent-blue);
+      border: none;
+      transition: opacity 0.15s;
+    }
+
+    .sd-data__btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    /* ============================
+       RIGHT PANEL (AI Mentor)
+       ============================ */
+    .sd-data__mentor {
+      width: 340px;
+      min-width: 340px;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sd-data__mentor-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .sd-data__mentor-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: sd-data-dot-pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes sd-data-dot-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(63, 185, 80, 0); }
+    }
+
+    .sd-data__mentor-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .sd-data__mentor-more {
+      font-size: 20px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+
+    .sd-data__mentor-more:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .sd-data__mentor-chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg-primary);
+    }
+
+    .sd-data__message {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-width: 92%;
+    }
+
+    .sd-data__message--mentor {
+      align-self: flex-start;
+    }
+
+    .sd-data__message--user {
+      align-self: flex-end;
+    }
+
+    .sd-data__message-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sd-data__message--mentor .sd-data__message-label {
+      color: var(--accent-green);
+    }
+
+    .sd-data__message--user .sd-data__message-label {
+      color: var(--accent-blue);
+      text-align: right;
+    }
+
+    .sd-data__message-bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-primary);
+    }
+
+    .sd-data__message--mentor .sd-data__message-bubble {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 4px 12px 12px 12px;
+    }
+
+    .sd-data__message--user .sd-data__message-bubble {
+      background: rgba(88, 166, 255, 0.2);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      border-radius: 12px 4px 12px 12px;
+    }
+
+    .sd-data__message-bubble code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: rgba(110, 118, 129, 0.2);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: var(--accent-blue);
+    }
+
+    .sd-data__message-time {
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+
+    .sd-data__message--user .sd-data__message-time {
+      text-align: right;
+    }
+
+    .sd-data__mentor-input {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+      background: var(--bg-secondary);
+    }
+
+    .sd-data__mentor-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sd-data__mentor-textfield {
+      flex: 1;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: border-color 0.15s;
+    }
+
+    .sd-data__mentor-textfield::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .sd-data__mentor-textfield:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .sd-data__mentor-send {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+
+    .sd-data__mentor-send:hover {
+      opacity: 0.85;
+    }
+
+    .sd-data__mentor-send .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .sd-data__mentor-hint-link {
+      text-align: center;
+      font-size: 12px;
+      color: var(--accent-blue);
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+
+    .sd-data__mentor-hint-link:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    /* ============================
+       Scrollbar Styling
+       ============================ */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sd-data">
+
+    <!-- =============================
+         HEADER BAR
+         ============================= -->
+    <header class="sd-data__header">
+      <!-- Left -->
+      <div class="sd-data__header-left">
+        <div class="sd-data__logo">
+          <span class="material-symbols-outlined">code</span>
+        </div>
+        <div class="sd-data__brand">
+          <span class="sd-data__brand-name">Senior Interview Mentor</span>
+          <span class="sd-data__brand-context">System Design: URL Shortener Service</span>
+        </div>
+      </div>
+
+      <!-- Center -->
+      <div class="sd-data__header-center">
+        <span class="sd-data__step-label"><strong>Step 3</strong> of 5</span>
+        <div class="sd-data__progress-bar">
+          <div class="sd-data__progress-fill"></div>
+        </div>
+        <span class="sd-data__progress-text">40% Complete</span>
+      </div>
+
+      <!-- Right -->
+      <div class="sd-data__header-right">
+        <div class="sd-data__timer">
+          <span class="material-symbols-outlined">schedule</span>
+          00:14:32
+        </div>
+        <button class="sd-data__header-btn">
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </button>
+        <button class="sd-data__header-btn sd-data__header-btn--end">
+          <span class="material-symbols-outlined">stop_circle</span>
+          End Interview
+        </button>
+        <div class="sd-data__avatar">DK</div>
+      </div>
+    </header>
+
+    <!-- =============================
+         BODY (Sidebar + Editor + Mentor)
+         ============================= -->
+    <div class="sd-data__body">
+
+      <!-- =============================
+           LEFT SIDEBAR
+           ============================= -->
+      <aside class="sd-data__sidebar">
+        <div class="sd-data__sidebar-header">Progress Tracking</div>
+
+        <ul class="sd-data__steps">
+          <!-- Step 1 - Completed -->
+          <li class="sd-data__step sd-data__step--completed">
+            <span class="material-symbols-outlined sd-data__step-icon">check_circle</span>
+            <div class="sd-data__step-info">
+              <span class="sd-data__step-number">Step 1</span>
+              <span class="sd-data__step-name">Requirements</span>
+            </div>
+          </li>
+
+          <!-- Step 2 - Completed -->
+          <li class="sd-data__step sd-data__step--completed">
+            <span class="material-symbols-outlined sd-data__step-icon">check_circle</span>
+            <div class="sd-data__step-info">
+              <span class="sd-data__step-number">Step 2</span>
+              <span class="sd-data__step-name">API Interface</span>
+            </div>
+          </li>
+
+          <!-- Step 3 - Active -->
+          <li class="sd-data__step sd-data__step--active">
+            <span class="material-symbols-outlined sd-data__step-icon">edit_note</span>
+            <div class="sd-data__step-info">
+              <span class="sd-data__step-number">Step 3</span>
+              <span class="sd-data__step-name">Data Model</span>
+              <span class="sd-data__step-status">In Progress</span>
+            </div>
+          </li>
+
+          <!-- Step 4 - Pending -->
+          <li class="sd-data__step sd-data__step--pending">
+            <span class="material-symbols-outlined sd-data__step-icon">radio_button_unchecked</span>
+            <div class="sd-data__step-info">
+              <span class="sd-data__step-number">Step 4</span>
+              <span class="sd-data__step-name">High-Level Design</span>
+            </div>
+          </li>
+
+          <!-- Step 5 - Pending -->
+          <li class="sd-data__step sd-data__step--pending">
+            <span class="material-symbols-outlined sd-data__step-icon">radio_button_unchecked</span>
+            <div class="sd-data__step-info">
+              <span class="sd-data__step-number">Step 5</span>
+              <span class="sd-data__step-name">Deep Dive</span>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Pro Tip -->
+        <div class="sd-data__sidebar-tip">
+          <span class="material-symbols-outlined">info</span>
+          <span class="sd-data__sidebar-tip-text">
+            <strong>Pro Tip:</strong> Define your primary keys early.
+          </span>
+        </div>
+      </aside>
+
+      <!-- =============================
+           CENTER PANEL (Editor)
+           ============================= -->
+      <main class="sd-data__editor">
+
+        <!-- Top Pane: Schema Definition -->
+        <section class="sd-data__schema">
+          <div class="sd-data__pane-header">
+            <div class="sd-data__pane-header-left">
+              <span class="material-symbols-outlined">schema</span>
+              <span class="sd-data__pane-title">Schema Definition</span>
+            </div>
+            <span class="sd-data__pane-badge">Markdown / SQL</span>
+          </div>
+
+          <div class="sd-data__code-area">
+            <div class="sd-data__line-numbers">
+              <span class="sd-data__line-number">1</span>
+              <span class="sd-data__line-number">2</span>
+              <span class="sd-data__line-number">3</span>
+              <span class="sd-data__line-number">4</span>
+              <span class="sd-data__line-number">5</span>
+              <span class="sd-data__line-number">6</span>
+              <span class="sd-data__line-number">7</span>
+              <span class="sd-data__line-number">8</span>
+              <span class="sd-data__line-number">9</span>
+              <span class="sd-data__line-number">10</span>
+              <span class="sd-data__line-number">11</span>
+              <span class="sd-data__line-number">12</span>
+              <span class="sd-data__line-number">13</span>
+              <span class="sd-data__line-number">14</span>
+              <span class="sd-data__line-number">15</span>
+              <span class="sd-data__line-number">16</span>
+            </div>
+            <textarea class="sd-data__code-editor" spellcheck="false" rows="16">// Define User and URL Mapping tables here...
+
+CREATE TABLE urls (
+  id BIGINT PRIMARY KEY,
+  short_hash VARCHAR(7) UNIQUE NOT NULL,
+  original_url VARCHAR(2048) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id BIGINT REFERENCES users(id)
+);
+
+CREATE TABLE users (
+  id BIGINT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE,
+  tier VARCHAR(50) -- e.g. FREE, PREMIUM
+);</textarea>
+          </div>
+        </section>
+
+        <!-- Resize Handle -->
+        <div class="sd-data__resize-handle"></div>
+
+        <!-- Bottom Pane: Database Choices -->
+        <section class="sd-data__choices">
+          <div class="sd-data__pane-header">
+            <div class="sd-data__pane-header-left">
+              <span class="material-symbols-outlined">dns</span>
+              <span class="sd-data__pane-title">Database Choices</span>
+            </div>
+          </div>
+
+          <div class="sd-data__choices-body">
+            <!-- Radio Group: Primary Store Type -->
+            <div>
+              <div class="sd-data__field-label">Primary Store Type</div>
+              <div class="sd-data__radio-group">
+                <div class="sd-data__radio">
+                  <div class="sd-data__radio-dot"></div>
+                  <span class="sd-data__radio-label">RDBMS (SQL)</span>
+                </div>
+                <div class="sd-data__radio sd-data__radio--selected">
+                  <div class="sd-data__radio-dot"></div>
+                  <span class="sd-data__radio-label">NoSQL</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Justification Textarea -->
+            <div>
+              <div class="sd-data__field-label">Justification &amp; Trade-offs</div>
+              <textarea class="sd-data__justification-textarea" spellcheck="false">Given the high read/write ratio (~100:1) and the need for horizontal scalability, a NoSQL key-value store like DynamoDB or Cassandra is preferred. The schema is simple (short_hash → original_url lookup) and doesn't require complex joins. Trade-off: we sacrifice ACID transactions and strong consistency for eventual consistency and partition tolerance, which is acceptable for a URL shortener where stale reads are tolerable for a brief window.</textarea>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="sd-data__choices-footer">
+            <button class="sd-data__btn-ghost">Save Draft</button>
+            <button class="sd-data__btn-primary">Next Step &rarr;</button>
+          </div>
+        </section>
+      </main>
+
+      <!-- =============================
+           RIGHT PANEL (AI Mentor)
+           ============================= -->
+      <aside class="sd-data__mentor">
+        <div class="sd-data__mentor-header">
+          <div class="sd-data__mentor-dot"></div>
+          <span class="sd-data__mentor-title">AI Mentor</span>
+          <span class="material-symbols-outlined sd-data__mentor-more">more_horiz</span>
+        </div>
+
+        <div class="sd-data__mentor-chat">
+          <!-- Message 1: Mentor -->
+          <div class="sd-data__message sd-data__message--mentor">
+            <span class="sd-data__message-label">Mentor AI</span>
+            <div class="sd-data__message-bubble">
+              Your schema looks solid so far. I see you have a <code>short_hash</code> column with a UNIQUE constraint -- good call. One thing to consider: if you're choosing NoSQL as your primary store, how would you handle lookups that require consistency guarantees? For instance, what happens if two users try to register the same <code>short_url</code> simultaneously?
+            </div>
+            <span class="sd-data__message-time">2 min ago</span>
+          </div>
+
+          <!-- Message 2: User -->
+          <div class="sd-data__message sd-data__message--user">
+            <span class="sd-data__message-label">You</span>
+            <div class="sd-data__message-bubble">
+              Good point. I'd lean towards eventual consistency here since URL shorteners prioritize availability over strict consistency. For collision handling, I'd use a conditional write (like DynamoDB's PutItem with a condition expression) to ensure uniqueness at the storage layer. If the write fails, we retry with a new hash.
+            </div>
+            <span class="sd-data__message-time">1 min ago</span>
+          </div>
+
+          <!-- Message 3: Mentor -->
+          <div class="sd-data__message sd-data__message--mentor">
+            <span class="sd-data__message-label">Mentor AI</span>
+            <div class="sd-data__message-bubble">
+              That's a strong answer -- you've clearly thought about the CAP theorem trade-offs. The conditional write approach is exactly what senior engineers use in practice. Follow-up: what's your strategy if hash collisions become frequent at scale? Think about the birthday paradox with a 7-character hash space.
+            </div>
+            <span class="sd-data__message-time">Just now</span>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="sd-data__mentor-input">
+          <div class="sd-data__mentor-input-row">
+            <input
+              type="text"
+              class="sd-data__mentor-textfield"
+              placeholder="Type your answer..."
+            />
+            <button class="sd-data__mentor-send">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+          <a class="sd-data__mentor-hint-link" href="#">Ask for a hint</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+</body>
+</html>

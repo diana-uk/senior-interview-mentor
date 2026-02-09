@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Senior Interview Mentor - Workspace</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#57a5ff",
+                        "background-dark": "#0d1117",
+                        "surface-dark": "#161b22",
+                        "card-dark": "#21262d",
+                        "border-dark": "#30363d",
+                        "text-secondary": "#8b949e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #57a5ff;
+        }
+        .hint-level {
+            @apply border-l-4 pl-4 py-3 relative transition-all duration-300;
+        }
+        .hint-active {
+            @apply opacity-100;
+        }
+        .hint-locked {
+            @apply opacity-40 grayscale pointer-events-none;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex flex-col">
+<header class="h-14 border-b border-border-dark bg-surface-dark flex items-center justify-between px-4 shrink-0">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold">S</div>
+<span class="font-bold hidden md:block">Senior Interview Mentor</span>
+</div>
+<div class="h-4 w-px bg-border-dark mx-2"></div>
+<div class="flex items-center gap-2 text-sm">
+<span class="text-text-secondary">Problem:</span>
+<span class="font-medium text-white">Trapping Rain Water</span>
+<span class="px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-500 text-xs font-semibold">Hard</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-text-secondary text-sm mr-4">
+<span class="material-symbols-outlined text-sm">timer</span>
+<span class="font-mono">24:15</span>
+</div>
+<button class="px-4 py-1.5 rounded bg-card-dark border border-border-dark text-sm font-medium hover:bg-border-dark transition-colors">Save Draft</button>
+<button class="px-4 py-1.5 rounded bg-primary text-white text-sm font-bold hover:bg-blue-400 transition-all shadow-[0_0_15px_-3px_rgba(87,165,255,0.3)]">Finish Session</button>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<aside class="w-80 border-r border-border-dark bg-surface-dark flex flex-col overflow-hidden shrink-0">
+<div class="p-4 border-b border-border-dark flex items-center justify-between">
+<h3 class="font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+                    AI Mentor
+                </h3>
+</div>
+<div class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-6">
+<div class="bg-card-dark rounded-lg p-3 text-sm leading-relaxed border border-border-dark">
+<p class="text-text-secondary italic mb-2">Mentor says:</p>
+                    "Think about how the height of bars on the left and right sides limit the water at any given position. Would a two-pointer approach work here?"
+                </div>
+<div class="space-y-4">
+<h4 class="text-xs font-bold text-text-secondary uppercase tracking-wider">Hint Ladder</h4>
+<div class="space-y-2">
+<div class="hint-level hint-active border-emerald-500 bg-emerald-500/5 rounded-r-lg">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold text-emerald-400">Level 1: Nudge</span>
+<span class="material-symbols-outlined text-sm text-emerald-400">visibility</span>
+</div>
+<p class="text-sm text-white">Focus on identifying the 'boundary' bars. Water depends on the lower of the two max heights.</p>
+</div>
+<div class="hint-level hint-locked border-orange-500 bg-orange-500/5 rounded-r-lg">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold text-orange-400">Level 2: Structure</span>
+<span class="material-symbols-outlined text-sm">lock</span>
+</div>
+<p class="text-sm text-text-secondary">Keep track of `left_max` and `right_max` as you move pointers...</p>
+</div>
+<div class="hint-level hint-locked border-purple-500 bg-purple-500/5 rounded-r-lg">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold text-purple-400">Level 3: Pseudocode</span>
+<span class="material-symbols-outlined text-sm">lock</span>
+</div>
+<p class="text-sm text-text-secondary">Final implementation logic with complexity hints...</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark bg-[#0d1117]/50">
+<div class="relative">
+<input class="w-full bg-card-dark border-border-dark rounded-lg pl-3 pr-10 py-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none" placeholder="Ask for a nudge..." type="text"/>
+<button class="absolute right-2 top-1.5 text-primary">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</aside>
+<section class="flex-1 flex flex-col bg-background-dark">
+<div class="h-10 border-b border-border-dark bg-surface-dark/50 flex items-center px-4 justify-between">
+<div class="flex items-center gap-4 h-full">
+<button class="h-full border-b-2 border-primary px-3 text-sm font-medium text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">code</span>
+                        solution.py
+                    </button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-text-secondary">Python 3</span>
+<span class="material-symbols-outlined text-text-secondary text-sm">settings</span>
+</div>
+</div>
+<div class="flex-1 relative font-mono text-sm p-6 text-gray-400">
+<div class="flex gap-4">
+<div class="text-gray-600 text-right select-none">
+                        1<br/>2<br/>3<br/>4<br/>5<br/>6
+                    </div>
+<div>
+<span class="text-purple-400">class</span> <span class="text-yellow-200">Solution</span>:<br/>
+                            <span class="text-purple-400">def</span> <span class="text-blue-300">trap</span>(self, height: List[int]) -&gt; int:<br/>
+                                <span class="text-gray-600"># Start implementing your solution below</span><br/>
+                                <span class="inline-block w-2 h-4 bg-primary/60 animate-pulse align-middle"></span>
+</div>
+</div>
+</div>
+<div class="h-48 border-t border-border-dark bg-surface-dark">
+<div class="h-10 border-b border-border-dark flex items-center px-4 justify-between">
+<div class="flex items-center gap-4 text-sm font-medium">
+<span class="text-white border-b-2 border-transparent h-full flex items-center">Console</span>
+<span class="text-text-secondary hover:text-white cursor-pointer h-full flex items-center">Test Cases</span>
+</div>
+</div>
+<div class="p-4 font-mono text-xs text-text-secondary">
+                    $ python solution.py --test-all<br/>
+<span class="text-emerald-500">&gt;&gt; Running tests...</span><br/>
+<span class="text-emerald-500">&gt;&gt; Test Case 1: PASSED</span><br/>
+<span class="text-rose-500">&gt;&gt; Test Case 2: FAILED (Expected 9, got 0)</span>
+</div>
+</div>
+</section>
+<aside class="w-72 border-l border-border-dark bg-surface-dark flex flex-col shrink-0">
+<div class="p-4 border-b border-border-dark">
+<h3 class="font-bold text-sm mb-3">Pre-coding Checklist</h3>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[10px] font-bold text-text-secondary uppercase">
+<span>Commitment Progress</span>
+<span>40%</span>
+</div>
+<div class="w-full bg-card-dark h-1.5 rounded-full overflow-hidden border border-border-dark">
+<div class="bg-primary h-full w-[40%]" style="box-shadow: 0 0 10px rgba(87,165,255,0.4)"></div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-2">
+<label class="flex items-center p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 cursor-pointer group hover:bg-emerald-500/10 transition-colors">
+<input checked="" class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-emerald-500 mr-3 text-xl">check_circle</span>
+<span class="text-sm font-medium text-emerald-50/80">Constraints recap</span>
+</label>
+<label class="flex items-center p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 cursor-pointer group hover:bg-emerald-500/10 transition-colors">
+<input checked="" class="hidden" type="checkbox"/>
+<span class="material-symbols-outlined text-emerald-500 mr-3 text-xl">check_circle</span>
+<span class="text-sm font-medium text-emerald-50/80">Chosen pattern</span>
+</label>
+<label class="flex items-center p-3 rounded-lg bg-card-dark border border-border-dark cursor-pointer group hover:border-primary/50 transition-colors">
+<input class="hidden peer" type="checkbox"/>
+<span class="w-5 h-5 rounded-full border-2 border-text-secondary mr-3 flex items-center justify-center group-hover:border-primary peer-checked:bg-primary peer-checked:border-primary">
+<span class="material-symbols-outlined text-white text-[14px] hidden peer-checked:block">check</span>
+</span>
+<span class="text-sm font-medium text-text-secondary group-hover:text-white">Approach plan</span>
+</label>
+<label class="flex items-center p-3 rounded-lg bg-card-dark border border-border-dark cursor-pointer group hover:border-primary/50 transition-colors">
+<input class="hidden peer" type="checkbox"/>
+<span class="w-5 h-5 rounded-full border-2 border-text-secondary mr-3 flex items-center justify-center group-hover:border-primary"></span>
+<span class="text-sm font-medium text-text-secondary group-hover:text-white">Complexity estimate</span>
+</label>
+<label class="flex items-center p-3 rounded-lg bg-card-dark border border-border-dark cursor-pointer group hover:border-primary/50 transition-colors">
+<input class="hidden peer" type="checkbox"/>
+<span class="w-5 h-5 rounded-full border-2 border-text-secondary mr-3 flex items-center justify-center group-hover:border-primary"></span>
+<span class="text-sm font-medium text-text-secondary group-hover:text-white">Edge cases</span>
+</label>
+</div>
+<div class="p-6 bg-[#0d1117] border-t border-border-dark mt-auto">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-text-secondary mb-3 text-3xl">lock</span>
+<p class="text-xs font-semibold text-text-secondary uppercase tracking-widest mb-1">Locked Content</p>
+<p class="text-xs text-text-secondary leading-relaxed">Complete all items to unlock the solution</p>
+<button class="w-full mt-4 py-2 rounded bg-card-dark border border-border-dark text-xs font-bold text-text-secondary cursor-not-allowed">
+                        View Solution
+                    </button>
+</div>
+</div>
+</aside>
+</main>
+<footer class="h-8 border-t border-border-dark bg-surface-dark px-4 flex items-center justify-between text-[11px] text-text-secondary shrink-0">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> System Ready</span>
+<span>Line 4, Column 12</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="hover:text-white cursor-pointer">Keyboard Shortcuts</span>
+<span class="hover:text-white cursor-pointer">Support</span>
+</div>
+</footer>
+
+</body></html>

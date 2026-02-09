@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior Interview Mentor - Documentation</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            overflow-x: auto;
+        }
+
+        nav a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 .icon {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent-blue);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .card code {
+            display: block;
+            background: var(--bg-tertiary);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            color: var(--text-primary);
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-orange);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-blue { background: rgba(88, 166, 255, 0.2); color: var(--accent-blue); }
+        .badge-green { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); }
+        .badge-purple { background: rgba(163, 113, 247, 0.2); color: var(--accent-purple); }
+        .badge-orange { background: rgba(210, 153, 34, 0.2); color: var(--accent-orange); }
+
+        /* Mode cards */
+        .mode-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-card h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .mode-card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .mode-card li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .mode-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            margin: 0;
+        }
+
+        /* Hint ladder */
+        .hint-ladder {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hint-level {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .hint-level.level-1 { border-left-color: var(--accent-green); }
+        .hint-level.level-2 { border-left-color: var(--accent-orange); }
+        .hint-level.level-3 { border-left-color: var(--accent-purple); }
+
+        .hint-level h5 {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Pattern grid */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .pattern-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .pattern-item:hover {
+            border-color: var(--accent-purple);
+            transform: scale(1.02);
+        }
+
+        .pattern-item .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pattern-item h5 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pattern-item p {
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        /* File tree */
+        .file-tree {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+
+        .file-tree .folder {
+            color: var(--accent-blue);
+        }
+
+        .file-tree .file {
+            color: var(--text-secondary);
+        }
+
+        .file-tree .comment {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        /* Rubric */
+        .rubric-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .rubric-score {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .score-block {
+            width: 20px;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .score-block.filled {
+            background: var(--accent-green);
+        }
+
+        /* Quick start */
+        .quick-start {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(163, 113, 247, 0.1) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .quick-start h3 {
+            color: var(--text-primary);
+            margin-top: 0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            nav ul {
+                padding: 0 1rem;
+            }
+
+            nav a {
+                padding: 0.75rem 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Senior Interview Mentor</h1>
+        <p>AI-powered coaching for LeetCode problems and senior full-stack interviews. Structured, demanding, and effective.</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#modes">Modes</a></li>
+            <li><a href="#commands">Commands</a></li>
+            <li><a href="#lib">Library</a></li>
+            <li><a href="#session">Session</a></li>
+            <li><a href="#commitment-gate">Commitment Gate</a></li>
+            <li><a href="#patterns">Patterns</a></li>
+            <li><a href="#rubric">Rubric</a></li>
+            <li><a href="#structure">Structure</a></li>
+            <li><a href="#getting-started">Get Started</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- Overview -->
+        <section id="overview">
+            <h2><span class="icon">🎯</span> Overview</h2>
+            <p>Senior Interview Mentor is an AI coaching system designed to train you for coding interviews. It operates as an elite coach: structured, demanding, practical, and consistent.</p>
+
+            <div class="quick-start">
+                <h3>Quick Start</h3>
+                <pre><code># Install dependencies
+npm install
+
+# Start solving a problem (short form)
+/s two sum
+
+# Stuck? Get next hint automatically
+/stuck
+
+# Quick check your thinking
+/check is this O(n)?
+
+# Start a mock interview (interactive stage picker)
+/i
+
+# Or jump directly to a specific interview type
+/i behavioral
+/i system-design
+/i leetcode dp hard
+/i project
+
+# Review your solution
+/r
+
+# Resume after a break
+/continue
+
+# Get next recommended problem
+/next</code></pre>
+            </div>
+
+            <h3>Core Principles</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>🧠 Independent Learning</h4>
+                    <p>You must learn to solve problems yourself. The mentor guides but never jumps to solutions.</p>
+                </div>
+                <div class="card">
+                    <h4>🎓 Socratic Method</h4>
+                    <p>Questions over answers. Hints are earned through genuine attempts.</p>
+                </div>
+                <div class="card">
+                    <h4>📊 Senior Habits</h4>
+                    <p>Clarify, reason about tradeoffs, analyze complexity, test edge cases, write clean code.</p>
+                </div>
+                <div class="card">
+                    <h4>⚡ No Fluff</h4>
+                    <p>Direct, crisp guidance. No motivational speeches. Warm but efficient.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modes -->
+        <section id="modes">
+            <h2><span class="icon">🔄</span> Operating Modes</h2>
+            <p>The mentor operates in exactly one mode at a time, automatically selected based on context.</p>
+
+            <div class="mode-card">
+                <h4><span class="badge badge-blue">TEACHER</span> Default Mode</h4>
+                <p>Socratic guidance with progressive hints. Used when learning or solving problems.</p>
+                <ul>
+                    <li>Uses hint ladder (3 levels)</li>
+                    <li>Requires commitment gate before solutions</li>
+                    <li>Teaches pattern recognition</li>
+                    <li>Enforces senior-level thinking</li>
+                </ul>
+            </div>
+
+            <div class="mode-card">
+                <h4><span class="badge badge-green">INTERVIEWER</span> Mock Interview</h4>
+                <p>Real interview simulation with time pressure. Triggered by "interview me" or "mock".</p>
+                <ul>
+                    <li><strong>Interactive stage picker</strong> when you run <code>/i</code> with no args</li>
+                    <li><strong>4 Interview Stages:</strong> Phone Screen, Technical Coding, System Design, Behavioral</li>
+                    <li><strong>Technical formats:</strong> LeetCode/Algorithms OR Project-based</li>
+                    <li>LeetCode topics: Arrays, Two Pointers, Trees & Graphs, Dynamic Programming</li>
+                    <li>Difficulty levels: Easy (20 min), Medium (35 min), Hard (45 min)</li>
+                    <li>Minimal hints (questions, not answers)</li>
+                    <li>Senior follow-ups about production, scale, testing</li>
+                </ul>
+            </div>
+
+            <div class="mode-card">
+                <h4><span class="badge badge-purple">REVIEWER</span> Code Review</h4>
+                <p>Detailed scoring and feedback. Triggered when you share code for review.</p>
+                <ul>
+                    <li>6-dimension rubric scoring (0-4 each)</li>
+                    <li>Top 3 prioritized issues</li>
+                    <li>Targeted refactor suggestions</li>
+                    <li>Micro-drills for weaknesses</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Commands -->
+        <section id="commands">
+            <h2><span class="icon">⌨️</span> Slash Commands</h2>
+            <p>These commands are powered by <strong>Claude Code Skills</strong> (located in <code>.claude/skills/</code>). Type <code>/</code> in Claude Code to see them autocomplete.</p>
+
+            <h3>Core Commands</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Alias</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/solve</code></td>
+                        <td><code>/s</code></td>
+                        <td>Start solving a problem with guided teaching</td>
+                        <td><code>/s two sum</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/interview</code></td>
+                        <td><code>/i</code></td>
+                        <td>Start a mock interview. No args = stage picker. Stages: phone, technical, system-design, behavioral</td>
+                        <td><code>/i</code>, <code>/i behavioral</code>, <code>/i leetcode dp hard</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/review</code></td>
+                        <td><code>/r</code></td>
+                        <td>Get your code reviewed with rubric scoring</td>
+                        <td><code>/r</code> then paste code</td>
+                    </tr>
+                    <tr>
+                        <td><code>/hint</code></td>
+                        <td><code>/h</code></td>
+                        <td>Request the next hint level (1-3)</td>
+                        <td><code>/h 2</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/pattern</code></td>
+                        <td>—</td>
+                        <td>Learn or drill an algorithm pattern</td>
+                        <td><code>/pattern sliding-window explain</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/mistakes</code></td>
+                        <td>—</td>
+                        <td>Track and review your mistake patterns</td>
+                        <td><code>/mistakes stats</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/run</code></td>
+                        <td>—</td>
+                        <td>Execute your solution against test cases</td>
+                        <td><code>/run solution.ts</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Session Commands</h3>
+            <p>These commands help you maintain continuity across conversations and track your progress.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/continue</code></td>
+                        <td>Resume your last session after a break or new conversation</td>
+                        <td><code>/continue</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/recap</code></td>
+                        <td>Show current session state: problem, progress, hints used</td>
+                        <td><code>/recap</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/stuck</code></td>
+                        <td>Auto-advance to next hint level (no need to track)</td>
+                        <td><code>/stuck</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/check</code></td>
+                        <td>Quick validation of your current thinking mid-problem</td>
+                        <td><code>/check is this O(n)?</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/next</code></td>
+                        <td>Get next recommended problem based on your weaknesses</td>
+                        <td><code>/next medium</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Conversation Commands</h3>
+            <p>Open Q&A mode without structured output—for general questions and discussion.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Alias</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/chat</code></td>
+                        <td><code>/ask</code></td>
+                        <td>Open Q&A about DSA, system design, career topics</td>
+                        <td><code>/chat when should I use BFS vs DFS?</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Quick Reference Card</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-green);">/s</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Solve problem</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-green);">/i</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Interview</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-green);">/r</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Review code</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-green);">/h</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Get hint</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-blue);">/stuck</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Auto-hint</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-blue);">/check</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Validate thinking</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-purple);">/recap</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Session state</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-purple);">/continue</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Resume</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-orange);">/next</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Next problem</p>
+                </div>
+                <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 8px; text-align: center;">
+                    <code style="font-size: 1.1rem; color: var(--accent-orange);">/chat</code>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem;">Open Q&A</p>
+                </div>
+            </div>
+
+            <h3>How Skills Work</h3>
+            <p>Each skill is a <code>SKILL.md</code> file in <code>.claude/skills/&lt;name&gt;/</code> with YAML frontmatter:</p>
+            <pre><code>---
+name: solve
+description: Start solving a LeetCode problem with guided teaching.
+argument-hint: [problem-name]
+allowed-tools: Read, Grep, Glob, WebSearch
+---
+
+Activate TEACHER mode. The user wants to solve: $ARGUMENTS
+
+[... instructions for Claude ...]</code></pre>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Frontmatter</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>name</code></td><td>Skill name (becomes /name command)</td></tr>
+                    <tr><td><code>description</code></td><td>When Claude should use this skill</td></tr>
+                    <tr><td><code>argument-hint</code></td><td>Placeholder shown during autocomplete</td></tr>
+                    <tr><td><code>allowed-tools</code></td><td>Tools Claude can use without asking</td></tr>
+                </tbody>
+            </table>
+            <p>The <code>$ARGUMENTS</code> placeholder is replaced with whatever the user types after the command.</p>
+        </section>
+
+        <!-- Library -->
+        <section id="lib">
+            <h2><span class="icon">🛠️</span> Library Modules</h2>
+            <p>TypeScript utilities in <code>/lib</code> that power the slash commands. You can also run them directly via npm scripts.</p>
+
+            <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                <h4 style="margin-top: 0; color: var(--accent-blue);">Architecture Note</h4>
+                <table style="margin: 0;">
+                    <tr>
+                        <td><code>.claude/skills/</code></td>
+                        <td>Claude Code skills (SKILL.md files) → slash commands that Claude understands</td>
+                    </tr>
+                    <tr>
+                        <td><code>lib/</code></td>
+                        <td>TypeScript modules → standalone utilities runnable via <code>npm run &lt;script&gt;</code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>📝 leetcode_problem_runner</h4>
+                    <p>Run TypeScript solutions against test cases locally. Measures execution time and validates output.</p>
+                    <code>npm run leetcode -- solution.ts</code>
+                </div>
+
+                <div class="card">
+                    <h4>💡 hint_ladder_engine</h4>
+                    <p>Manages progressive hint delivery with commitment gating. Three levels: nudge, structure, pseudocode.</p>
+                    <code>npm run hint -- two-sum 1</code>
+                </div>
+
+                <div class="card">
+                    <h4>📊 rubric_scorer</h4>
+                    <p>Evaluates solutions on 6 dimensions (0-4 scale). Generates improvement plans and targeted drills.</p>
+                    <code>npm run score -- --demo</code>
+                </div>
+
+                <div class="card">
+                    <h4>🔄 mistake_tracker</h4>
+                    <p>Tracks mistakes by category with spaced repetition scheduling. Surfaces problems at optimal review intervals.</p>
+                    <code>npm run mistakes -- stats</code>
+                </div>
+
+                <div class="card">
+                    <h4>🔍 pattern_detector</h4>
+                    <p>Identifies algorithm patterns from problem descriptions. Provides templates and practice problems.</p>
+                    <code>npm run pattern -- detect "substring"</code>
+                </div>
+
+                <div class="card">
+                    <h4>⏱️ mock_interview_session</h4>
+                    <p>Simulates realistic interview experience with timer, phases, and follow-up questions.</p>
+                    <code>npm run interview -- dp hard</code>
+                </div>
+
+                <div class="card">
+                    <h4>💾 session_manager</h4>
+                    <p>Tracks session state for continuity. Enables /continue, /recap, and progress persistence across conversations.</p>
+                    <code>npm run session -- status</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Session State -->
+        <section id="session">
+            <h2><span class="icon">💾</span> Session State</h2>
+            <p>The system tracks your progress in <code>data/session.json</code>, enabling continuity across conversations.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>📍 What's Tracked</h4>
+                    <p>Current problem, mode, hint level, commitment gate progress, interview phase and timing, activity log.</p>
+                </div>
+                <div class="card">
+                    <h4>🔄 Continuity</h4>
+                    <p>Use <code>/continue</code> to resume after a break. Use <code>/recap</code> to see where you are at any time.</p>
+                </div>
+                <div class="card">
+                    <h4>📊 Hint Tracking</h4>
+                    <p>Hints are tracked automatically. <code>/stuck</code> advances to the next level without you tracking.</p>
+                </div>
+                <div class="card">
+                    <h4>⏱️ Interview Timing</h4>
+                    <p>In interview mode, tracks elapsed time, current phase, and pace indicators.</p>
+                </div>
+            </div>
+
+            <h3>Session Commands Workflow</h3>
+            <pre><code># Start a problem
+/s two sum
+
+# Check your thinking mid-problem
+/check is my approach correct?
+
+# Stuck? Get next hint automatically
+/stuck
+
+# See where you are
+/recap
+
+# Come back later and resume
+/continue
+
+# Done? Get next recommended problem
+/next</code></pre>
+        </section>
+
+        <!-- Commitment Gate -->
+        <section id="commitment-gate">
+            <h2><span class="icon">🚪</span> Commitment Gate</h2>
+            <p>Before revealing any full solution, you must demonstrate understanding by providing these five elements:</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Constraints Recap</h4>
+                        <p>Summarize the problem constraints in 1-3 bullets. Input size, types, edge conditions.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Chosen Pattern</h4>
+                        <p>Name the algorithm pattern you'll use: HashMap, Sliding Window, BFS, DP, etc.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Approach Plan</h4>
+                        <p>Outline your approach in 4-8 bullet points. High-level steps, not code.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Complexity Estimate</h4>
+                        <p>State both time and space complexity with brief justification.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Edge Cases</h4>
+                        <p>List 3-6 edge cases: empty input, single element, duplicates, negatives, overflow, etc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p><strong>Why?</strong> This ensures you've thought through the problem before seeing a solution. It builds the habits that make senior engineers effective.</p>
+        </section>
+
+        <!-- Hint Ladder -->
+        <section id="hint-ladder">
+            <h2><span class="icon">📶</span> Hint Ladder</h2>
+            <p>Hints are earned, not given freely. Each level reveals more, but you must attempt first.</p>
+
+            <div class="hint-ladder">
+                <div class="hint-level level-1">
+                    <h5><span class="badge badge-green">Level 1</span> Nudge</h5>
+                    <p>Small push in the right direction. Pattern name or key invariant to maintain.</p>
+                    <p><em>Example: "Think about what you need to find for each element. Can you check in O(1)?"</em></p>
+                </div>
+
+                <div class="hint-level level-2">
+                    <h5><span class="badge badge-orange">Level 2</span> Structure</h5>
+                    <p>Recommended data structure and high-level steps (3-5 bullets).</p>
+                    <p><em>Example: "Use a HashMap (value → index). For each element, calculate complement, check map, then store."</em></p>
+                </div>
+
+                <div class="hint-level level-3">
+                    <h5><span class="badge badge-purple">Level 3</span> Pseudocode</h5>
+                    <p>Detailed pseudocode outline. Still not full working code—you must implement.</p>
+                    <p><em>Example: Complete pseudocode with loop structure, conditions, and return statements.</em></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patterns -->
+        <section id="patterns">
+            <h2><span class="icon">🧩</span> Pattern Library</h2>
+            <p>The mentor teaches you to recognize these common algorithm patterns:</p>
+
+            <div class="pattern-grid">
+                <div class="pattern-item">
+                    <div class="icon">🪟</div>
+                    <h5>Sliding Window</h5>
+                    <p>Subarray/substring</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">👆👆</div>
+                    <h5>Two Pointers</h5>
+                    <p>Sorted arrays</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🗺️</div>
+                    <h5>HashMap</h5>
+                    <p>Counting, lookup</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">➕</div>
+                    <h5>Prefix Sum</h5>
+                    <p>Range queries</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🌊</div>
+                    <h5>BFS</h5>
+                    <p>Shortest path</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🔍</div>
+                    <h5>DFS</h5>
+                    <p>All paths, traversal</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">📊</div>
+                    <h5>Topological Sort</h5>
+                    <p>Dependencies</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🔗</div>
+                    <h5>Union-Find</h5>
+                    <p>Connected components</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🎯</div>
+                    <h5>Binary Search</h5>
+                    <p>Sorted data</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">📚</div>
+                    <h5>Heap</h5>
+                    <p>Top-k, streaming</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">📅</div>
+                    <h5>Intervals</h5>
+                    <p>Merge, overlap</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🤑</div>
+                    <h5>Greedy</h5>
+                    <p>Local optimal</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">📈</div>
+                    <h5>Dynamic Programming</h5>
+                    <p>Subproblems</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">↩️</div>
+                    <h5>Backtracking</h5>
+                    <p>Combinations</p>
+                </div>
+                <div class="pattern-item">
+                    <div class="icon">🌳</div>
+                    <h5>Trees</h5>
+                    <p>Traversals, LCA</p>
+                </div>
+            </div>
+
+            <h3>Learning a Pattern</h3>
+            <pre><code># Get detailed explanation with template
+/pattern sliding-window explain
+
+# Get practice problems
+/pattern dp drill
+
+# Identify pattern from problem description
+/pattern identify "Find maximum sum subarray of size k"</code></pre>
+        </section>
+
+        <!-- Rubric -->
+        <section id="rubric">
+            <h2><span class="icon">📋</span> Scoring Rubric</h2>
+            <p>Solutions are evaluated on 6 dimensions, each scored 0-4:</p>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block"></div>
+                </div>
+                <div>
+                    <strong>Understanding & Assumptions</strong>
+                    <p style="margin:0;font-size:0.85rem;">Did you clarify constraints and identify assumptions?</p>
+                </div>
+            </div>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                </div>
+                <div>
+                    <strong>Algorithm Correctness</strong>
+                    <p style="margin:0;font-size:0.85rem;">Does the solution correctly solve the problem?</p>
+                </div>
+            </div>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block"></div>
+                    <div class="score-block"></div>
+                </div>
+                <div>
+                    <strong>Complexity Analysis</strong>
+                    <p style="margin:0;font-size:0.85rem;">Accurate time and space complexity with justification?</p>
+                </div>
+            </div>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block"></div>
+                </div>
+                <div>
+                    <strong>Code Quality</strong>
+                    <p style="margin:0;font-size:0.85rem;">Readability, naming, types, structure?</p>
+                </div>
+            </div>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block"></div>
+                    <div class="score-block"></div>
+                </div>
+                <div>
+                    <strong>Edge Cases & Testing</strong>
+                    <p style="margin:0;font-size:0.85rem;">Coverage of boundary conditions and test cases?</p>
+                </div>
+            </div>
+
+            <div class="rubric-item">
+                <div class="rubric-score">
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block filled"></div>
+                    <div class="score-block"></div>
+                </div>
+                <div>
+                    <strong>Communication</strong>
+                    <p style="margin:0;font-size:0.85rem;">Clarity of explanation and thought process?</p>
+                </div>
+            </div>
+
+            <h3>Score Interpretation</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>22-24</td><td>A</td><td>Exceptional - ready to pass senior interviews</td></tr>
+                    <tr><td>19-21</td><td>B+</td><td>Strong - minor improvements needed</td></tr>
+                    <tr><td>16-18</td><td>B</td><td>Good - some areas need work</td></tr>
+                    <tr><td>13-15</td><td>C+</td><td>Adequate - significant practice required</td></tr>
+                    <tr><td>10-12</td><td>C</td><td>Below expectations - focus on fundamentals</td></tr>
+                    <tr><td>&lt;10</td><td>NI</td><td>Needs improvement - revisit basics</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Project Structure -->
+        <section id="structure">
+            <h2><span class="icon">📁</span> Project Structure</h2>
+
+            <div class="file-tree">
+<pre><span class="folder">senior-interview-mentor/</span>
+├── <span class="folder">.claude/</span>
+│   ├── settings.json              <span class="comment"># Claude Code permissions</span>
+│   └── <span class="folder">skills/</span>                    <span class="comment"># Slash commands (18 total)</span>
+│       ├── <span class="folder">solve/</span>SKILL.md         <span class="comment"># /solve [problem]</span>
+│       ├── <span class="folder">s/</span>SKILL.md             <span class="comment"># /s (alias for /solve)</span>
+│       ├── <span class="folder">interview/</span>SKILL.md     <span class="comment"># /interview [topic] [difficulty]</span>
+│       ├── <span class="folder">i/</span>SKILL.md             <span class="comment"># /i (alias for /interview)</span>
+│       ├── <span class="folder">review/</span>SKILL.md        <span class="comment"># /review [code]</span>
+│       ├── <span class="folder">r/</span>SKILL.md             <span class="comment"># /r (alias for /review)</span>
+│       ├── <span class="folder">hint/</span>SKILL.md          <span class="comment"># /hint [1-3]</span>
+│       ├── <span class="folder">h/</span>SKILL.md             <span class="comment"># /h (alias for /hint)</span>
+│       ├── <span class="folder">pattern/</span>SKILL.md       <span class="comment"># /pattern [name] [action]</span>
+│       ├── <span class="folder">mistakes/</span>SKILL.md      <span class="comment"># /mistakes [action]</span>
+│       ├── <span class="folder">run/</span>SKILL.md           <span class="comment"># /run [file]</span>
+│       ├── <span class="folder">continue/</span>SKILL.md      <span class="comment"># /continue - resume session</span>
+│       ├── <span class="folder">recap/</span>SKILL.md         <span class="comment"># /recap - session summary</span>
+│       ├── <span class="folder">stuck/</span>SKILL.md         <span class="comment"># /stuck - auto-hint</span>
+│       ├── <span class="folder">check/</span>SKILL.md         <span class="comment"># /check - quick validation</span>
+│       ├── <span class="folder">next/</span>SKILL.md          <span class="comment"># /next - recommended problem</span>
+│       ├── <span class="folder">chat/</span>SKILL.md          <span class="comment"># /chat - open Q&A</span>
+│       └── <span class="folder">ask/</span>SKILL.md           <span class="comment"># /ask (alias for /chat)</span>
+├── <span class="folder">lib/</span>                           <span class="comment"># TypeScript utility modules</span>
+│   ├── <span class="folder">leetcode_problem_runner/</span>   <span class="comment"># Run solutions against tests</span>
+│   ├── <span class="folder">hint_ladder_engine/</span>        <span class="comment"># Progressive hint system</span>
+│   ├── <span class="folder">rubric_scorer/</span>             <span class="comment"># 6-dimension scoring</span>
+│   ├── <span class="folder">mistake_tracker/</span>           <span class="comment"># Spaced repetition</span>
+│   ├── <span class="folder">pattern_detector/</span>          <span class="comment"># Pattern identification</span>
+│   ├── <span class="folder">mock_interview_session/</span>    <span class="comment"># Timed interviews</span>
+│   └── <span class="folder">session_manager/</span>           <span class="comment"># Session state persistence</span>
+├── <span class="folder">examples/</span>                      <span class="comment"># Sample solutions with tests</span>
+│   ├── <span class="folder">two-sum/</span>
+│   └── <span class="folder">sliding-window/</span>
+├── <span class="folder">data/</span>                          <span class="comment"># User progress</span>
+│   ├── <span class="file">mistakes.json</span>              <span class="comment"># Mistake history</span>
+│   └── <span class="file">session.json</span>               <span class="comment"># Current session state</span>
+├── <span class="folder">docs/</span>                          <span class="comment"># Documentation (this file)</span>
+├── <span class="file">CLAUDE.md</span>                      <span class="comment"># Agent behavior instructions</span>
+├── <span class="file">package.json</span>
+├── <span class="file">tsconfig.json</span>
+└── <span class="file">.gitignore</span></pre>
+            </div>
+
+            <h3>NPM Scripts</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Script</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>npm run leetcode</code></td><td>Run solution against test cases</td></tr>
+                    <tr><td><code>npm run hint</code></td><td>Get hints for a problem</td></tr>
+                    <tr><td><code>npm run score</code></td><td>Score a solution with rubric</td></tr>
+                    <tr><td><code>npm run mistakes</code></td><td>Track mistake patterns</td></tr>
+                    <tr><td><code>npm run pattern</code></td><td>Detect or learn patterns</td></tr>
+                    <tr><td><code>npm run interview</code></td><td>Start mock interview</td></tr>
+                    <tr><td><code>npm run session</code></td><td>Manage session state (status, clear, etc.)</td></tr>
+                    <tr><td><code>npm run build</code></td><td>Compile TypeScript</td></tr>
+                    <tr><td><code>npm test</code></td><td>Run tests with Vitest</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Getting Started -->
+        <section id="getting-started">
+            <h2><span class="icon">🚀</span> Getting Started</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Install Dependencies</h4>
+                        <pre><code>npm install</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Try a Sample Problem</h4>
+                        <pre><code>/s two sum</code></pre>
+                        <p>The mentor will guide you through understanding, approach, and implementation.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Get Help When Stuck</h4>
+                        <pre><code>/stuck</code></pre>
+                        <p>Auto-advances to the next hint level. Use <code>/check</code> for quick validation of your thinking.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Run Your Solution</h4>
+                        <pre><code>npm run leetcode -- examples/two-sum/solution.ts</code></pre>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Practice with Mock Interviews</h4>
+                        <pre><code>/i</code></pre>
+                        <p>Pick your interview stage: Phone Screen, Technical Coding (LeetCode or Project), System Design, or Behavioral. Or skip the picker: <code>/i behavioral</code>, <code>/i leetcode dp hard</code>.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Resume After a Break</h4>
+                        <pre><code>/continue</code></pre>
+                        <p>Pick up where you left off. Use <code>/recap</code> to see your current state anytime.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Get Your Next Challenge</h4>
+                        <pre><code>/next</code></pre>
+                        <p>Get a recommended problem based on your weak areas and mistake history.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-content">
+                        <h4>Ask Questions Anytime</h4>
+                        <pre><code>/chat when should I use DP vs greedy?</code></pre>
+                        <p>Open Q&A mode for conceptual questions without structured output.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Senior Interview Mentor &mdash; Built for Claude Code</p>
+        <p>Master the patterns. Pass the interviews. Ship great code.</p>
+    </footer>
+</body>
+</html>

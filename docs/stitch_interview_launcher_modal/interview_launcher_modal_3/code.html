@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Senior Interview Mentor - Mistakes &amp; Progress Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#58a6ff",
+                        "background-dark": "#0d1117",
+                        "surface-dark": "#161b22",
+                        "card-dark": "#21262d",
+                        "border-dark": "#30363d",
+                        "text-secondary": "#8b949e",
+                        "accent-blue": "#58a6ff",
+                        "accent-green": "#3fb950",
+                        "accent-purple": "#a371f7",
+                        "accent-orange": "#d29922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #58a6ff;
+        }
+        .chart-grid {
+            background-image: linear-gradient(#30363d 1px, transparent 1px), linear-gradient(90deg, #30363d 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white min-h-screen flex">
+<aside class="w-20 border-r border-border-dark bg-surface-dark flex flex-col items-center py-6 shrink-0">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-white font-bold mb-10 shadow-[0_0_15px_-3px_rgba(88,166,255,0.4)]">S</div>
+<nav class="flex flex-col gap-8 flex-1">
+<a class="group relative" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors">rocket_launch</span>
+<div class="absolute left-14 bg-card-dark border border-border-dark px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap z-50">Launcher</div>
+</a>
+<a class="group relative" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors">list_alt</span>
+<div class="absolute left-14 bg-card-dark border border-border-dark px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap z-50">Problem List</div>
+</a>
+<a class="group relative" href="#">
+<span class="material-symbols-outlined text-primary transition-colors">assignment_late</span>
+<div class="absolute left-14 bg-card-dark border border-border-dark px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap z-50">Mistakes</div>
+</a>
+<a class="group relative" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors">leaderboard</span>
+<div class="absolute left-14 bg-card-dark border border-border-dark px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap z-50">Stats</div>
+</a>
+<div class="mt-auto pb-4">
+<a class="group relative" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors">settings</span>
+<div class="absolute left-14 bg-card-dark border border-border-dark px-2 py-1 rounded text-[10px] hidden group-hover:block whitespace-nowrap z-50">Settings</div>
+</a>
+</div>
+</nav>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="h-16 border-b border-border-dark bg-surface-dark flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-2">
+<h1 class="text-lg font-bold tracking-tight">Mistakes &amp; Progress</h1>
+<span class="text-text-secondary text-sm border-l border-border-dark pl-3 ml-1">Dashboard</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-lg">search</span>
+<input class="bg-background-dark border-border-dark rounded-full pl-10 pr-4 py-1.5 text-sm w-64 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Search patterns or problems..." type="text"/>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-border-dark">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-semibold">Alex Chen</p>
+<p class="text-[10px] text-text-secondary">Senior Engineer</p>
+</div>
+<div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent-purple p-[1px]">
+<div class="w-full h-full rounded-full bg-surface-dark flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-text-secondary">person</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto p-8 custom-scrollbar space-y-8">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-bold uppercase tracking-widest text-text-secondary">Priority Review Areas</h2>
+<button class="text-primary text-xs font-medium hover:underline">View All Patterns</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-surface-dark border border-border-dark rounded-xl p-5 hover:border-primary/40 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-accent-orange/10 flex items-center justify-center text-accent-orange">
+<span class="material-symbols-outlined">dynamic_form</span>
+</div>
+<div class="text-right">
+<p class="text-2xl font-bold">42%</p>
+<p class="text-[10px] text-text-secondary uppercase">Rubric Score</p>
+</div>
+</div>
+<h3 class="font-semibold mb-3">Dynamic Programming</h3>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[10px] text-accent-orange font-bold uppercase">
+<span>Spaced Repetition</span>
+<span>Due in 2 days</span>
+</div>
+<div class="w-full bg-background-dark h-1.5 rounded-full overflow-hidden border border-border-dark">
+<div class="bg-accent-orange h-full w-[80%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-5 hover:border-primary/40 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-accent-purple/10 flex items-center justify-center text-accent-purple">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div class="text-right">
+<p class="text-2xl font-bold">58%</p>
+<p class="text-[10px] text-text-secondary uppercase">Rubric Score</p>
+</div>
+</div>
+<h3 class="font-semibold mb-3">Graphs (DFS/BFS)</h3>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[10px] text-accent-purple font-bold uppercase">
+<span>Spaced Repetition</span>
+<span>Due Today</span>
+</div>
+<div class="w-full bg-background-dark h-1.5 rounded-full overflow-hidden border border-border-dark">
+<div class="bg-accent-purple h-full w-[100%] shadow-[0_0_8px_rgba(163,113,247,0.4)]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-5 hover:border-primary/40 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-accent-blue/10 flex items-center justify-center text-accent-blue">
+<span class="material-symbols-outlined">rebase_edit</span>
+</div>
+<div class="text-right">
+<p class="text-2xl font-bold">65%</p>
+<p class="text-[10px] text-text-secondary uppercase">Rubric Score</p>
+</div>
+</div>
+<h3 class="font-semibold mb-3">Sliding Window</h3>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[10px] text-text-secondary font-bold uppercase">
+<span>Spaced Repetition</span>
+<span>Due in 5 days</span>
+</div>
+<div class="w-full bg-background-dark h-1.5 rounded-full overflow-hidden border border-border-dark">
+<div class="bg-accent-blue h-full w-[30%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-5 hover:border-primary/40 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-lg bg-accent-green/10 flex items-center justify-center text-accent-green">
+<span class="material-symbols-outlined">heap_snapshot_thumbnail</span>
+</div>
+<div class="text-right">
+<p class="text-2xl font-bold">79%</p>
+<p class="text-[10px] text-text-secondary uppercase">Rubric Score</p>
+</div>
+</div>
+<h3 class="font-semibold mb-3">Heap / Priority Queue</h3>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[10px] text-text-secondary font-bold uppercase">
+<span>Spaced Repetition</span>
+<span>Mastered</span>
+</div>
+<div class="w-full bg-background-dark h-1.5 rounded-full overflow-hidden border border-border-dark">
+<div class="bg-accent-green h-full w-[10%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="bg-surface-dark border border-border-dark rounded-xl overflow-hidden">
+<div class="p-6 border-b border-border-dark flex items-center justify-between">
+<div>
+<h2 class="font-bold">Performance Trend</h2>
+<p class="text-xs text-text-secondary">Average rubric scores over the last 30 days</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-blue"></span>
+<span class="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Problem Solving</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-green"></span>
+<span class="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Communication</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-purple"></span>
+<span class="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Technical</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-orange"></span>
+<span class="text-[10px] uppercase font-bold text-text-secondary tracking-wider">Edge Cases</span>
+</div>
+</div>
+</div>
+<div class="p-6 h-[320px] relative">
+<div class="absolute inset-x-6 inset-y-6 chart-grid opacity-10"></div>
+<svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 300">
+<path d="M0,250 L100,230 L200,240 L300,200 L400,180 L500,190 L600,150 L700,160 L800,120 L900,100 L1000,90" fill="none" stroke="#a371f7" stroke-width="3"></path>
+<path d="M0,220 L100,210 L200,190 L300,170 L400,175 L500,140 L600,130 L700,110 L800,90 L900,80 L1000,70" fill="none" stroke="#58a6ff" stroke-width="3"></path>
+<path d="M0,280 L100,260 L200,250 L300,220 L400,230 L500,200 L600,190 L700,150 L800,140 L900,130 L1000,120" fill="none" stroke="#3fb950" stroke-width="3"></path>
+<path d="M0,290 L100,285 L200,270 L300,275 L400,260 L500,255 L600,240 L700,235 L800,220 L900,215 L1000,200" fill="none" stroke="#d29922" stroke-width="3"></path>
+</svg>
+<div class="absolute left-6 top-6 h-[calc(100%-48px)] flex flex-col justify-between text-[10px] text-text-secondary font-mono">
+<span>100</span>
+<span>75</span>
+<span>50</span>
+<span>25</span>
+<span>0</span>
+</div>
+<div class="absolute bottom-1 left-12 right-6 flex justify-between text-[10px] text-text-secondary font-mono">
+<span>30 Days ago</span>
+<span>20 Days ago</span>
+<span>10 Days ago</span>
+<span>Today</span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="bg-surface-dark border border-border-dark rounded-xl overflow-hidden">
+<div class="p-6 border-b border-border-dark">
+<h2 class="font-bold">Recent Mistakes &amp; Learning Log</h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="bg-background-dark/50 text-[11px] uppercase tracking-wider text-text-secondary font-bold border-b border-border-dark">
+<th class="px-6 py-4">Problem Name</th>
+<th class="px-6 py-4">Core Mistake</th>
+<th class="px-6 py-4">Difficulty</th>
+<th class="px-6 py-4">Last Attempt</th>
+<th class="px-6 py-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-dark">
+<tr class="hover:bg-background-dark/40 transition-colors group">
+<td class="px-6 py-4 font-medium">Trapping Rain Water</td>
+<td class="px-6 py-4">
+<span class="text-text-secondary">Failed to account for the </span>
+<span class="text-accent-orange font-medium">empty array constraint</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[10px] font-bold border border-red-500/20">Hard</span>
+</td>
+<td class="px-6 py-4 text-text-secondary text-xs">2 hours ago</td>
+<td class="px-6 py-4 text-right">
+<button class="bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded text-xs font-bold hover:bg-primary hover:text-white transition-all">Re-try</button>
+</td>
+</tr>
+<tr class="hover:bg-background-dark/40 transition-colors group">
+<td class="px-6 py-4 font-medium">Longest Substring Without Repeating...</td>
+<td class="px-6 py-4">
+<span class="text-text-secondary">Incorrect </span>
+<span class="text-accent-orange font-medium">window shrink condition</span>
+<span class="text-text-secondary"> (set instead of map)</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 text-[10px] font-bold border border-yellow-500/20">Medium</span>
+</td>
+<td class="px-6 py-4 text-text-secondary text-xs">Yesterday</td>
+<td class="px-6 py-4 text-right">
+<button class="bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded text-xs font-bold hover:bg-primary hover:text-white transition-all">Re-try</button>
+</td>
+</tr>
+<tr class="hover:bg-background-dark/40 transition-colors group">
+<td class="px-6 py-4 font-medium">Word Ladder II</td>
+<td class="px-6 py-4">
+<span class="text-text-secondary">Over-complicated </span>
+<span class="text-accent-orange font-medium">graph construction</span>
+<span class="text-text-secondary"> causing TLE</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 text-[10px] font-bold border border-red-500/20">Hard</span>
+</td>
+<td class="px-6 py-4 text-text-secondary text-xs">3 days ago</td>
+<td class="px-6 py-4 text-right">
+<button class="bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded text-xs font-bold hover:bg-primary hover:text-white transition-all">Re-try</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<footer class="h-10 border-t border-border-dark bg-surface-dark px-8 flex items-center justify-between text-[11px] text-text-secondary shrink-0">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Analytics Updated</span>
+<span>Last Sync: 10:42 AM</span>
+</div>
+<div class="flex items-center gap-6">
+<a class="hover:text-white transition-colors" href="#">Export Performance Data</a>
+<a class="hover:text-white transition-colors" href="#">Documentation</a>
+</div>
+</footer>
+</div>
+
+</body></html>

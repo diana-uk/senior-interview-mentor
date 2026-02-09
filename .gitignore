@@ -1,0 +1,18 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.env
+.env.local
+coverage/
+*.tsbuildinfo
+
+# Data files (keep structure, ignore user data)
+data/*.json
+!data/.gitkeep
+
+# Session files
+sessions/
+
+# MCP config (contains tokens)
+.mcp.json

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Senior Interview Mentor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../layout.css">
+  <link rel="stylesheet" href="../animations.css">
+  <style>
+    /* Dashboard-specific styles */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--space-5);
+      padding: var(--space-6);
+      overflow-y: auto;
+      height: calc(100vh - var(--topnav-height));
+    }
+
+    .dashboard-greeting {
+      grid-column: span 8;
+    }
+
+    .dashboard-streak {
+      grid-column: span 4;
+    }
+
+    .dashboard-stats {
+      grid-column: span 12;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .dashboard-recommended {
+      grid-column: span 8;
+    }
+
+    .dashboard-weaknesses {
+      grid-column: span 4;
+    }
+
+    .dashboard-recent {
+      grid-column: span 6;
+    }
+
+    .dashboard-patterns {
+      grid-column: span 6;
+    }
+
+    /* Greeting Card */
+    .greeting-card {
+      background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .greeting-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--neon-cyan-subtle) 0%, transparent 70%);
+      opacity: 0.5;
+    }
+
+    .greeting-time {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-2);
+    }
+
+    .greeting-title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: var(--font-extrabold);
+      color: var(--text-bright);
+      margin-bottom: var(--space-3);
+      position: relative;
+    }
+
+    .greeting-subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 500px;
+      line-height: var(--leading-relaxed);
+    }
+
+    .greeting-cta {
+      margin-top: var(--space-5);
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    /* Streak Card */
+    .streak-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .streak-flames {
+      font-size: 48px;
+      margin-bottom: var(--space-3);
+      filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.5));
+    }
+
+    .streak-count {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      font-weight: var(--font-extrabold);
+      color: var(--neon-amber);
+      text-shadow: 0 0 30px var(--neon-amber-glow);
+    }
+
+    .streak-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-top: var(--space-1);
+    }
+
+    .streak-best {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* Stat Card */
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .stat-card-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      font-size: 20px;
+    }
+
+    .stat-card-icon-cyan {
+      background: var(--neon-cyan-subtle);
+      color: var(--neon-cyan);
+    }
+
+    .stat-card-icon-lime {
+      background: var(--neon-lime-subtle);
+      color: var(--neon-lime);
+    }
+
+    .stat-card-icon-magenta {
+      background: var(--neon-magenta-subtle);
+      color: var(--neon-magenta);
+    }
+
+    .stat-card-icon-purple {
+      background: var(--neon-purple-subtle);
+      color: var(--neon-purple);
+    }
+
+    .stat-card-value {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--text-bright);
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-card-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .stat-card-change {
+      font-size: var(--text-xs);
+      margin-top: var(--space-2);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+    }
+
+    .stat-card-change-up {
+      background: var(--neon-lime-subtle);
+      color: var(--neon-lime);
+    }
+
+    .stat-card-change-down {
+      background: var(--neon-red-subtle);
+      color: var(--neon-red);
+    }
+
+    /* Recommended Problems */
+    .problem-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .problem-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .problem-item:hover {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+    }
+
+    .problem-item-index {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-overlay);
+      border-radius: var(--radius-md);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      color: var(--text-muted);
+    }
+
+    .problem-item-content {
+      flex: 1;
+    }
+
+    .problem-item-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .problem-item-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    .problem-item-pattern {
+      padding: var(--space-0-5) var(--space-2);
+      background: var(--bg-overlay);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+    }
+
+    .problem-item-arrow {
+      color: var(--text-muted);
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+
+    .problem-item:hover .problem-item-arrow {
+      transform: translateX(4px);
+      color: var(--neon-cyan);
+    }
+
+    /* Weakness Heatmap */
+    .weakness-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-2);
+    }
+
+    .weakness-cell {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-xxs);
+      font-weight: var(--font-bold);
+      cursor: pointer;
+      transition: transform var(--duration-fast) var(--ease-out);
+    }
+
+    .weakness-cell:hover {
+      transform: scale(1.1);
+    }
+
+    .weakness-cell-0 { background: var(--bg-overlay); color: var(--text-disabled); }
+    .weakness-cell-1 { background: rgba(255, 51, 102, 0.2); color: var(--neon-red); }
+    .weakness-cell-2 { background: rgba(255, 51, 102, 0.4); color: var(--neon-red); }
+    .weakness-cell-3 { background: rgba(255, 51, 102, 0.6); color: var(--text-bright); }
+    .weakness-cell-4 { background: rgba(255, 51, 102, 0.8); color: var(--text-bright); }
+
+    .weakness-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-4);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    .weakness-legend-scale {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .weakness-legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    /* Recent Sessions */
+    .session-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+    }
+
+    .session-item-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+    }
+
+    .session-item-icon-teacher {
+      background: var(--neon-cyan-subtle);
+      color: var(--neon-cyan);
+    }
+
+    .session-item-icon-interviewer {
+      background: var(--neon-magenta-subtle);
+      color: var(--neon-magenta);
+    }
+
+    .session-item-content {
+      flex: 1;
+    }
+
+    .session-item-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+    }
+
+    .session-item-time {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    .session-item-score {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .session-item-score-good {
+      background: var(--neon-lime-subtle);
+      color: var(--neon-lime);
+    }
+
+    .session-item-score-ok {
+      background: var(--neon-amber-subtle);
+      color: var(--neon-amber);
+    }
+
+    /* Pattern Grid */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .pattern-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pattern-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--pattern-color, var(--neon-cyan));
+    }
+
+    .pattern-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--pattern-color, var(--neon-cyan));
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .pattern-icon {
+      font-size: 28px;
+      margin-bottom: var(--space-2);
+    }
+
+    .pattern-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .pattern-progress {
+      height: 4px;
+      background: var(--bg-overlay);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .pattern-progress-fill {
+      height: 100%;
+      background: var(--pattern-color, var(--neon-cyan));
+      border-radius: var(--radius-full);
+    }
+
+    .pattern-count {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-2);
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .dashboard-greeting { grid-column: span 12; }
+      .dashboard-streak { grid-column: span 12; }
+      .dashboard-recommended { grid-column: span 12; }
+      .dashboard-weaknesses { grid-column: span 12; }
+      .dashboard-recent { grid-column: span 12; }
+      .dashboard-patterns { grid-column: span 12; }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pattern-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Navigation -->
+    <nav class="topnav">
+      <div class="topnav-left">
+        <div class="topnav-brand">
+          <div class="topnav-logo">SM</div>
+          <span class="topnav-title">Senior Mentor</span>
+        </div>
+      </div>
+      <div class="topnav-right">
+        <button class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Start Interview
+        </button>
+        <div class="avatar avatar-md avatar-user">DK</div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="app-body">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <button class="sidebar-nav-item sidebar-nav-item-active" title="Dashboard">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
+          <button class="sidebar-nav-item" title="Problems">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+          <button class="sidebar-nav-item" title="Patterns">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </button>
+          <button class="sidebar-nav-item" title="Mistakes">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+          <button class="sidebar-nav-item" title="Stats">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"></line>
+              <line x1="12" y1="20" x2="12" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="sidebar-nav-item" title="Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Dashboard Content -->
+      <main class="dashboard">
+        <!-- Greeting -->
+        <div class="dashboard-greeting">
+          <div class="greeting-card">
+            <div class="greeting-time">Good evening</div>
+            <h1 class="greeting-title">Ready to level up, Diana?</h1>
+            <p class="greeting-subtitle">
+              You're 3 problems away from mastering HashMap patterns. Let's close the gap today.
+            </p>
+            <div class="greeting-cta">
+              <button class="btn btn-primary btn-lg">Continue Learning</button>
+              <button class="btn btn-secondary btn-lg">View Recommended</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Streak -->
+        <div class="dashboard-streak">
+          <div class="streak-card">
+            <div class="streak-flames">🔥</div>
+            <div class="streak-count">12</div>
+            <div class="streak-label">Day Streak</div>
+            <div class="streak-best">Best: 28 days</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="dashboard-stats">
+          <div class="stat-card stagger-enter stagger-1" style="opacity: 1; transform: none;">
+            <div class="stat-card-icon stat-card-icon-cyan">📝</div>
+            <div class="stat-card-value">47</div>
+            <div class="stat-card-label">Problems Solved</div>
+            <div class="stat-card-change stat-card-change-up">+8 this week</div>
+          </div>
+          <div class="stat-card stagger-enter stagger-2" style="opacity: 1; transform: none;">
+            <div class="stat-card-icon stat-card-icon-lime">✓</div>
+            <div class="stat-card-value">82%</div>
+            <div class="stat-card-label">Success Rate</div>
+            <div class="stat-card-change stat-card-change-up">+5% from last</div>
+          </div>
+          <div class="stat-card stagger-enter stagger-3" style="opacity: 1; transform: none;">
+            <div class="stat-card-icon stat-card-icon-magenta">⏱</div>
+            <div class="stat-card-value">23m</div>
+            <div class="stat-card-label">Avg. Time</div>
+            <div class="stat-card-change stat-card-change-up">-4m faster</div>
+          </div>
+          <div class="stat-card stagger-enter stagger-4" style="opacity: 1; transform: none;">
+            <div class="stat-card-icon stat-card-icon-purple">🎯</div>
+            <div class="stat-card-value">6</div>
+            <div class="stat-card-label">Patterns Mastered</div>
+            <div class="stat-card-change stat-card-change-up">+2 new</div>
+          </div>
+        </div>
+
+        <!-- Recommended Problems -->
+        <div class="dashboard-recommended">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Recommended for You</h2>
+              <button class="btn btn-ghost btn-sm">View All</button>
+            </div>
+            <div class="problem-list">
+              <div class="problem-item">
+                <div class="problem-item-index">1</div>
+                <div class="problem-item-content">
+                  <div class="problem-item-title">Valid Anagram</div>
+                  <div class="problem-item-meta">
+                    <span class="badge badge-easy">Easy</span>
+                    <span class="problem-item-pattern">HashMap</span>
+                    <span>Based on your mistakes</span>
+                  </div>
+                </div>
+                <div class="problem-item-arrow">→</div>
+              </div>
+              <div class="problem-item">
+                <div class="problem-item-index">2</div>
+                <div class="problem-item-content">
+                  <div class="problem-item-title">Longest Substring Without Repeating</div>
+                  <div class="problem-item-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="problem-item-pattern">Sliding Window</span>
+                    <span>Your weakest pattern</span>
+                  </div>
+                </div>
+                <div class="problem-item-arrow">→</div>
+              </div>
+              <div class="problem-item">
+                <div class="problem-item-index">3</div>
+                <div class="problem-item-content">
+                  <div class="problem-item-title">Binary Tree Level Order</div>
+                  <div class="problem-item-meta">
+                    <span class="badge badge-medium">Medium</span>
+                    <span class="problem-item-pattern">BFS</span>
+                    <span>Continue progression</span>
+                  </div>
+                </div>
+                <div class="problem-item-arrow">→</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weakness Heatmap -->
+        <div class="dashboard-weaknesses">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Weak Areas</h2>
+              <span class="badge badge-pulse badge-interviewer">Focus Here</span>
+            </div>
+            <div class="weakness-grid">
+              <div class="weakness-cell weakness-cell-3" title="HashMap: 3 mistakes">HM</div>
+              <div class="weakness-cell weakness-cell-4" title="Sliding Window: 4 mistakes">SW</div>
+              <div class="weakness-cell weakness-cell-1" title="Two Pointers: 1 mistake">2P</div>
+              <div class="weakness-cell weakness-cell-2" title="BFS: 2 mistakes">BFS</div>
+              <div class="weakness-cell weakness-cell-0" title="DFS: 0 mistakes">DFS</div>
+              <div class="weakness-cell weakness-cell-1" title="Binary Search: 1 mistake">BS</div>
+              <div class="weakness-cell weakness-cell-0" title="DP: 0 mistakes">DP</div>
+              <div class="weakness-cell weakness-cell-3" title="Backtracking: 3 mistakes">BT</div>
+              <div class="weakness-cell weakness-cell-2" title="Heap: 2 mistakes">HP</div>
+              <div class="weakness-cell weakness-cell-0" title="Greedy: 0 mistakes">GR</div>
+            </div>
+            <div class="weakness-legend">
+              <span>Fewer mistakes</span>
+              <div class="weakness-legend-scale">
+                <div class="weakness-legend-box weakness-cell-0"></div>
+                <div class="weakness-legend-box weakness-cell-1"></div>
+                <div class="weakness-legend-box weakness-cell-2"></div>
+                <div class="weakness-legend-box weakness-cell-3"></div>
+                <div class="weakness-legend-box weakness-cell-4"></div>
+              </div>
+              <span>More mistakes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="dashboard-recent">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Recent Sessions</h2>
+              <button class="btn btn-ghost btn-sm">History</button>
+            </div>
+            <div class="session-list">
+              <div class="session-item">
+                <div class="session-item-icon session-item-icon-teacher">📚</div>
+                <div class="session-item-content">
+                  <div class="session-item-title">Two Sum - HashMap Pattern</div>
+                  <div class="session-item-time">2 hours ago • 18 minutes</div>
+                </div>
+                <div class="session-item-score session-item-score-good">4/4</div>
+              </div>
+              <div class="session-item">
+                <div class="session-item-icon session-item-icon-interviewer">🎯</div>
+                <div class="session-item-content">
+                  <div class="session-item-title">Mock Interview - Technical</div>
+                  <div class="session-item-time">Yesterday • 45 minutes</div>
+                </div>
+                <div class="session-item-score session-item-score-ok">3/4</div>
+              </div>
+              <div class="session-item">
+                <div class="session-item-icon session-item-icon-teacher">📚</div>
+                <div class="session-item-content">
+                  <div class="session-item-title">Container With Most Water</div>
+                  <div class="session-item-time">2 days ago • 25 minutes</div>
+                </div>
+                <div class="session-item-score session-item-score-good">4/4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern Progress -->
+        <div class="dashboard-patterns">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Pattern Mastery</h2>
+              <button class="btn btn-ghost btn-sm">All Patterns</button>
+            </div>
+            <div class="pattern-grid">
+              <div class="pattern-card" style="--pattern-color: var(--pattern-hashmap);">
+                <div class="pattern-icon">🗂</div>
+                <div class="pattern-name">HashMap</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 85%; background: var(--pattern-hashmap);"></div>
+                </div>
+                <div class="pattern-count">17/20 solved</div>
+              </div>
+              <div class="pattern-card" style="--pattern-color: var(--pattern-twopointer);">
+                <div class="pattern-icon">👆👆</div>
+                <div class="pattern-name">Two Pointers</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 70%; background: var(--pattern-twopointer);"></div>
+                </div>
+                <div class="pattern-count">14/20 solved</div>
+              </div>
+              <div class="pattern-card" style="--pattern-color: var(--pattern-slidingwindow);">
+                <div class="pattern-icon">🪟</div>
+                <div class="pattern-name">Sliding Window</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 45%; background: var(--pattern-slidingwindow);"></div>
+                </div>
+                <div class="pattern-count">9/20 solved</div>
+              </div>
+              <div class="pattern-card" style="--pattern-color: var(--pattern-bfs);">
+                <div class="pattern-icon">🌊</div>
+                <div class="pattern-name">BFS</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 60%; background: var(--pattern-bfs);"></div>
+                </div>
+                <div class="pattern-count">12/20 solved</div>
+              </div>
+              <div class="pattern-card" style="--pattern-color: var(--pattern-dp);">
+                <div class="pattern-icon">📊</div>
+                <div class="pattern-name">Dynamic Prog.</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 30%; background: var(--pattern-dp);"></div>
+                </div>
+                <div class="pattern-count">6/20 solved</div>
+              </div>
+              <div class="pattern-card" style="--pattern-color: var(--pattern-binary);">
+                <div class="pattern-icon">🎯</div>
+                <div class="pattern-name">Binary Search</div>
+                <div class="progress-bar pattern-progress">
+                  <div class="progress-bar-fill" style="width: 55%; background: var(--pattern-binary);"></div>
+                </div>
+                <div class="pattern-count">11/20 solved</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

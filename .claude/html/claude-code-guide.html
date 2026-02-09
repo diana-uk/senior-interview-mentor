@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code &mdash; Global &amp; Project Skills Guide</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface-2: #232734;
+      --border: #2e3348;
+      --text: #e2e4ed;
+      --text-muted: #8b8fa7;
+      --accent: #c4a7ff;
+      --accent-dim: #9171db;
+      --green: #7ae8a2;
+      --green-dim: #2a4a38;
+      --blue: #7ab8ff;
+      --blue-dim: #1e3a5f;
+      --orange: #ffb07a;
+      --orange-dim: #4a3020;
+      --red: #ff7a8a;
+      --code-bg: #141620;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 2.5rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    h2 .badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    h2 .badge-global {
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+
+    h2 .badge-project {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    p, li {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    p { margin-bottom: 0.8rem; }
+
+    ul, ol {
+      padding-left: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    li { margin-bottom: 0.3rem; }
+    li strong { color: var(--text); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .card-header {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-blue { background: var(--blue); }
+    .dot-green { background: var(--green); }
+    .dot-orange { background: var(--orange); }
+    .dot-accent { background: var(--accent); }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      overflow-x: auto;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    pre code {
+      color: var(--text-muted);
+    }
+
+    :not(pre) > code {
+      background: var(--surface-2);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 0.85em;
+    }
+
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    .tree .dir { color: var(--blue); font-weight: 600; }
+    .tree .file { color: var(--text-muted); }
+    .tree .comment { color: #555a75; font-style: italic; }
+    .tree .highlight { color: var(--green); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.7rem 1rem;
+      background: var(--surface-2);
+      color: var(--text);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+    }
+
+    th:first-child { border-radius: 8px 0 0 0; }
+    th:last-child { border-radius: 0 8px 0 0; }
+
+    td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    @media (max-width: 700px) {
+      .two-col { grid-template-columns: 1fr; }
+      body { padding: 1rem; }
+      header h1 { font-size: 1.6rem; }
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .flow-step {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .flow-arrow {
+      color: var(--accent-dim);
+      font-size: 1.2rem;
+    }
+
+    .flow-step.active {
+      border-color: var(--accent-dim);
+      background: rgba(196, 167, 255, 0.08);
+    }
+
+    .note {
+      background: rgba(122, 184, 255, 0.06);
+      border-left: 3px solid var(--blue);
+      padding: 0.8rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .note strong { color: var(--blue); }
+
+    .warn {
+      background: rgba(255, 176, 122, 0.06);
+      border-left: 3px solid var(--orange);
+      padding: 0.8rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .warn strong { color: var(--orange); }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0 1rem;
+      color: #444866;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Claude Code: Global &amp; Project Skills</h1>
+      <p>How to set up skills, memory, and configuration at different scopes</p>
+    </header>
+
+    <!-- ===== CONCEPT ===== -->
+    <h2>The Two-Layer System</h2>
+    <p>
+      Claude Code uses a <strong>hierarchical configuration</strong> system.
+      Anything you put in the <strong>global</strong> directory (<code>~/.claude/</code>) applies to
+      every project on your machine. Anything inside a <strong>project's</strong>
+      <code>.claude/</code> folder applies only to that repo. Both layers load automatically
+      and merge together.
+    </p>
+
+    <div class="flow">
+      <span class="flow-step">Global <code>~/.claude/</code></span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step active">Project <code>.claude/</code></span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">Merged result</span>
+    </div>
+
+    <div class="note">
+      <strong>Override rule:</strong> When both layers define the same thing (e.g. a skill named
+      <code>/review</code>), the <strong>project-level version wins</strong>.
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== GLOBAL ===== -->
+    <h2><span class="badge badge-global">Global</span> Global Configuration</h2>
+    <p>
+      Your global config lives in your home directory. These skills, memory, and
+      settings are available in <em>every</em> project you open with Claude Code.
+    </p>
+
+    <div class="card">
+      <div class="card-header"><span class="dot dot-blue"></span> Global Directory Structure</div>
+      <div class="tree">
+<pre><code><span class="dir">~/.claude/</span>
+├── <span class="highlight">CLAUDE.md</span>              <span class="comment"># Global instructions &amp; preferences</span>
+├── <span class="file">settings.json</span>          <span class="comment"># Global permissions, env vars</span>
+├── <span class="file">mcp.json</span>               <span class="comment"># Global MCP servers</span>
+├── <span class="dir">skills/</span>                <span class="comment"># Skills available EVERYWHERE</span>
+│   ├── <span class="dir">explain-code/</span>
+│   │   └── <span class="highlight">SKILL.md</span>
+│   └── <span class="dir">research/</span>
+│       └── <span class="highlight">SKILL.md</span>
+├── <span class="dir">agents/</span>                <span class="comment"># Global subagents</span>
+└── <span class="dir">rules/</span>                 <span class="comment"># Global rules</span>
+    └── <span class="file">my-preferences.md</span></code></pre>
+      </div>
+    </div>
+
+    <h3>Global CLAUDE.md</h3>
+    <p>Put personal preferences that apply everywhere in <code>~/.claude/CLAUDE.md</code>:</p>
+    <pre><code># My Preferences
+
+- Always use TypeScript unless I say otherwise
+- Use 2-space indentation
+- Prefer functional patterns over classes
+- When committing, use conventional commit format</code></pre>
+
+    <h3>Global Skill Example</h3>
+    <p>Create a folder inside <code>~/.claude/skills/</code> with a <code>SKILL.md</code> file:</p>
+    <pre><code># File: ~/.claude/skills/explain-code/SKILL.md
+
+---
+name: explain-code
+description: Explains code with diagrams and analogies
+---
+
+When explaining code:
+1. Start with an everyday analogy
+2. Draw an ASCII diagram of the flow
+3. Walk through step-by-step
+4. Highlight a common gotcha</code></pre>
+    <p>Now <code>/explain-code</code> works in every project on your machine.</p>
+
+    <hr class="divider">
+
+    <!-- ===== PROJECT ===== -->
+    <h2><span class="badge badge-project">Project</span> Project Configuration</h2>
+    <p>
+      Project config lives in your repo root. Skills here only apply to
+      this project and can be committed to git so your team gets them too.
+    </p>
+
+    <div class="card">
+      <div class="card-header"><span class="dot dot-green"></span> Project Directory Structure</div>
+      <div class="tree">
+<pre><code><span class="dir">your-project/</span>
+├── <span class="highlight">CLAUDE.md</span>              <span class="comment"># Project instructions (committed)</span>
+├── <span class="dir">.claude/</span>
+│   ├── <span class="file">settings.json</span>      <span class="comment"># Project permissions</span>
+│   ├── <span class="file">settings.local.json</span>  <span class="comment"># Personal overrides (auto-gitignored)</span>
+│   ├── <span class="file">CLAUDE.local.md</span>    <span class="comment"># Personal project notes (auto-gitignored)</span>
+│   ├── <span class="dir">skills/</span>            <span class="comment"># Project-only skills</span>
+│   │   ├── <span class="dir">deploy/</span>
+│   │   │   └── <span class="highlight">SKILL.md</span>
+│   │   └── <span class="dir">run-tests/</span>
+│   │       └── <span class="highlight">SKILL.md</span>
+│   ├── <span class="dir">agents/</span>            <span class="comment"># Project subagents</span>
+│   └── <span class="dir">rules/</span>             <span class="comment"># Project rules (modular)</span>
+│       ├── <span class="file">code-style.md</span>
+│       └── <span class="file">testing.md</span>
+└── <span class="file">.mcp.json</span>              <span class="comment"># Project MCP servers</span></code></pre>
+      </div>
+    </div>
+
+    <h3>Project Skill Example</h3>
+    <pre><code># File: .claude/skills/deploy/SKILL.md
+
+---
+name: deploy
+description: Deploy the app to production
+---
+
+Deploy steps:
+1. Run the full test suite
+2. Build the application
+3. Push to the deployment target
+4. Verify the deployment succeeded</code></pre>
+
+    <div class="warn">
+      <strong>Personal files:</strong> <code>settings.local.json</code> and
+      <code>CLAUDE.local.md</code> are automatically gitignored. Use these for
+      personal preferences that shouldn't be shared with your team.
+    </div>
+
+    <hr class="divider">
+
+    <!-- ===== SKILL ANATOMY ===== -->
+    <h2>Anatomy of a SKILL.md</h2>
+    <p>Every skill is a folder containing a <code>SKILL.md</code> file. The file has two parts:</p>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="dot dot-accent"></span> Frontmatter (YAML)</div>
+        <p style="font-size:0.85rem;">Required metadata between <code>---</code> fences.</p>
+        <ul>
+          <li><strong>name</strong> &mdash; the slash command name</li>
+          <li><strong>description</strong> &mdash; when/why to use it</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="dot dot-accent"></span> Body (Markdown)</div>
+        <p style="font-size:0.85rem;">Instructions Claude follows when the skill is invoked.</p>
+        <ul>
+          <li>Step-by-step instructions</li>
+          <li>Templates, rules, examples</li>
+        </ul>
+      </div>
+    </div>
+
+    <pre><code>---
+name: my-skill
+description: Short description of what this does
+---
+
+## Instructions
+
+Your markdown instructions here.
+Claude follows these when the user runs /my-skill.</code></pre>
+
+    <h3>Supporting Files</h3>
+    <p>Skills can include extra files alongside <code>SKILL.md</code>:</p>
+    <pre><code>~/.claude/skills/my-skill/
+├── SKILL.md
+├── template.md
+├── examples/
+│   └── sample.ts
+└── scripts/
+    └── helper.sh</code></pre>
+
+    <hr class="divider">
+
+    <!-- ===== LOADING ORDER ===== -->
+    <h2>Loading &amp; Priority Order</h2>
+    <p>When Claude Code starts, configuration layers load in this order (later wins):</p>
+
+    <div class="flow">
+      <span class="flow-step">1. Managed</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">2. Global <code>~/.claude/</code></span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step active">3. Project <code>.claude/</code></span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step">4. Local overrides</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Source</th>
+          <th>Shared?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Managed</td>
+          <td>Enterprise IT deployment</td>
+          <td>Org-wide</td>
+        </tr>
+        <tr>
+          <td>Global</td>
+          <td><code>~/.claude/</code></td>
+          <td>Your machine only</td>
+        </tr>
+        <tr>
+          <td>Project</td>
+          <td><code>.claude/</code> in repo root</td>
+          <td>Committed to git (team)</td>
+        </tr>
+        <tr>
+          <td>Local</td>
+          <td><code>.claude/*.local.*</code></td>
+          <td>Auto-gitignored (you only)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <!-- ===== QUICK REF ===== -->
+    <h2>Quick Reference Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>What</th>
+          <th>Global Path</th>
+          <th>Project Path</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Skills</strong></td>
+          <td><code>~/.claude/skills/&lt;name&gt;/SKILL.md</code></td>
+          <td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td>
+        </tr>
+        <tr>
+          <td><strong>Memory</strong></td>
+          <td><code>~/.claude/CLAUDE.md</code></td>
+          <td><code>./CLAUDE.md</code></td>
+        </tr>
+        <tr>
+          <td><strong>Personal notes</strong></td>
+          <td>&mdash;</td>
+          <td><code>.claude/CLAUDE.local.md</code></td>
+        </tr>
+        <tr>
+          <td><strong>Settings</strong></td>
+          <td><code>~/.claude/settings.json</code></td>
+          <td><code>.claude/settings.json</code></td>
+        </tr>
+        <tr>
+          <td><strong>Personal settings</strong></td>
+          <td>&mdash;</td>
+          <td><code>.claude/settings.local.json</code></td>
+        </tr>
+        <tr>
+          <td><strong>MCP servers</strong></td>
+          <td><code>~/.claude/mcp.json</code></td>
+          <td><code>.mcp.json</code></td>
+        </tr>
+        <tr>
+          <td><strong>Rules</strong></td>
+          <td><code>~/.claude/rules/*.md</code></td>
+          <td><code>.claude/rules/*.md</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <!-- ===== TIPS ===== -->
+    <h2>Tips</h2>
+    <ul>
+      <li>When you type <code>/</code>, Claude shows <strong>all</strong> available skills merged from both global and project layers.</li>
+      <li>Use <code>/memory</code> to check which CLAUDE.md files are currently loaded.</li>
+      <li>Skills can reference each other &mdash; a project skill can build on patterns from a global one.</li>
+      <li>Keep global skills generic (explain, research, format). Keep project skills specific (deploy, test, lint).</li>
+      <li>The older <code>.claude/commands/</code> format still works but <code>.claude/skills/</code> is the modern approach with more features.</li>
+    </ul>
+
+    <footer>
+      Claude Code Configuration Guide
+    </footer>
+
+  </div>
+</body>
+</html>

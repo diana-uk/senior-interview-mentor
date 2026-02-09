@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Design Whiteboard Workspace</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ================================================================
+       CSS Custom Properties (App Theme)
+       ================================================================ */
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #a371f7;
+      --accent-orange: #d29922;
+      --accent-red: #f85149;
+      --border: #30363d;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    }
+
+    /* ================================================================
+       Reset & Base
+       ================================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    /* ================================================================
+       Layout Shell
+       ================================================================ */
+    .sd-wb {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .sd-wb__body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ================================================================
+       HEADER (64px)
+       ================================================================ */
+    .sd-wb__header {
+      height: 64px;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-wb__header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sd-wb__header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sd-wb__header-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-blue);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sd-wb__header-logo-icon .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--bg-primary);
+    }
+
+    .sd-wb__header-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .sd-wb__header-separator {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+    }
+
+    .sd-wb__header-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .sd-wb__header-breadcrumb-link {
+      color: #8da6ce;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .sd-wb__header-breadcrumb-link:hover {
+      color: var(--text-primary);
+    }
+
+    .sd-wb__header-breadcrumb-sep {
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__header-badge--hard {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: rgba(248, 81, 73, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    .sd-wb__header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sd-wb__header-timer {
+      display: flex;
+      align-items: center;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .sd-wb__header-icon-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-wb__header-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .sd-wb__header-finish-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent-blue);
+      color: var(--bg-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .sd-wb__header-finish-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ================================================================
+       LEFT TOOLS SIDEBAR (64px)
+       ================================================================ */
+    .sd-wb__tools {
+      width: 64px;
+      min-width: 64px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+    }
+
+    .sd-wb__tools-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .sd-wb__tools-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sd-wb__tool-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: #8da6ce;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-wb__tool-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .sd-wb__tool-btn--active {
+      background: var(--accent-blue);
+      color: var(--bg-primary);
+    }
+
+    .sd-wb__tool-btn--active:hover {
+      background: var(--accent-blue);
+      color: var(--bg-primary);
+      opacity: 0.9;
+    }
+
+    .sd-wb__tool-btn .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    /* ================================================================
+       LEFT PLAN SIDEBAR (288px)
+       ================================================================ */
+    .sd-wb__plan {
+      width: 288px;
+      min-width: 288px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sd-wb__plan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-wb__plan-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #8da6ce;
+    }
+
+    .sd-wb__plan-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-green);
+      background: rgba(63, 185, 80, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .sd-wb__plan-steps {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Scrollbar styling */
+    .sd-wb__plan-steps::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sd-wb__plan-steps::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sd-wb__plan-steps::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* Step card base */
+    .sd-wb__step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .sd-wb__step-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 18px;
+    }
+
+    .sd-wb__step-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sd-wb__step-icon .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    .sd-wb__step-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sd-wb__step-title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .sd-wb__step-sub {
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    /* Completed step */
+    .sd-wb__step--completed {
+      background: rgba(63, 185, 80, 0.05);
+      border-color: rgba(63, 185, 80, 0.2);
+    }
+
+    .sd-wb__step--completed .sd-wb__step-icon .material-symbols-outlined {
+      color: var(--accent-green);
+    }
+
+    .sd-wb__step--completed .sd-wb__step-title {
+      color: var(--accent-green);
+    }
+
+    .sd-wb__step--completed .sd-wb__step-sub {
+      color: rgba(63, 185, 80, 0.6);
+    }
+
+    /* Active step */
+    .sd-wb__step--active {
+      background: rgba(88, 166, 255, 0.1);
+      border-color: var(--accent-blue);
+      position: relative;
+      box-shadow: 0 0 20px rgba(88, 166, 255, 0.08);
+    }
+
+    .sd-wb__step--active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 4px;
+      background: var(--accent-blue);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .sd-wb__step--active .sd-wb__step-icon .material-symbols-outlined {
+      color: var(--accent-blue);
+      animation: sd-wb-pulse 2s ease-in-out infinite;
+    }
+
+    .sd-wb__step--active .sd-wb__step-title {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .sd-wb__step--active .sd-wb__step-sub {
+      color: var(--accent-blue);
+    }
+
+    /* Locked step */
+    .sd-wb__step--locked {
+      background: rgba(13, 17, 23, 0.3);
+      border-color: rgba(48, 54, 61, 0.5);
+      opacity: 0.6;
+    }
+
+    .sd-wb__step--locked .sd-wb__step-icon .material-symbols-outlined {
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__step--locked .sd-wb__step-title {
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__step--locked .sd-wb__step-sub {
+      color: rgba(139, 148, 158, 0.5);
+    }
+
+    /* Plan footer / progress */
+    .sd-wb__plan-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sd-wb__plan-progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .sd-wb__plan-progress-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__plan-progress-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .sd-wb__plan-progress-track {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .sd-wb__plan-progress-fill {
+      height: 100%;
+      width: 50%;
+      background: var(--accent-green);
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    /* ================================================================
+       CENTER CANVAS
+       ================================================================ */
+    .sd-wb__canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+      background-color: var(--bg-primary);
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .sd-wb__canvas-viewport {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Architecture node base */
+    .sd-wb__node {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: box-shadow 0.2s;
+    }
+
+    .sd-wb__node-icon .material-symbols-outlined {
+      font-size: 24px;
+    }
+
+    .sd-wb__node-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .sd-wb__node-sub {
+      font-size: 10px;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* Client Apps node */
+    .sd-wb__node--client {
+      left: 60px;
+      top: 180px;
+      width: 128px;
+      height: 80px;
+    }
+
+    .sd-wb__node--client .sd-wb__node-icon .material-symbols-outlined {
+      color: var(--accent-blue);
+    }
+
+    .sd-wb__node--client .sd-wb__node-label {
+      color: var(--text-primary);
+      font-size: 10px;
+    }
+
+    /* Load Balancer node */
+    .sd-wb__node--lb {
+      left: 260px;
+      top: 168px;
+      width: 160px;
+      height: 96px;
+      border-color: var(--accent-blue);
+      background: rgba(22, 27, 34, 0.5);
+      box-shadow: 0 0 24px rgba(88, 166, 255, 0.1);
+    }
+
+    .sd-wb__node--lb .sd-wb__node-icon .material-symbols-outlined {
+      color: var(--accent-blue);
+    }
+
+    .sd-wb__node--lb .sd-wb__node-label {
+      color: var(--accent-blue);
+      font-size: 10px;
+    }
+
+    /* Resize handles on LB */
+    .sd-wb__node-handle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-blue);
+      border-radius: 2px;
+    }
+
+    .sd-wb__node-handle--tl { top: -4px; left: -4px; }
+    .sd-wb__node-handle--tr { top: -4px; right: -4px; }
+    .sd-wb__node-handle--bl { bottom: -4px; left: -4px; }
+    .sd-wb__node-handle--br { bottom: -4px; right: -4px; }
+
+    /* API Gateway node */
+    .sd-wb__node--gateway {
+      left: 500px;
+      top: 176px;
+      width: 192px;
+      height: 80px;
+    }
+
+    .sd-wb__node--gateway .sd-wb__node-icon .material-symbols-outlined {
+      color: #ffcc00;
+    }
+
+    .sd-wb__node--gateway .sd-wb__node-label {
+      color: var(--text-primary);
+      font-size: 10px;
+    }
+
+    /* Redis Cluster node */
+    .sd-wb__node--redis {
+      left: 524px;
+      top: 320px;
+      width: 144px;
+      height: 64px;
+      border-style: dashed;
+    }
+
+    .sd-wb__node--redis .sd-wb__node-icon .material-symbols-outlined {
+      color: var(--accent-red);
+      font-size: 20px;
+    }
+
+    .sd-wb__node--redis .sd-wb__node-label {
+      color: var(--text-primary);
+      font-size: 10px;
+    }
+
+    /* App Servers group container */
+    .sd-wb__group {
+      position: absolute;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 16px 12px 12px;
+    }
+
+    .sd-wb__group--servers {
+      left: 760px;
+      top: 100px;
+      width: 160px;
+      height: 256px;
+    }
+
+    .sd-wb__group-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .sd-wb__group-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sd-wb__group-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .sd-wb__group-item-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      flex-shrink: 0;
+    }
+
+    .sd-wb__group-item-dot--pulse {
+      animation: sd-wb-pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* ================================================================
+       Connector Lines (SVG overlay)
+       ================================================================ */
+    .sd-wb__connectors {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .sd-wb__connector-line {
+      stroke: var(--border);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .sd-wb__connector-line--blue {
+      stroke: var(--accent-blue);
+      stroke-width: 2;
+    }
+
+    .sd-wb__connector-arrow {
+      fill: var(--border);
+    }
+
+    .sd-wb__connector-arrow--blue {
+      fill: var(--accent-blue);
+    }
+
+    /* ================================================================
+       Bottom Toolbar (floating)
+       ================================================================ */
+    .sd-wb__canvas-toolbar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px 8px;
+      gap: 0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+
+    .sd-wb__canvas-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 8px;
+    }
+
+    .sd-wb__canvas-toolbar-group + .sd-wb__canvas-toolbar-group {
+      border-left: 1px solid var(--border);
+    }
+
+    .sd-wb__canvas-toolbar-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-wb__canvas-toolbar-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .sd-wb__canvas-toolbar-btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .sd-wb__canvas-toolbar-zoom {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      min-width: 36px;
+      text-align: center;
+    }
+
+    .sd-wb__canvas-toolbar-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    /* Toggle switch */
+    .sd-wb__toggle {
+      width: 36px;
+      height: 20px;
+      background: var(--bg-tertiary);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 1px solid var(--border);
+    }
+
+    .sd-wb__toggle--active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .sd-wb__toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .sd-wb__toggle--active .sd-wb__toggle-knob {
+      transform: translateX(16px);
+    }
+
+    /* ================================================================
+       RIGHT MENTOR PANEL (400px)
+       ================================================================ */
+    .sd-wb__mentor {
+      width: 400px;
+      min-width: 400px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sd-wb__mentor-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sd-wb__mentor-header-icon .material-symbols-outlined {
+      font-size: 22px;
+      color: var(--accent-blue);
+    }
+
+    .sd-wb__mentor-header-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .sd-wb__mentor-header-dots {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sd-wb__mentor-header-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+    }
+
+    .sd-wb__mentor-header-dot--active {
+      background: var(--accent-blue);
+    }
+
+    /* Chat area */
+    .sd-wb__mentor-chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .sd-wb__mentor-chat::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sd-wb__mentor-chat::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sd-wb__mentor-chat::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .sd-wb__mentor-msg-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sd-wb__mentor-msg-label--mentor {
+      color: var(--accent-blue);
+    }
+
+    .sd-wb__mentor-msg-label--you {
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__mentor-msg-label-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .sd-wb__mentor-msg {
+      background: rgba(22, 27, 34, 0.3);
+      border-left: 2px solid var(--accent-blue);
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__mentor-msg p {
+      margin-bottom: 10px;
+    }
+
+    .sd-wb__mentor-msg p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sd-wb__mentor-msg strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .sd-wb__mentor-msg em {
+      color: var(--accent-blue);
+      font-style: normal;
+    }
+
+    .sd-wb__mentor-placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    /* Input area */
+    .sd-wb__mentor-input-area {
+      padding: 12px 16px 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sd-wb__mentor-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(22, 27, 34, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .sd-wb__mentor-input-prompt {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      user-select: none;
+    }
+
+    .sd-wb__mentor-input-field {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+      caret-color: var(--accent-blue);
+    }
+
+    .sd-wb__mentor-input-field::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    .sd-wb__mentor-input-cursor {
+      width: 2px;
+      height: 16px;
+      background: var(--accent-blue);
+      animation: sd-wb-blink 1s step-end infinite;
+      flex-shrink: 0;
+    }
+
+    .sd-wb__mentor-input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+
+    .sd-wb__mentor-input-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    .sd-wb__mentor-input-hint kbd {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--bg-tertiary);
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .sd-wb__mentor-input-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sd-wb__mentor-input-action-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sd-wb__mentor-input-action-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .sd-wb__mentor-input-action-btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    /* ================================================================
+       Animations
+       ================================================================ */
+    @keyframes sd-wb-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes sd-wb-pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes sd-wb-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sd-wb">
+
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
+    <header class="sd-wb__header">
+      <div class="sd-wb__header-left">
+        <div class="sd-wb__header-logo">
+          <div class="sd-wb__header-logo-icon">
+            <span class="material-symbols-outlined">account_tree</span>
+          </div>
+          <span class="sd-wb__header-title">Senior Interview Mentor</span>
+        </div>
+
+        <div class="sd-wb__header-separator"></div>
+
+        <nav class="sd-wb__header-breadcrumb">
+          <a class="sd-wb__header-breadcrumb-link" href="#">Workspace</a>
+          <span class="sd-wb__header-breadcrumb-sep">/</span>
+          <a class="sd-wb__header-breadcrumb-link" href="#">Design URL Shortener</a>
+          <span class="sd-wb__header-breadcrumb-sep">/</span>
+          <span class="sd-wb__header-badge--hard">HARD</span>
+        </nav>
+      </div>
+
+      <div class="sd-wb__header-right">
+        <div class="sd-wb__header-timer">00:42:18</div>
+        <button class="sd-wb__header-icon-btn" title="Settings">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        <button class="sd-wb__header-finish-btn">
+          Finish Interview
+        </button>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         BODY (tools + plan + canvas + mentor)
+         ============================================================ -->
+    <div class="sd-wb__body">
+
+      <!-- LEFT TOOLS SIDEBAR -->
+      <aside class="sd-wb__tools">
+        <div class="sd-wb__tools-list">
+          <button class="sd-wb__tool-btn sd-wb__tool-btn--active" title="Select">
+            <span class="material-symbols-outlined">near_me</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Rectangle">
+            <span class="material-symbols-outlined">rectangle</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Circle">
+            <span class="material-symbols-outlined">circle</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Connector">
+            <span class="material-symbols-outlined">arrow_outward</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Text">
+            <span class="material-symbols-outlined">text_fields</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Cloud Component">
+            <span class="material-symbols-outlined">cloud</span>
+          </button>
+          <button class="sd-wb__tool-btn" title="Database">
+            <span class="material-symbols-outlined">database</span>
+          </button>
+        </div>
+        <div class="sd-wb__tools-bottom">
+          <button class="sd-wb__tool-btn" title="Help">
+            <span class="material-symbols-outlined">help</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- LEFT PLAN SIDEBAR -->
+      <aside class="sd-wb__plan">
+        <div class="sd-wb__plan-header">
+          <span class="sd-wb__plan-label">Plan Overview</span>
+          <span class="sd-wb__plan-count">3/6 DONE</span>
+        </div>
+
+        <div class="sd-wb__plan-steps">
+          <!-- Step 1 — Completed -->
+          <div class="sd-wb__step sd-wb__step--completed">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">Requirements &amp; Scope</div>
+              <div class="sd-wb__step-sub">Completed</div>
+            </div>
+          </div>
+
+          <!-- Step 2 — Completed -->
+          <div class="sd-wb__step sd-wb__step--completed">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">API Design</div>
+              <div class="sd-wb__step-sub">Completed</div>
+            </div>
+          </div>
+
+          <!-- Step 3 — Completed -->
+          <div class="sd-wb__step sd-wb__step--completed">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">Data Model &amp; Storage</div>
+              <div class="sd-wb__step-sub">Completed</div>
+            </div>
+          </div>
+
+          <!-- Step 4 — Active -->
+          <div class="sd-wb__step sd-wb__step--active">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">radio_button_checked</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">High-Level Architecture</div>
+              <div class="sd-wb__step-sub">In Progress...</div>
+            </div>
+          </div>
+
+          <!-- Step 5 — Locked -->
+          <div class="sd-wb__step sd-wb__step--locked">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">lock</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">Deep Dives &amp; Bottlenecks</div>
+              <div class="sd-wb__step-sub">Locked</div>
+            </div>
+          </div>
+
+          <!-- Step 6 — Locked -->
+          <div class="sd-wb__step sd-wb__step--locked">
+            <div class="sd-wb__step-icon">
+              <span class="material-symbols-outlined">lock</span>
+            </div>
+            <div class="sd-wb__step-content">
+              <div class="sd-wb__step-title">Scaling &amp; Reliability</div>
+              <div class="sd-wb__step-sub">Locked</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="sd-wb__plan-footer">
+          <div class="sd-wb__plan-progress-header">
+            <span class="sd-wb__plan-progress-label">Total Progress</span>
+            <span class="sd-wb__plan-progress-value">50%</span>
+          </div>
+          <div class="sd-wb__plan-progress-track">
+            <div class="sd-wb__plan-progress-fill"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER CANVAS -->
+      <main class="sd-wb__canvas">
+        <div class="sd-wb__canvas-viewport">
+
+          <!-- SVG connectors -->
+          <svg class="sd-wb__connectors" xmlns="http://www.w3.org/2000/svg">
+            <!-- Client → Load Balancer -->
+            <line class="sd-wb__connector-line" x1="188" y1="220" x2="254" y2="216" />
+            <polygon class="sd-wb__connector-arrow" points="254,210 264,216 254,222" />
+
+            <!-- Load Balancer → API Gateway -->
+            <line class="sd-wb__connector-line--blue" x1="420" y1="216" x2="494" y2="216" />
+            <polygon class="sd-wb__connector-arrow--blue" points="494,210 504,216 494,222" />
+
+            <!-- Load Balancer → App Servers (upper branch) -->
+            <polyline class="sd-wb__connector-line" points="420,196 440,196 440,160 754,160" />
+            <polygon class="sd-wb__connector-arrow" points="754,154 764,160 754,166" />
+
+            <!-- Load Balancer → App Servers (lower branch) -->
+            <polyline class="sd-wb__connector-line" points="420,236 440,236 440,280 754,280" />
+            <polygon class="sd-wb__connector-arrow" points="754,274 764,280 754,286" />
+
+            <!-- API Gateway → Redis (vertical) -->
+            <line class="sd-wb__connector-line" x1="596" y1="256" x2="596" y2="314" />
+            <polygon class="sd-wb__connector-arrow" points="590,314 596,324 602,314" />
+          </svg>
+
+          <!-- CLIENT APPS node -->
+          <div class="sd-wb__node sd-wb__node--client">
+            <div class="sd-wb__node-icon">
+              <span class="material-symbols-outlined">devices</span>
+            </div>
+            <div class="sd-wb__node-label">Client Apps</div>
+          </div>
+
+          <!-- LOAD BALANCER node (selected, with handles) -->
+          <div class="sd-wb__node sd-wb__node--lb">
+            <span class="sd-wb__node-handle sd-wb__node-handle--tl"></span>
+            <span class="sd-wb__node-handle sd-wb__node-handle--tr"></span>
+            <span class="sd-wb__node-handle sd-wb__node-handle--bl"></span>
+            <span class="sd-wb__node-handle sd-wb__node-handle--br"></span>
+            <div class="sd-wb__node-icon">
+              <span class="material-symbols-outlined">balance</span>
+            </div>
+            <div class="sd-wb__node-label">Load Balancer</div>
+          </div>
+
+          <!-- API GATEWAY node -->
+          <div class="sd-wb__node sd-wb__node--gateway">
+            <div class="sd-wb__node-icon">
+              <span class="material-symbols-outlined">security</span>
+            </div>
+            <div class="sd-wb__node-label">API Gateway</div>
+            <div class="sd-wb__node-sub">Entry Point</div>
+          </div>
+
+          <!-- REDIS CLUSTER node -->
+          <div class="sd-wb__node sd-wb__node--redis">
+            <div class="sd-wb__node-icon">
+              <span class="material-symbols-outlined">memory</span>
+            </div>
+            <div class="sd-wb__node-label">Redis Cluster</div>
+          </div>
+
+          <!-- APP SERVERS group -->
+          <div class="sd-wb__group sd-wb__group--servers">
+            <div class="sd-wb__group-label">App Servers</div>
+            <div class="sd-wb__group-items">
+              <div class="sd-wb__group-item">
+                <span class="sd-wb__group-item-dot"></span>
+                URL Service
+              </div>
+              <div class="sd-wb__group-item">
+                <span class="sd-wb__group-item-dot"></span>
+                Analytics Svc
+              </div>
+              <div class="sd-wb__group-item">
+                <span class="sd-wb__group-item-dot sd-wb__group-item-dot--pulse"></span>
+                Key Gen Svc
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom floating toolbar -->
+        <div class="sd-wb__canvas-toolbar">
+          <div class="sd-wb__canvas-toolbar-group">
+            <button class="sd-wb__canvas-toolbar-btn" title="Zoom Out">
+              <span class="material-symbols-outlined">remove</span>
+            </button>
+            <span class="sd-wb__canvas-toolbar-zoom">85%</span>
+            <button class="sd-wb__canvas-toolbar-btn" title="Zoom In">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+          </div>
+          <div class="sd-wb__canvas-toolbar-group">
+            <button class="sd-wb__canvas-toolbar-btn" title="Undo">
+              <span class="material-symbols-outlined">undo</span>
+            </button>
+            <button class="sd-wb__canvas-toolbar-btn" title="Redo">
+              <span class="material-symbols-outlined">redo</span>
+            </button>
+          </div>
+          <div class="sd-wb__canvas-toolbar-group">
+            <span class="sd-wb__canvas-toolbar-label">Snap to Grid</span>
+            <div class="sd-wb__toggle sd-wb__toggle--active">
+              <div class="sd-wb__toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT MENTOR PANEL -->
+      <aside class="sd-wb__mentor">
+        <div class="sd-wb__mentor-header">
+          <div class="sd-wb__mentor-header-icon">
+            <span class="material-symbols-outlined">psychology</span>
+          </div>
+          <span class="sd-wb__mentor-header-title">AI Mentor Terminal</span>
+          <div class="sd-wb__mentor-header-dots">
+            <span class="sd-wb__mentor-header-dot"></span>
+            <span class="sd-wb__mentor-header-dot"></span>
+            <span class="sd-wb__mentor-header-dot sd-wb__mentor-header-dot--active"></span>
+          </div>
+        </div>
+
+        <div class="sd-wb__mentor-chat">
+          <!-- Mentor message -->
+          <div class="sd-wb__mentor-msg-label sd-wb__mentor-msg-label--mentor">
+            [MENTOR]
+            <span class="sd-wb__mentor-msg-label-line"></span>
+          </div>
+          <div class="sd-wb__mentor-msg">
+            <p>Good progress on the architecture. Your <strong>Redis caching layer</strong> is well-placed between the API Gateway and the App Servers.</p>
+            <p>Consider the <em>cache invalidation strategy</em> -- are you using TTL-based expiry or event-driven invalidation?</p>
+            <p>Also: <strong>what happens during a traffic spike?</strong> How does your Load Balancer decide which App Server receives the request? Think about health checks and connection draining.</p>
+          </div>
+
+          <!-- User reply placeholder -->
+          <div class="sd-wb__mentor-msg-label sd-wb__mentor-msg-label--you">
+            [YOU]
+            <span class="sd-wb__mentor-msg-label-line"></span>
+          </div>
+          <div class="sd-wb__mentor-placeholder">...</div>
+        </div>
+
+        <div class="sd-wb__mentor-input-area">
+          <div class="sd-wb__mentor-input-row">
+            <span class="sd-wb__mentor-input-prompt">$</span>
+            <input
+              class="sd-wb__mentor-input-field"
+              type="text"
+              placeholder="Type your response..."
+            />
+            <span class="sd-wb__mentor-input-cursor"></span>
+          </div>
+          <div class="sd-wb__mentor-input-footer">
+            <span class="sd-wb__mentor-input-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to send</span>
+            <div class="sd-wb__mentor-input-actions">
+              <button class="sd-wb__mentor-input-action-btn" title="Voice input">
+                <span class="material-symbols-outlined">mic</span>
+              </button>
+              <button class="sd-wb__mentor-input-action-btn" title="Attach file">
+                <span class="material-symbols-outlined">attach_file</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</body>
+</html>
