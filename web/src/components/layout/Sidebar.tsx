@@ -50,11 +50,11 @@ export default function Sidebar({
   return (
     <>
       <aside className="sidebar">
-        <div className="sidebar__icons">
+        <div className="sidebar-nav">
           {icons.map(({ id, icon: Icon }) => (
             <button
               key={id}
-              className={`sidebar__icon ${activePanel === id ? 'sidebar__icon--active' : ''}`}
+              className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}`}
               onClick={() => handleIconClick(id)}
               title={id}
             >
@@ -62,8 +62,8 @@ export default function Sidebar({
             </button>
           ))}
         </div>
-        <div className="sidebar__bottom">
-          <button className="sidebar__icon" title="Settings">
+        <div className="sidebar-footer">
+          <button className="sidebar-nav-item" title="Settings">
             <Settings size={18} />
           </button>
         </div>
@@ -71,13 +71,13 @@ export default function Sidebar({
 
       {activePanel && activePanel !== 'interview' && (
         <div className="sidebar-panel">
-          <div className="sidebar-panel__header">
-            <span>{panelTitles[activePanel]}</span>
-            <button className="sidebar-panel__close" onClick={() => onPanelChange(null)}>
+          <div className="sidebar-panel-header">
+            <span className="sidebar-panel-title">{panelTitles[activePanel]}</span>
+            <button className="sidebar-panel-close" onClick={() => onPanelChange(null)}>
               <X size={16} />
             </button>
           </div>
-          <div className="sidebar-panel__content">
+          <div className="sidebar-panel-content">
             {activePanel === 'problems' && (
               <ProblemList onSelect={onSelectProblem} currentId={currentProblemId} />
             )}

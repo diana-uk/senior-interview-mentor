@@ -81,9 +81,9 @@ const topics: { id: TopicName; label: string }[] = [
 ];
 
 const difficulties: { id: Difficulty; color: string }[] = [
-  { id: 'Easy', color: 'var(--accent-green)' },
-  { id: 'Medium', color: '#eab308' },
-  { id: 'Hard', color: '#f43f5e' },
+  { id: 'Easy', color: 'var(--neon-lime)' },
+  { id: 'Medium', color: 'var(--neon-amber)' },
+  { id: 'Hard', color: 'var(--neon-red)' },
 ];
 
 function getEstimatedDuration(stage: InterviewStage | null, format: TechnicalFormat | null): string {
@@ -184,58 +184,73 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
         : 3;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal launcher-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-backdrop" onClick={handleClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 720 }}>
         {/* Header */}
-        <div className="modal__header">
+        <div className="modal-header">
           <div>
-            <div className="modal__title">Configure New Session</div>
-            <div className="modal__breadcrumb">
-              <span className={`modal__breadcrumb-item ${breadcrumbStep >= 1 ? 'modal__breadcrumb-item--active' : ''}`}>
+            <div className="modal-title">Configure New Session</div>
+            <div className="topnav-breadcrumb" style={{ marginTop: 4 }}>
+              <span className={`topnav-breadcrumb-item ${breadcrumbStep >= 1 ? 'topnav-breadcrumb-current' : ''}`}>
                 Type
               </span>
-              <span className="modal__breadcrumb-sep">
+              <span className="topnav-breadcrumb-sep">
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_right</span>
               </span>
-              <span className={`modal__breadcrumb-item ${breadcrumbStep >= 2 ? 'modal__breadcrumb-item--active' : ''}`}>
+              <span className={`topnav-breadcrumb-item ${breadcrumbStep >= 2 ? 'topnav-breadcrumb-current' : ''}`}>
                 {showSystemDesignSection ? 'Problem' : 'Format'}
               </span>
-              <span className="modal__breadcrumb-sep">
+              <span className="topnav-breadcrumb-sep">
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_right</span>
               </span>
-              <span className={`modal__breadcrumb-item ${breadcrumbStep >= 3 ? 'modal__breadcrumb-item--active' : ''}`}>
+              <span className={`topnav-breadcrumb-item ${breadcrumbStep >= 3 ? 'topnav-breadcrumb-current' : ''}`}>
                 Settings
               </span>
             </div>
           </div>
-          <button className="modal__close" onClick={handleClose}>
+          <button className="modal-close" onClick={handleClose}>
             <X size={18} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="modal__body">
+        <div className="modal-body">
           {/* Section 1: Select Interview Stage */}
-          <div className="modal-section">
-            <div className="modal-section__header">
-              <div className="modal-section__number modal-section__number--active">1</div>
-              <div className="modal-section__title">Select Interview Stage</div>
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+              <div className="progress-step-indicator" style={{ background: 'var(--neon-cyan)', color: 'var(--bg-void)' }}>1</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)' }}>Select Interview Stage</div>
             </div>
-            <div className="stage-grid">
-              {stages.map((s) => (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+              {stages.map((s, i) => (
                 <div
                   key={s.id}
-                  className={`stage-card ${stage === s.id ? 'stage-card--selected' : ''}`}
+                  className={`card card-interactive ${stage === s.id ? 'card-hover-lift' : ''} stagger-enter stagger-${i + 1}`}
                   onClick={() => handleStageSelect(s.id)}
+                  style={{
+                    position: 'relative',
+                    borderColor: stage === s.id ? 'var(--neon-cyan)' : 'var(--border-default)',
+                    background: stage === s.id ? 'var(--neon-cyan-subtle)' : 'var(--bg-elevated)',
+                  }}
                 >
                   {stage === s.id && (
-                    <span className="stage-card__check material-symbols-outlined">check_circle</span>
+                    <span className="material-symbols-outlined" style={{ position: 'absolute', top: 8, right: 8, color: 'var(--neon-cyan)', fontSize: 18 }}>check_circle</span>
                   )}
-                  <div className={`stage-card__icon-wrap ${stage === s.id ? 'stage-card__icon-wrap--active' : 'stage-card__icon-wrap--default'}`}>
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 8,
+                    background: stage === s.id ? 'var(--neon-cyan)' : 'var(--bg-overlay)',
+                    color: stage === s.id ? 'var(--bg-void)' : 'var(--text-muted)',
+                    marginBottom: 12,
+                  }}>
                     <span className="material-symbols-outlined">{s.icon}</span>
                   </div>
-                  <div className="stage-card__title">{s.title}</div>
-                  <div className="stage-card__desc">{s.desc}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)', marginBottom: 4 }}>{s.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{s.desc}</div>
                 </div>
               ))}
             </div>
@@ -244,46 +259,60 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
           {/* Section 2: Format / Category / System Design Problem */}
           {(showFormatSection || showCategorySection || showSystemDesignSection) && (
             <>
-              <div className="modal-divider" />
-              <div className={`modal-section ${section2Active ? '' : 'modal-section--inactive'}`}>
-                <div className="modal-section__header">
-                  <div className={`modal-section__number ${section2Active ? 'modal-section__number--active' : 'modal-section__number--inactive'}`}>2</div>
-                  <div className="modal-section__title">
+              <div className="divider" />
+              <div style={{ marginBottom: 24, opacity: section2Active ? 1 : 0.5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div className="progress-step-indicator" style={{ background: section2Active ? 'var(--neon-cyan)' : 'var(--bg-overlay)', color: section2Active ? 'var(--bg-void)' : 'var(--text-muted)' }}>2</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)' }}>
                     {showCategorySection ? 'Question Category' : showSystemDesignSection ? 'Choose Design Problem' : 'Coding Format'}
                   </div>
                 </div>
 
                 {showFormatSection && (
-                  <div className="format-grid">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {formats.map((f) => (
                       <div
                         key={f.id}
-                        className={`format-card ${format === f.id ? 'format-card--selected' : ''}`}
+                        className="card card-interactive"
                         onClick={() => handleFormatSelect(f.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 16,
+                          borderColor: format === f.id ? 'var(--neon-cyan)' : 'var(--border-default)',
+                          background: format === f.id ? 'var(--neon-cyan-subtle)' : 'var(--bg-elevated)',
+                        }}
                       >
-                        <div className={`format-card__icon ${format === f.id ? 'format-card__icon--active' : 'format-card__icon--default'}`}>
+                        <div style={{
+                          width: 44,
+                          height: 44,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 8,
+                          background: format === f.id ? 'var(--neon-cyan)' : 'var(--bg-overlay)',
+                          color: format === f.id ? 'var(--bg-void)' : 'var(--text-muted)',
+                        }}>
                           <span className="material-symbols-outlined">{f.icon}</span>
                         </div>
-                        <div className="format-card__text">
-                          <h4>{f.title}</h4>
-                          <p>{f.desc} ({f.duration}).</p>
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)', marginBottom: 2 }}>{f.title}</h4>
+                          <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>{f.desc} ({f.duration}).</p>
                         </div>
-                        <div className="format-card__radio">
-                          <span className="material-symbols-outlined">
-                            {format === f.id ? 'radio_button_checked' : 'radio_button_unchecked'}
-                          </span>
-                        </div>
+                        <span className="material-symbols-outlined" style={{ color: format === f.id ? 'var(--neon-cyan)' : 'var(--text-muted)' }}>
+                          {format === f.id ? 'radio_button_checked' : 'radio_button_unchecked'}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {showCategorySection && (
-                  <div className="topic-grid">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {questionCategories.map((c) => (
                       <button
                         key={c.id}
-                        className={`topic-chip ${category === c.id ? 'topic-chip--selected' : ''}`}
+                        className={`btn ${category === c.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                         onClick={() => setCategory(c.id)}
                       >
                         {c.label}
@@ -294,36 +323,51 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
 
                 {showSystemDesignSection && (
                   <>
-                    <div className="sd-problem-grid">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
                       {systemDesignProblems.map((p) => (
                         <div
                           key={p.id}
-                          className={`sd-problem-card ${sdTopic === p.id ? 'sd-problem-card--selected' : ''}`}
+                          className="card card-interactive"
                           onClick={() => {
                             setSdTopic(p.id);
                             if (p.id !== 'custom') setCustomPrompt('');
                           }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 12,
+                            borderColor: sdTopic === p.id ? 'var(--neon-cyan)' : 'var(--border-default)',
+                            background: sdTopic === p.id ? 'var(--neon-cyan-subtle)' : 'var(--bg-elevated)',
+                          }}
                         >
-                          <div className={`sd-problem-card__icon ${sdTopic === p.id ? 'sd-problem-card__icon--active' : ''}`}>
-                            <span className="material-symbols-outlined">{p.icon}</span>
+                          <div style={{
+                            width: 36,
+                            height: 36,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 8,
+                            background: sdTopic === p.id ? 'var(--neon-cyan)' : 'var(--bg-overlay)',
+                            color: sdTopic === p.id ? 'var(--bg-void)' : 'var(--text-muted)',
+                            flexShrink: 0,
+                          }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{p.icon}</span>
                           </div>
-                          <div className="sd-problem-card__text">
-                            <div className="sd-problem-card__title">{p.title}</div>
-                            <div className="sd-problem-card__desc">{p.desc}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-bright)', marginBottom: 2 }}>{p.title}</div>
+                            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{p.desc}</div>
                           </div>
-                          <div className="sd-problem-card__radio">
-                            <span className="material-symbols-outlined">
-                              {sdTopic === p.id ? 'radio_button_checked' : 'radio_button_unchecked'}
-                            </span>
-                          </div>
+                          <span className="material-symbols-outlined" style={{ color: sdTopic === p.id ? 'var(--neon-cyan)' : 'var(--text-muted)', fontSize: 18 }}>
+                            {sdTopic === p.id ? 'radio_button_checked' : 'radio_button_unchecked'}
+                          </span>
                         </div>
                       ))}
                     </div>
 
                     {sdTopic === 'custom' && (
-                      <div className="sd-custom-input">
+                      <div style={{ marginTop: 16 }}>
                         <textarea
-                          className="sd-custom-input__field"
+                          className="input input-mono textarea"
                           placeholder="Describe your system design challenge, e.g. 'Design a ride-sharing service like Uber' or 'Design a video streaming platform like YouTube'..."
                           value={customPrompt}
                           onChange={(e) => setCustomPrompt(e.target.value)}
@@ -340,21 +384,21 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
           {/* Section 3: Topic & Difficulty (technical leetcode only) */}
           {showTopicSection && (
             <>
-              <div className="modal-divider" />
-              <div className={`modal-section ${section3Active ? '' : 'modal-section--inactive'}`}>
-                <div className="modal-section__header">
-                  <div className={`modal-section__number ${section3Active ? 'modal-section__number--active' : 'modal-section__number--inactive'}`}>3</div>
-                  <div className="modal-section__title">Topic & Difficulty</div>
+              <div className="divider" />
+              <div style={{ marginBottom: 24, opacity: section3Active ? 1 : 0.5 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div className="progress-step-indicator" style={{ background: section3Active ? 'var(--neon-cyan)' : 'var(--bg-overlay)', color: section3Active ? 'var(--bg-void)' : 'var(--text-muted)' }}>3</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)' }}>Topic & Difficulty</div>
                 </div>
 
-                <div className="topic-difficulty-grid">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24 }}>
                   <div>
-                    <div className="section-label">Focus Areas</div>
-                    <div className="topic-grid">
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Focus Areas</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {topics.map((t) => (
                         <button
                           key={t.id}
-                          className={`topic-chip ${topic === t.id ? 'topic-chip--selected' : ''}`}
+                          className={`btn ${topic === t.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                           onClick={() => setTopic(t.id)}
                         >
                           {t.label}
@@ -364,16 +408,17 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
                   </div>
 
                   <div>
-                    <div className="section-label">Target Difficulty</div>
-                    <div className="difficulty-list">
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Target Difficulty</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {difficulties.map((d) => (
                         <button
                           key={d.id}
-                          className={`diff-item ${difficulty === d.id ? 'diff-item--selected' : ''}`}
+                          className={`btn ${difficulty === d.id ? 'btn-primary' : 'btn-secondary'}`}
                           onClick={() => setDifficulty(d.id)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}
                         >
                           <span>{d.id}</span>
-                          <span className={`diff-dot diff-dot--${d.id.toLowerCase()}`} />
+                          <span className={`badge badge-${d.id.toLowerCase()}`} style={{ minWidth: 8, height: 8, padding: 0, borderRadius: '50%' }} />
                         </button>
                       ))}
                     </div>
@@ -385,10 +430,10 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
         </div>
 
         {/* Footer */}
-        <div className="modal__footer">
+        <div className="modal-footer">
           <div>
             {stage && (
-              <button className="btn btn--ghost" onClick={() => { reset(); }}>
+              <button className="btn btn-ghost" onClick={() => { reset(); }}>
                 <ArrowLeft size={14} />
                 Back
               </button>
@@ -396,13 +441,13 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {stage && (
-              <div className="modal__footer-info">
-                <div className="modal__footer-info-label">Estimated duration</div>
-                <div className="modal__footer-info-value">{getEstimatedDuration(stage, format)}</div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estimated duration</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{getEstimatedDuration(stage, format)}</div>
               </div>
             )}
             <button
-              className="btn btn--primary btn--launch"
+              className="btn btn-primary btn-glow-pulse"
               disabled={!canStart()}
               onClick={handleStart}
             >

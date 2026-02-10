@@ -46,25 +46,25 @@ const sampleMistakes: MistakeEntry[] = [
 export default function MistakesPanel() {
   return (
     <div>
-      <div className="section-label">Tracked Mistakes ({sampleMistakes.length})</div>
-      {sampleMistakes.map((m) => {
+      <div className="section-label" style={{ marginBottom: 12 }}>Tracked Mistakes ({sampleMistakes.length})</div>
+      {sampleMistakes.map((m, i) => {
         const isOverdue = new Date(m.nextReview) <= new Date();
         return (
-          <div key={m.id} className="mistake-card">
-            <div className="mistake-card__pattern">{m.pattern}</div>
-            <div className="mistake-card__desc">{m.description}</div>
-            <div className="mistake-card__meta">
-              <span style={{ color: isOverdue ? 'var(--accent-red)' : undefined }}>
-                {isOverdue ? 'Review due!' : `Review: ${m.nextReview}`}
-              </span>
-              <div className="streak-dots">
-                {[0, 1, 2, 3, 4].map((i) => (
+          <div key={m.id} className={`card card-interactive stagger-enter stagger-${i + 1}`} style={{ marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span className="badge badge-secondary">{m.pattern}</span>
+              <div className="streak-indicator">
+                {[0, 1, 2, 3, 4].map((idx) => (
                   <span
-                    key={i}
-                    className={`streak-dot ${i < m.streak ? 'streak-dot--filled' : ''}`}
+                    key={idx}
+                    className={`streak-dot ${idx < m.streak ? 'streak-dot-filled' : ''}`}
                   />
                 ))}
               </div>
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-primary)', marginBottom: 8 }}>{m.description}</div>
+            <div style={{ fontSize: 11, color: isOverdue ? 'var(--neon-red)' : 'var(--text-muted)' }}>
+              {isOverdue ? 'Review due!' : `Review: ${m.nextReview}`}
             </div>
           </div>
         );

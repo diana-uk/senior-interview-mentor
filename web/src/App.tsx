@@ -52,9 +52,9 @@ const defaultGate: CommitmentGateItem[] = [
 ];
 
 const defaultHints: HintLevel[] = [
-  { level: 1, label: 'Nudge', description: 'A small push in the right direction', content: 'Think about what data structure lets you look up values in O(1) time. What if you stored the complement?', unlocked: false, color: 'var(--accent-green)' },
-  { level: 2, label: 'Structure', description: 'Data structure + algorithm steps', content: 'Use a HashMap to store each number\'s index as you iterate. For each number, check if (target - num) exists in the map.', unlocked: false, color: 'var(--accent-orange)' },
-  { level: 3, label: 'Pseudocode', description: 'Detailed pseudocode outline', content: '1. Create empty map\n2. For each num at index i:\n   a. complement = target - num\n   b. If complement in map → return [map[complement], i]\n   c. Else → map[num] = i\n3. Return [] (no solution)', unlocked: false, color: 'var(--accent-purple)' },
+  { level: 1, label: 'Nudge', description: 'A small push in the right direction', content: 'Think about what data structure lets you look up values in O(1) time. What if you stored the complement?', unlocked: false, color: 'var(--neon-lime)' },
+  { level: 2, label: 'Structure', description: 'Data structure + algorithm steps', content: 'Use a HashMap to store each number\'s index as you iterate. For each number, check if (target - num) exists in the map.', unlocked: false, color: 'var(--neon-amber)' },
+  { level: 3, label: 'Pseudocode', description: 'Detailed pseudocode outline', content: '1. Create empty map\n2. For each num at index i:\n   a. complement = target - num\n   b. If complement in map → return [map[complement], i]\n   c. Else → map[num] = i\n3. Return [] (no solution)', unlocked: false, color: 'var(--neon-purple)' },
 ];
 
 const questionCategories: { id: string; label: string }[] = [
@@ -393,7 +393,7 @@ export default function App() {
   const progressPercent = currentProblem ? (gateCompleted / commitmentGate.length) * 100 : 0;
 
   return (
-    <div className="app">
+    <div className="app-shell">
       <TopNav
         mode={mode}
         problem={currentProblem}
@@ -403,7 +403,7 @@ export default function App() {
         progressPercent={progressPercent}
       />
 
-      <div className="main-content">
+      <div className="app-body">
         <Sidebar
           activePanel={sidebarPanel}
           onPanelChange={setSidebarPanel}
@@ -451,6 +451,7 @@ export default function App() {
                   hidden={false}
                   interviewStage={interviewStage}
                   systemDesignTopicId={sdTopicId}
+                  onSendMessage={handleSendMessage}
                 />
               }
             />
@@ -480,6 +481,7 @@ export default function App() {
                 hidden={mobileView !== 'editor'}
                 interviewStage={interviewStage}
                 systemDesignTopicId={sdTopicId}
+                onSendMessage={handleSendMessage}
               />
             </>
           )}
@@ -495,13 +497,13 @@ export default function App() {
 
       <div className="mobile-tabs">
         <button
-          className={`mobile-tab ${mobileView === 'chat' ? 'mobile-tab--active' : ''}`}
+          className={`mobile-tab ${mobileView === 'chat' ? 'mobile-tab-active' : ''}`}
           onClick={() => setMobileView('chat')}
         >
           Mentor Chat
         </button>
         <button
-          className={`mobile-tab ${mobileView === 'editor' ? 'mobile-tab--active' : ''}`}
+          className={`mobile-tab ${mobileView === 'editor' ? 'mobile-tab-active' : ''}`}
           onClick={() => setMobileView('editor')}
         >
           Code Editor
@@ -521,8 +523,8 @@ export default function App() {
             bottom: 80,
             left: 60,
             width: 260,
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--border)',
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-default)',
             borderRadius: 12,
             padding: '12px 0',
             zIndex: 50,

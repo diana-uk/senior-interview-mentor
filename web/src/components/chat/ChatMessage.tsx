@@ -6,17 +6,26 @@ import type { ChatMessage } from '../../types';
 
 interface ChatMessageItemProps {
   message: ChatMessage;
+  isNew?: boolean;
 }
 
-export default function ChatMessageItem({ message }: ChatMessageItemProps) {
-  const roleClass = message.role === 'mentor' ? 'chat-message--mentor' : 'chat-message--user';
-  const errorClass = message.isError ? 'chat-message--error' : '';
-  const roleLabel = message.role === 'mentor' ? 'Mentor' : 'You';
+export default function ChatMessageItem({ message, isNew }: ChatMessageItemProps) {
+  const roleClass = message.role === 'mentor' ? 'message-mentor' : 'message-user';
+  const errorClass = message.isError ? 'message-error' : '';
+  const animationClass = isNew ? 'message-enter' : '';
+  const roleLabel = message.role === 'mentor' ? 'M' : 'Y';
 
   return (
-    <div className={`chat-message ${roleClass} ${errorClass}`}>
-      <div className="chat-message__role">{roleLabel}</div>
-      <div className="chat-message__content">
+    <div className={`message ${roleClass} ${errorClass} ${animationClass}`}>
+      <div className="message-header">
+        <div className={`avatar avatar-sm ${message.role === 'mentor' ? 'avatar-mentor' : 'avatar-user'}`}>
+          {roleLabel}
+        </div>
+        <span className="message-time">
+          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
+      </div>
+      <div className="message-content">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -24,7 +33,7 @@ export default function ChatMessageItem({ message }: ChatMessageItemProps) {
               const match = /language-(\w+)/.exec(className || '');
               const inline = !match && !className;
               if (inline) {
-                return <code {...props}>{children}</code>;
+                return <code className="code-inline" {...props}>{children}</code>;
               }
               return (
                 <SyntaxHighlighter
@@ -35,7 +44,8 @@ export default function ChatMessageItem({ message }: ChatMessageItemProps) {
                     margin: '8px 0',
                     borderRadius: '8px',
                     fontSize: '12.5px',
-                    border: '1px solid var(--border)',
+                    border: '1px solid var(--border-default)',
+                    background: 'var(--bg-deep)',
                   }}
                 >
                   {String(children).replace(/\n$/, '')}

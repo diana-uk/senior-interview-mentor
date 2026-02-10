@@ -18,13 +18,18 @@ function formatTime(seconds: number): string {
 
 function getTimerClass(seconds: number, running: boolean): string {
   if (!running) return '';
-  if (seconds > 1800) return 'topnav__timer--green';
-  if (seconds > 600) return 'topnav__timer--orange';
-  return 'topnav__timer--red';
+  if (seconds > 600) return 'interview-timer-safe';
+  if (seconds > 120) return 'interview-timer-warning';
+  return 'interview-timer-danger';
 }
 
 function getDifficultyClass(d: Difficulty): string {
-  return `difficulty-badge difficulty-badge--${d.toLowerCase()}`;
+  return `badge badge-${d.toLowerCase()}`;
+}
+
+function getModeClass(mode: Mode): string {
+  const m = mode.toLowerCase();
+  return `badge badge-pulse badge-${m}`;
 }
 
 export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent }: TopNavProps) {
@@ -33,43 +38,59 @@ export default function TopNav({ mode, problem, timerSeconds, timerRunning, hint
 
   return (
     <nav className="topnav">
-      <div className="topnav__brand">Senior Interview Mentor</div>
+      <div className="topnav-left">
+        <div className="topnav-brand">
+          <div className="topnav-logo">S</div>
+          <span className="topnav-title">Senior Interview Mentor</span>
+        </div>
 
-      <div className="topnav__breadcrumb">
-        {problem ? (
-          <>
-            <span>{problem.title}</span>
-            <span className={getDifficultyClass(problem.difficulty)}>{problem.difficulty}</span>
-          </>
-        ) : (
-          <span>Select a problem to begin</span>
-        )}
+        <div className="topnav-breadcrumb">
+          {problem ? (
+            <>
+              <span className="topnav-breadcrumb-item">{problem.title}</span>
+              <span className={getDifficultyClass(problem.difficulty)}>{problem.difficulty}</span>
+            </>
+          ) : (
+            <span className="topnav-breadcrumb-item">Select a problem to begin</span>
+          )}
+        </div>
       </div>
 
-      <div className="topnav__controls">
+      <div className="topnav-center">
+        <span className={getModeClass(mode)}>
+          {mode}
+        </span>
+      </div>
+
+      <div className="topnav-right">
         {(mode === 'INTERVIEWER' || timerRunning) && (
-          <div className={`topnav__timer ${getTimerClass(timerSeconds, timerRunning)}`}>
-            <Timer size={12} style={{ marginRight: 4, display: 'inline' }} />
-            {formatTime(timerSeconds)}
+          <div className="interview-timer">
+            <Timer size={14} className="interview-timer-icon" />
+            <span className={`interview-timer-value ${getTimerClass(timerSeconds, timerRunning)}`}>
+              {formatTime(timerSeconds)}
+            </span>
           </div>
         )}
 
-        <div className="topnav__control-item">
-          <Lightbulb size={14} />
-          <span>{hintsUsed}/3</span>
+        <div className="hints-badge">
+          <Lightbulb size={14} className="hints-badge-icon" />
+          <span className="hints-badge-count">{hintsUsed}/3</span>
+          <span className="hints-badge-label">hints</span>
         </div>
 
-        <svg className="progress-ring" viewBox="0 0 28 28">
-          <circle className="progress-ring__circle-bg" cx="14" cy="14" r="10" />
-          <circle
-            className="progress-ring__circle"
-            cx="14"
-            cy="14"
-            r="10"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-          />
-        </svg>
+        <div className="progress-ring">
+          <svg viewBox="0 0 28 28" width="28" height="28">
+            <circle className="progress-ring-bg" cx="14" cy="14" r="10" />
+            <circle
+              className="progress-ring-fill"
+              cx="14"
+              cy="14"
+              r="10"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+            />
+          </svg>
+        </div>
       </div>
     </nav>
   );

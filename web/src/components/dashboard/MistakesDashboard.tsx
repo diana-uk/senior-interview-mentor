@@ -35,7 +35,7 @@ const defaultPriorityAreas: PriorityArea[] = [
     icon: 'dynamic_form',
     name: 'Dynamic Programming',
     rubricScore: 42,
-    color: 'var(--accent-orange)',
+    color: 'var(--neon-amber)',
     spacedRepStatus: 'Due in 2 days',
     progressWidth: 80,
     isUrgent: false,
@@ -45,7 +45,7 @@ const defaultPriorityAreas: PriorityArea[] = [
     icon: 'account_tree',
     name: 'Graphs (DFS/BFS)',
     rubricScore: 58,
-    color: 'var(--accent-purple)',
+    color: 'var(--neon-purple)',
     spacedRepStatus: 'Due Today',
     progressWidth: 100,
     isUrgent: true,
@@ -55,7 +55,7 @@ const defaultPriorityAreas: PriorityArea[] = [
     icon: 'rebase_edit',
     name: 'Sliding Window',
     rubricScore: 65,
-    color: 'var(--accent-blue)',
+    color: 'var(--neon-cyan)',
     spacedRepStatus: 'Due in 5 days',
     progressWidth: 30,
     isUrgent: false,
@@ -65,7 +65,7 @@ const defaultPriorityAreas: PriorityArea[] = [
     icon: 'heap_snapshot_thumbnail',
     name: 'Heap / Priority Queue',
     rubricScore: 79,
-    color: 'var(--accent-green)',
+    color: 'var(--neon-lime)',
     spacedRepStatus: 'Mastered',
     progressWidth: 10,
     isUrgent: false,
@@ -231,19 +231,19 @@ export default function MistakesDashboard({
                 </div>
                 <div className="md__trend-legend">
                   <span className="md__trend-legend-item">
-                    <span className="md__trend-legend-dot" style={{ background: 'var(--accent-blue)' }} />
+                    <span className="md__trend-legend-dot" style={{ background: 'var(--neon-cyan)' }} />
                     PROBLEM SOLVING
                   </span>
                   <span className="md__trend-legend-item">
-                    <span className="md__trend-legend-dot" style={{ background: 'var(--accent-green)' }} />
+                    <span className="md__trend-legend-dot" style={{ background: 'var(--neon-lime)' }} />
                     COMMUNICATION
                   </span>
                   <span className="md__trend-legend-item">
-                    <span className="md__trend-legend-dot" style={{ background: 'var(--accent-purple)' }} />
+                    <span className="md__trend-legend-dot" style={{ background: 'var(--neon-purple)' }} />
                     TECHNICAL
                   </span>
                   <span className="md__trend-legend-item">
-                    <span className="md__trend-legend-dot" style={{ background: 'var(--accent-orange)' }} />
+                    <span className="md__trend-legend-dot" style={{ background: 'var(--neon-amber)' }} />
                     EDGE CASES
                   </span>
                 </div>
@@ -253,7 +253,7 @@ export default function MistakesDashboard({
                   {/* Grid lines */}
                   <defs>
                     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--border)" strokeWidth="0.5" opacity="0.3" />
+                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="var(--border-default)" strokeWidth="0.5" opacity="0.3" />
                     </pattern>
                   </defs>
                   <rect width="960" height="320" fill="url(#grid)" />
@@ -269,7 +269,7 @@ export default function MistakesDashboard({
                   <polyline
                     points="40,240 160,220 280,200 400,180 520,160 640,130 760,100 880,60"
                     fill="none"
-                    stroke="var(--accent-blue)"
+                    stroke="var(--neon-cyan)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -279,7 +279,7 @@ export default function MistakesDashboard({
                   <polyline
                     points="40,260 160,250 280,230 400,210 520,180 640,160 760,130 880,90"
                     fill="none"
-                    stroke="var(--accent-green)"
+                    stroke="var(--neon-lime)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -289,7 +289,7 @@ export default function MistakesDashboard({
                   <polyline
                     points="40,280 160,260 280,240 400,220 520,200 640,180 760,160 880,130"
                     fill="none"
-                    stroke="var(--accent-purple)"
+                    stroke="var(--neon-purple)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -299,21 +299,21 @@ export default function MistakesDashboard({
                   <polyline
                     points="40,300 160,290 280,270 400,260 520,240 640,220 760,200 880,170"
                     fill="none"
-                    stroke="var(--accent-orange)"
+                    stroke="var(--neon-amber)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
 
                   {/* Dots at endpoints */}
-                  <circle cx="40" cy="240" r="4" fill="var(--accent-blue)" />
-                  <circle cx="880" cy="60" r="4" fill="var(--accent-blue)" />
-                  <circle cx="40" cy="260" r="4" fill="var(--accent-green)" />
-                  <circle cx="880" cy="90" r="4" fill="var(--accent-green)" />
-                  <circle cx="40" cy="280" r="4" fill="var(--accent-purple)" />
-                  <circle cx="880" cy="130" r="4" fill="var(--accent-purple)" />
-                  <circle cx="40" cy="300" r="4" fill="var(--accent-orange)" />
-                  <circle cx="880" cy="170" r="4" fill="var(--accent-orange)" />
+                  <circle cx="40" cy="240" r="4" fill="var(--neon-cyan)" />
+                  <circle cx="880" cy="60" r="4" fill="var(--neon-cyan)" />
+                  <circle cx="40" cy="260" r="4" fill="var(--neon-lime)" />
+                  <circle cx="880" cy="90" r="4" fill="var(--neon-lime)" />
+                  <circle cx="40" cy="280" r="4" fill="var(--neon-purple)" />
+                  <circle cx="880" cy="130" r="4" fill="var(--neon-purple)" />
+                  <circle cx="40" cy="300" r="4" fill="var(--neon-amber)" />
+                  <circle cx="880" cy="170" r="4" fill="var(--neon-amber)" />
                 </svg>
                 <div className="md__chart-xaxis">
                   <span>30 Days ago</span>

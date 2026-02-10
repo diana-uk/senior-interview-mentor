@@ -106,7 +106,7 @@ export default function SystemDesignRouter({
       return (
         <div className="sd-text-phase">
           <PhaseProgressSidebar {...sidebarProps} />
-          <div className="sd-text-phase__workspace">
+          <div className="sd-text-phase-workspace">
             {chatPanel}
             {editorPanel}
           </div>

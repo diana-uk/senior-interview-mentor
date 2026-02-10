@@ -19,6 +19,7 @@ interface EditorPanelProps {
   hidden?: boolean;
   interviewStage?: InterviewStage | null;
   systemDesignTopicId?: SystemDesignTopicId | null;
+  onSendMessage?: (message: string) => void;
 }
 
 const tabs: { id: EditorTab; label: string }[] = [
@@ -48,6 +49,7 @@ export default function EditorPanel({
   hidden,
   interviewStage,
   systemDesignTopicId,
+  onSendMessage,
 }: EditorPanelProps) {
   const isSystemDesign = interviewStage === 'system-design';
   const currentTabs = isSystemDesign ? sdTabs : tabs;
@@ -63,22 +65,39 @@ export default function EditorPanel({
   const editorLanguage = activeTab === 'notes' ? 'markdown' : 'typescript';
 
   return (
-    <div className={`panel-editor ${hidden ? 'panel-hidden' : ''}`}>
-      <div className="editor-tabs">
-        {currentTabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`editor-tab ${activeTab === tab.id ? 'editor-tab--active' : ''}`}
-            onClick={() => onTabChange(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <div className={`editor-panel ${hidden ? 'panel-hidden' : ''}`}>
+      <div className="editor-header">
+        <div className="editor-tabs">
+          {currentTabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`editor-tab ${activeTab === tab.id ? 'editor-tab-active' : ''}`}
+              onClick={() => onTabChange(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div className="editor-actions">
+          {!isSystemDesign && (
+            <button className="btn btn-primary btn-sm" onClick={onRunTests}>
+              <Play size={14} />
+              Run Tests
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="editor-content">
         {isSystemDesign && activeTab === 'solution' ? (
-          <SystemDesignEditor value={code} onChange={onCodeChange} topicId={systemDesignTopicId ?? 'url-shortener'} />
+          <SystemDesignEditor
+            value={code}
+            onChange={onCodeChange}
+            topicId={systemDesignTopicId ?? 'url-shortener'}
+            onSubmitSection={onSendMessage ? (title, content) => {
+              onSendMessage(`**${title}:**\n\n${content}\n\nPlease review my ${title.toLowerCase()} section and provide feedback.`);
+            } : undefined}
+          />
         ) : (
           <Editor
             height="100%"
@@ -88,7 +107,7 @@ export default function EditorPanel({
             onChange={(value) => currentHandler(value ?? '')}
             options={{
               fontSize: 13,
-              fontFamily: "'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace",
+              fontFamily: "'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace",
               fontLigatures: true,
               minimap: { enabled: false },
               lineNumbers: 'on',
@@ -105,19 +124,12 @@ export default function EditorPanel({
             }}
           />
         )}
-
-        {!isSystemDesign && (
-          <button className="run-tests-btn" onClick={onRunTests}>
-            <Play size={14} />
-            Run Tests
-          </button>
-        )}
       </div>
 
       {!isSystemDesign && (
-        <div className="console-panel" style={{ height: consoleOpen ? 200 : 36 }}>
-          <div className="console-header" onClick={onToggleConsole}>
-            <span className="console-header__title">
+        <div className="editor-console" style={{ height: consoleOpen ? 200 : 36 }}>
+          <div className="editor-console-header" onClick={onToggleConsole}>
+            <span className="editor-console-title">
               {consoleOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
               Output
               {totalCount > 0 && (
@@ -128,25 +140,34 @@ export default function EditorPanel({
             </span>
           </div>
           {consoleOpen && (
-            <div className="console-body">
+            <div className="editor-console-content">
               {testResults.length === 0 ? (
-                <div style={{ color: 'var(--text-secondary)', fontSize: 12, padding: 8 }}>
-                  Run tests to see results here.
+                <div className="empty-state" style={{ padding: '16px' }}>
+                  <div className="empty-state-description">Run tests to see results here.</div>
                 </div>
               ) : (
                 testResults.map((test, i) => (
-                  <div key={i} className="test-result">
-                    {test.passed ? (
-                      <CheckCircle2 size={14} className="test-result__icon--pass" />
-                    ) : (
-                      <XCircle size={14} className="test-result__icon--fail" />
-                    )}
-                    <span className="test-result__label">Test {i + 1}: {test.input}</span>
-                    <span className="test-result__expected">
-                      {test.passed
-                        ? `= ${test.expected}`
-                        : `Expected: ${test.expected}${test.actual ? ` | Got: ${test.actual}` : ''}`}
-                    </span>
+                  <div key={i} className={`test-result ${test.passed ? 'test-result-pass' : 'test-result-fail'} test-result-enter`}>
+                    <div className="test-result-icon">
+                      {test.passed ? (
+                        <CheckCircle2 size={14} />
+                      ) : (
+                        <XCircle size={14} />
+                      )}
+                    </div>
+                    <div className="test-result-content">
+                      <div className="test-result-input">Test {i + 1}: {test.input}</div>
+                      <div className="test-result-output">
+                        <span className="test-result-expected">
+                          <span className="test-result-label">Expected: </span>{test.expected}
+                        </span>
+                        {!test.passed && test.actual && (
+                          <span className="test-result-actual">
+                            <span className="test-result-label">Got: </span>{test.actual}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))
               )}
