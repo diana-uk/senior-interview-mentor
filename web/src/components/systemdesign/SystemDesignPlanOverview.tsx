@@ -14,7 +14,7 @@ const PHASE_STEPS: {
     title: 'Requirements & Scope',
     description: 'Clarify functional and non-functional requirements. Define scope, estimate scale, and identify key constraints.',
     icon: 'checklist',
-    accentColor: 'var(--accent-blue)',
+    accentColor: 'var(--neon-cyan)',
     accentBg: 'rgba(88, 166, 255, 0.10)',
   },
   {
@@ -22,7 +22,7 @@ const PHASE_STEPS: {
     title: 'API Design',
     description: 'Define REST endpoints, request/response contracts, status codes, and error handling patterns.',
     icon: 'api',
-    accentColor: 'var(--accent-green)',
+    accentColor: 'var(--neon-lime)',
     accentBg: 'rgba(63, 185, 80, 0.10)',
   },
   {
@@ -30,7 +30,7 @@ const PHASE_STEPS: {
     title: 'Data Model & Storage',
     description: 'Design schemas, choose databases, plan indexing strategy and data partitioning.',
     icon: 'database',
-    accentColor: 'var(--accent-orange)',
+    accentColor: 'var(--neon-amber)',
     accentBg: 'rgba(210, 153, 34, 0.10)',
   },
   {
@@ -38,7 +38,7 @@ const PHASE_STEPS: {
     title: 'High-Level Architecture',
     description: 'Describe components, services, data flow, and inter-service communication patterns.',
     icon: 'account_tree',
-    accentColor: 'var(--accent-purple)',
+    accentColor: 'var(--neon-purple)',
     accentBg: 'rgba(163, 113, 247, 0.10)',
   },
   {
@@ -139,8 +139,8 @@ export default function SystemDesignPlanOverview({
                     <div
                       className="sd-overview__step-dot"
                       style={{
-                        borderColor: isCompleted ? 'var(--accent-green)' : isLocked ? 'var(--border)' : step.accentColor,
-                        background: isCompleted ? 'var(--accent-green)' : 'var(--bg-primary)',
+                        borderColor: isCompleted ? 'var(--neon-lime)' : isLocked ? 'var(--border-default)' : step.accentColor,
+                        background: isCompleted ? 'var(--neon-lime)' : 'var(--bg-surface)',
                       }}
                     >
                       {isCompleted && <Check size={12} color="white" />}
@@ -151,7 +151,7 @@ export default function SystemDesignPlanOverview({
                       <div
                         className="sd-overview__step-line"
                         style={{
-                          background: isCompleted ? 'var(--accent-green)' : 'var(--border)',
+                          background: isCompleted ? 'var(--neon-lime)' : 'var(--border-default)',
                         }}
                       />
                     )}
@@ -161,11 +161,11 @@ export default function SystemDesignPlanOverview({
                   <div
                     className="sd-overview__step-card"
                     style={{
-                      borderLeftColor: isLocked ? 'var(--border)' : step.accentColor,
+                      borderLeftColor: isLocked ? 'var(--border-default)' : step.accentColor,
                     }}
                   >
                     <div className="sd-overview__step-header">
-                      <div className="sd-overview__step-icon" style={{ background: isLocked ? 'var(--bg-tertiary)' : step.accentBg, color: isLocked ? 'var(--text-secondary)' : step.accentColor }}>
+                      <div className="sd-overview__step-icon" style={{ background: isLocked ? 'var(--bg-overlay)' : step.accentBg, color: isLocked ? 'var(--text-secondary)' : step.accentColor }}>
                         <span className="material-symbols-outlined">{step.icon}</span>
                       </div>
                       <div className="sd-overview__step-info">

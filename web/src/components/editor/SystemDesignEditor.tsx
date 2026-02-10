@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronDown, ChevronRight, Send } from 'lucide-react';
 import type { SystemDesignTopicId } from '../../types';
 
 interface SystemDesignEditorProps {
   value: string;
   onChange: (value: string) => void;
   topicId: SystemDesignTopicId;
+  onSubmitSection?: (sectionTitle: string, content: string) => void;
 }
 
 interface Section {
@@ -122,12 +123,11 @@ const placeholdersByTopic: Record<SystemDesignTopicId, PlaceholderSet> = {
   },
 };
 
-export default function SystemDesignEditor({ value, onChange, topicId }: SystemDesignEditorProps) {
-  const parsed = parseSections(value);
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+export default function SystemDesignEditor({ value, onChange, topicId, onSubmitSection }: SystemDesignEditorProps) {
   const placeholders = placeholdersByTopic[topicId] || placeholdersByTopic['custom'];
 
-  function parseSections(raw: string): Record<string, string> {
+  // Parse initial value into sections
+  const parseSections = useCallback((raw: string): Record<string, string> => {
     const result: Record<string, string> = {};
     if (!raw) return result;
 
@@ -144,7 +144,26 @@ export default function SystemDesignEditor({ value, onChange, topicId }: SystemD
       }
     }
     return result;
-  }
+  }, []);
+
+  // Local state for each section to prevent cursor jumping
+  const [localSections, setLocalSections] = useState<Record<string, string>>(() => parseSections(value));
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync from parent value only on initial mount or external changes
+  const lastValueRef = useRef(value);
+  useEffect(() => {
+    if (value !== lastValueRef.current) {
+      const parsed = parseSections(value);
+      // Only update if significantly different (not from our own changes)
+      const currentSerialized = serializeSections(localSections);
+      if (value !== currentSerialized) {
+        setLocalSections(parsed);
+      }
+      lastValueRef.current = value;
+    }
+  }, [value, parseSections, localSections]);
 
   function serializeSections(data: Record<string, string>): string {
     return sections
@@ -152,33 +171,67 @@ export default function SystemDesignEditor({ value, onChange, topicId }: SystemD
       .join('\n\n');
   }
 
+  // Debounced sync to parent
   function handleSectionChange(sectionId: string, content: string) {
-    const updated = { ...parsed, [sectionId]: content };
-    onChange(serializeSections(updated));
+    // Update local state immediately (no cursor jumping)
+    setLocalSections(prev => ({ ...prev, [sectionId]: content }));
+
+    // Debounce sync to parent
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+    syncTimeoutRef.current = setTimeout(() => {
+      const updated = { ...localSections, [sectionId]: content };
+      const serialized = serializeSections(updated);
+      lastValueRef.current = serialized;
+      onChange(serialized);
+    }, 300);
   }
 
   function toggleCollapse(id: string) {
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
-  const filledCount = sections.filter((s) => (parsed[s.id] || '').trim().length > 0).length;
+  function handleSubmitSection(section: Section) {
+    const content = localSections[section.id] || '';
+    if (content.trim() && onSubmitSection) {
+      onSubmitSection(section.title, content.trim());
+    }
+  }
+
+  // Calculate which sections are unlocked (progressive reveal)
+  const getUnlockedSections = () => {
+    const unlocked: string[] = [];
+    for (const section of sections) {
+      unlocked.push(section.id);
+      const content = localSections[section.id] || '';
+      // If this section is empty, don't unlock further sections
+      if (!content.trim()) {
+        break;
+      }
+    }
+    return unlocked;
+  };
+
+  const unlockedSections = getUnlockedSections();
+  const filledCount = sections.filter((s) => (localSections[s.id] || '').trim().length > 0).length;
 
   return (
     <div className="sd-editor">
       {/* Header with progress */}
-      <div className="sd-editor__header">
-        <div className="sd-editor__header-top">
+      <div className="sd-editor-header">
+        <div className="sd-editor-header-top">
           <div>
-            <div className="sd-editor__title">System Design Workspace</div>
-            <div className="sd-editor__subtitle">
+            <div className="sd-editor-title">System Design Workspace</div>
+            <div className="sd-editor-subtitle">
               Fill out each section below. Describe components, data flow, and tradeoffs in plain text.
             </div>
           </div>
-          <div className="sd-editor__progress">
-            <div className="sd-editor__progress-label">{filledCount}/{sections.length} sections</div>
-            <div className="sd-editor__progress-track">
+          <div className="sd-editor-progress">
+            <div className="sd-editor-progress-label">{filledCount}/{sections.length} sections</div>
+            <div className="progress-bar" style={{ width: 120 }}>
               <div
-                className="sd-editor__progress-fill"
+                className="progress-bar-fill"
                 style={{ width: `${(filledCount / sections.length) * 100}%` }}
               />
             </div>
@@ -187,51 +240,86 @@ export default function SystemDesignEditor({ value, onChange, topicId }: SystemD
       </div>
 
       {/* Sections */}
-      <div className="sd-editor__sections">
-        {sections.map((section) => {
+      <div className="sd-editor-sections">
+        {sections.map((section, i) => {
+          const isUnlocked = unlockedSections.includes(section.id);
           const isCollapsed = collapsed[section.id];
-          const content = parsed[section.id] || '';
+          const content = localSections[section.id] || '';
           const hasContent = content.trim().length > 0;
 
+          if (!isUnlocked) {
+            // Show locked section placeholder
+            return (
+              <div key={section.id} className="sd-section sd-section-locked stagger-enter stagger-${i + 1}">
+                <div className="sd-section-header sd-section-header-locked">
+                  <div className="sd-section-left">
+                    <div className="sd-section-step sd-section-step-locked">
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>lock</span>
+                    </div>
+                    <span className="material-symbols-outlined sd-section-icon sd-section-icon-locked">
+                      {section.icon}
+                    </span>
+                    <span className="sd-section-title sd-section-title-locked">{section.title}</span>
+                  </div>
+                  <div className="sd-section-right">
+                    <span className="badge badge-muted">Complete previous section</span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
           return (
-            <div key={section.id} className={`sd-section ${hasContent ? 'sd-section--filled' : ''}`}>
+            <div key={section.id} className={`sd-section ${hasContent ? 'sd-section-filled' : ''} stagger-enter stagger-${i + 1}`}>
               <div
-                className="sd-section__header"
+                className="sd-section-header"
                 onClick={() => toggleCollapse(section.id)}
               >
-                <div className="sd-section__left">
-                  <div className={`sd-section__step ${hasContent ? 'sd-section__step--done' : ''}`}>
+                <div className="sd-section-left">
+                  <div className={`sd-section-step ${hasContent ? 'sd-section-step-done' : ''}`}>
                     {hasContent ? (
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>check</span>
                     ) : (
                       section.step
                     )}
                   </div>
-                  <span className={`material-symbols-outlined sd-section__icon ${hasContent ? 'sd-section__icon--filled' : ''}`}>
+                  <span className={`material-symbols-outlined sd-section-icon ${hasContent ? 'sd-section-icon-filled' : ''}`}>
                     {section.icon}
                   </span>
-                  <span className="sd-section__title">{section.title}</span>
+                  <span className="sd-section-title">{section.title}</span>
                 </div>
-                <div className="sd-section__right">
-                  {hasContent && <span className="sd-section__badge">filled</span>}
+                <div className="sd-section-right">
+                  {hasContent && <span className="badge badge-success">filled</span>}
                   {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
                 </div>
               </div>
 
               {!isCollapsed && (
-                <div className="sd-section__body">
-                  <div className="sd-section__hint">
+                <div className="sd-section-body">
+                  <div className="sd-section-hint">
                     <span className="material-symbols-outlined" style={{ fontSize: 14 }}>info</span>
                     {section.hint}
                   </div>
                   <textarea
-                    className="sd-section__textarea"
+                    className="input input-mono textarea"
                     value={content}
                     onChange={(e) => handleSectionChange(section.id, e.target.value)}
                     placeholder={placeholders[section.id] || ''}
                     rows={10}
                     spellCheck={false}
                   />
+                  {onSubmitSection && (
+                    <div className="sd-section-actions">
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleSubmitSection(section)}
+                        disabled={!content.trim()}
+                      >
+                        <Send size={14} />
+                        Submit for Review
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

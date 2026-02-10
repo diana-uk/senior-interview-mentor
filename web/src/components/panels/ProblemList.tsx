@@ -49,12 +49,6 @@ const problemsByPattern: Record<string, ProblemEntry[]> = {
   ],
 };
 
-const difficultyColors: Record<Difficulty, string> = {
-  Easy: 'var(--accent-green)',
-  Medium: 'var(--accent-orange)',
-  Hard: 'var(--accent-red)',
-};
-
 interface ProblemListProps {
   onSelect: (id: string) => void;
   currentId: string | null;
@@ -63,22 +57,35 @@ interface ProblemListProps {
 export default function ProblemList({ onSelect, currentId }: ProblemListProps) {
   return (
     <div>
-      {Object.entries(problemsByPattern).map(([pattern, problems]) => (
-        <div key={pattern} className="problem-group">
-          <div className="problem-group__title">{pattern}</div>
-          {problems.map((p) => (
-            <div
-              key={p.id}
-              className={`problem-item ${currentId === p.id ? 'problem-item--active' : ''}`}
-              onClick={() => onSelect(p.id)}
-            >
-              <span className="problem-item__title">{p.title}</span>
-              <span
-                className="problem-item__badge"
-                style={{ background: difficultyColors[p.difficulty] }}
-              />
-            </div>
-          ))}
+      {Object.entries(problemsByPattern).map(([pattern, problems], groupIndex) => (
+        <div key={pattern} className={`card stagger-enter stagger-${groupIndex + 1}`} style={{ marginBottom: 12 }}>
+          <div className="card-header" style={{ marginBottom: 8, paddingBottom: 8 }}>
+            <span className="card-title" style={{ fontSize: 13 }}>{pattern}</span>
+          </div>
+          <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {problems.map((p) => (
+              <div
+                key={p.id}
+                className={`card card-interactive ${currentId === p.id ? 'card-hover-lift' : ''}`}
+                onClick={() => onSelect(p.id)}
+                style={{
+                  padding: '8px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: currentId === p.id ? 'var(--neon-cyan-subtle)' : 'var(--bg-elevated)',
+                  borderColor: currentId === p.id ? 'var(--neon-cyan)' : 'var(--border-default)',
+                }}
+              >
+                <span style={{ fontSize: 13, color: currentId === p.id ? 'var(--text-bright)' : 'var(--text-primary)' }}>
+                  {p.title}
+                </span>
+                <span className={`badge badge-${p.difficulty.toLowerCase()}`}>
+                  {p.difficulty}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>

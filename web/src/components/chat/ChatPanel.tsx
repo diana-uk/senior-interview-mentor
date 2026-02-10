@@ -49,37 +49,39 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
   const modeClass = mode.toLowerCase();
 
   return (
-    <div className={`panel-chat ${hidden ? 'panel-hidden' : ''}`}>
+    <div className={`chat-panel ${hidden ? 'panel-hidden' : ''}`}>
       <div className="chat-header">
-        <span className={`mode-badge mode-badge--${modeClass}`}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />
-          {mode}
-        </span>
+        <div className="chat-header-left">
+          <span className="chat-header-label">Mentor Chat</span>
+          <span className={`badge badge-pulse badge-${modeClass}`}>
+            {mode}
+          </span>
+        </div>
         {mode === 'INTERVIEWER' && (
           <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Interview in progress</span>
         )}
       </div>
 
       <div className="chat-messages">
-        {messages.map((msg) => (
-          <ChatMessageItem key={msg.id} message={msg} />
+        {messages.map((msg, i) => (
+          <ChatMessageItem key={msg.id} message={msg} isNew={i === messages.length - 1} />
         ))}
         {isStreaming && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.content === '' && (
-          <div className="streaming-indicator">
-            <span className="streaming-dot" />
-            <span className="streaming-dot" />
-            <span className="streaming-dot" />
+          <div className="typing-indicator">
+            <span className="typing-dot" />
+            <span className="typing-dot" />
+            <span className="typing-dot" />
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="chat-input-area">
-        <div className="chat-slash-commands">
+        <div className="chat-quick-actions">
           {slashCommands.map((cmd) => (
             <button
               key={cmd}
-              className="slash-cmd"
+              className="chat-quick-action"
               onClick={() => {
                 setInput(cmd + ' ');
                 inputRef.current?.focus();
@@ -103,7 +105,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
           />
           {isStreaming ? (
             <button
-              className="chat-stop-btn"
+              className="btn btn-ghost btn-icon"
               onClick={onStopStreaming}
               title="Stop generating"
             >

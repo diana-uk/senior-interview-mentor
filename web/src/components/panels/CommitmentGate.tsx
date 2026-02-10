@@ -17,47 +17,52 @@ export default function CommitmentGate({ open, onClose, items, onToggle }: Commi
 
   return (
     <div className="commitment-gate">
-      <div className="commitment-gate__header">
+      <div className="commitment-gate-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div className="commitment-gate__title">Commitment Gate</div>
-          <button className="sidebar-panel__close" onClick={onClose}>
+          <div className="commitment-gate-title">Commitment Gate</div>
+          <button className="sidebar-panel-close" onClick={onClose}>
             <X size={16} />
           </button>
         </div>
-        <div className="commitment-gate__progress">
+        <div className="commitment-gate-subtitle">
+          Complete all items before viewing the solution
+        </div>
+        <div className="progress-bar" style={{ marginTop: 12 }}>
           <div
-            className="commitment-gate__progress-bar"
+            className={`progress-bar-fill ${allComplete ? 'progress-bar-fill-success' : ''}`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
-      <div className="commitment-gate__items">
-        {items.map((item) => (
-          <div key={item.id} className="gate-item" onClick={() => onToggle(item.id)}>
-            <div className={`gate-checkbox ${item.completed ? 'gate-checkbox--checked' : ''}`}>
-              {item.completed && <Check size={12} color="#0d1117" strokeWidth={3} />}
+      <div className="commitment-gate-items">
+        {items.map((item, i) => (
+          <div
+            key={item.id}
+            className={`commitment-gate-item ${item.completed ? 'commitment-gate-item-complete' : ''} stagger-enter stagger-${i + 1}`}
+            onClick={() => onToggle(item.id)}
+          >
+            <div className="commitment-gate-checkbox">
+              {item.completed && <Check size={14} strokeWidth={3} />}
             </div>
-            <div>
-              <div className="gate-item__label">{item.label}</div>
-              <div className="gate-item__desc">{item.description}</div>
+            <div className="commitment-gate-item-content">
+              <div className="commitment-gate-item-label">{item.label}</div>
+              <div className="commitment-gate-item-description">{item.description}</div>
             </div>
           </div>
         ))}
       </div>
 
       {!allComplete && (
-        <div className="gate-locked">
-          <div className="gate-locked__icon">
-            <Lock size={20} />
-          </div>
-          Complete all items to unlock the solution
+        <div className="empty-state" style={{ padding: '24px 20px' }}>
+          <Lock size={24} className="empty-state-icon" style={{ opacity: 0.5 }} />
+          <div className="empty-state-description">Complete all items to unlock the solution</div>
         </div>
       )}
 
       {allComplete && (
         <div style={{ padding: '16px 20px' }}>
-          <button className="btn btn--primary" style={{ width: '100%', justifyContent: 'center' }}>
+          <button className="btn btn-primary btn-glow-pulse" style={{ width: '100%', justifyContent: 'center' }}>
             Solution Unlocked — View Full Code
           </button>
         </div>

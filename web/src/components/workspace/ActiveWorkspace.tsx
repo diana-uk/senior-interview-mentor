@@ -83,7 +83,7 @@ export default function ActiveWorkspace({
         {/* Left Panel: AI Mentor */}
         <div className="aw__panel aw__panel--mentor">
           <div className="aw__panel-header">
-            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--accent-blue)' }}>psychology</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--neon-cyan)' }}>psychology</span>
             <span className="aw__panel-title">AI Mentor</span>
           </div>
 
@@ -100,9 +100,9 @@ export default function ActiveWorkspace({
               <div className="aw__hint-list">
                 {hints.map((hint) => {
                   const levelColors: Record<number, string> = {
-                    1: 'var(--accent-green)',
-                    2: 'var(--accent-orange)',
-                    3: 'var(--accent-purple)',
+                    1: 'var(--neon-lime)',
+                    2: 'var(--neon-amber)',
+                    3: 'var(--neon-purple)',
                   };
                   const color = levelColors[hint.level];
                   return (
