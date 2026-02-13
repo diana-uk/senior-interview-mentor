@@ -93,6 +93,17 @@ export interface ChatMessage {
   isError?: boolean;
 }
 
+export interface MemoryContext {
+  hintStyle: 'analogies' | 'pseudocode' | 'visual' | 'direct';
+  detailLevel: 'brief' | 'balanced' | 'detailed';
+  solvedProblems: { title: string; pattern: string; difficulty: string }[];
+  weakPatterns: { pattern: string; mistakeCount: number; avgScore: number }[];
+  strongPatterns: { pattern: string; solveCount: number; avgScore: number }[];
+  recentMistakes: { problem: string; description: string }[];
+  totalSolved: number;
+  currentStreak: number;
+}
+
 export interface ChatContext {
   mode: Mode;
   currentProblem: {
@@ -106,6 +117,7 @@ export interface ChatContext {
   commitmentGateCompleted: number;
   interviewStage: string | null;
   technicalQuestionCategory?: TechnicalQuestionCategory;
+  memory?: MemoryContext;
 }
 
 export interface CommitmentGateItem {

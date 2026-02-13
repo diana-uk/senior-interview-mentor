@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'sim-settings';
 
+export type HintStyle = 'analogies' | 'pseudocode' | 'visual' | 'direct';
+export type DetailLevel = 'brief' | 'balanced' | 'detailed';
+
 export interface UserSettings {
   language: 'typescript' | 'javascript';
   editorFontSize: number;
@@ -12,6 +15,8 @@ export interface UserSettings {
   notifyDailyReminder: boolean;
   notifyStreakAlert: boolean;
   reminderTime: string; // HH:MM format
+  hintStyle: HintStyle;
+  detailLevel: DetailLevel;
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -24,6 +29,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   notifyDailyReminder: false,
   notifyStreakAlert: false,
   reminderTime: '09:00',
+  hintStyle: 'pseudocode',
+  detailLevel: 'balanced',
 };
 
 function loadSettings(): UserSettings {
@@ -238,6 +245,74 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
 
           <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 8 }}>
             Browser notifications require permission. Alerts are local only.
+          </div>
+        </div>
+      </div>
+
+      {/* AI Memory */}
+      <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card-header" style={{ marginBottom: 8 }}>
+          <span className="card-title" style={{ fontSize: 12 }}>AI Memory</span>
+        </div>
+        <div className="card-body">
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+              Hint Style
+            </label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {([
+                { value: 'analogies', label: 'Analogies' },
+                { value: 'pseudocode', label: 'Pseudocode' },
+                { value: 'visual', label: 'Visual' },
+                { value: 'direct', label: 'Direct' },
+              ] as const).map(({ value, label }) => (
+                <button
+                  key={value}
+                  className={`btn ${settings.hintStyle === value ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                  onClick={() => update('hintStyle', value)}
+                  style={{ flex: 1, minWidth: 70, fontSize: 10 }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>
+              {settings.hintStyle === 'analogies' && 'Hints use real-world analogies to explain concepts.'}
+              {settings.hintStyle === 'pseudocode' && 'Hints use pseudocode outlines and step-by-step logic.'}
+              {settings.hintStyle === 'visual' && 'Hints use diagrams, ASCII art, and visual examples.'}
+              {settings.hintStyle === 'direct' && 'Hints are concise and to the point — minimal framing.'}
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+              Detail Level
+            </label>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {([
+                { value: 'brief', label: 'Brief' },
+                { value: 'balanced', label: 'Balanced' },
+                { value: 'detailed', label: 'Detailed' },
+              ] as const).map(({ value, label }) => (
+                <button
+                  key={value}
+                  className={`btn ${settings.detailLevel === value ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                  onClick={() => update('detailLevel', value)}
+                  style={{ flex: 1, fontSize: 10 }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>
+              {settings.detailLevel === 'brief' && 'Short, focused responses. Just the essentials.'}
+              {settings.detailLevel === 'balanced' && 'Standard explanations with context and examples.'}
+              {settings.detailLevel === 'detailed' && 'Thorough explanations with deep dives and alternatives.'}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 8, borderTop: '1px solid var(--border-default)', paddingTop: 6 }}>
+            The AI remembers your progress, weak patterns, and recent mistakes to personalize coaching across sessions.
           </div>
         </div>
       </div>
