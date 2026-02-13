@@ -29,10 +29,15 @@
   --border-subtle: rgba(255, 255, 255, 0.04);
   --border-default: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.12);
+  --border-emphasis: rgba(255, 255, 255, 0.18);
   --border-focus: rgba(0, 240, 255, 0.5);
+
+  /* Inset / recessed surfaces */
+  --bg-inset: #0a0a12;
 
   /* Primary Accent - Neon Cyan */
   --neon-cyan: #00f0ff;
+  --neon-cyan-bright: #33f5ff;
   --neon-cyan-dim: #00a8b3;
   --neon-cyan-glow: rgba(0, 240, 255, 0.3);
   --neon-cyan-subtle: rgba(0, 240, 255, 0.1);
@@ -79,6 +84,9 @@
   --color-warning: var(--neon-amber);
   --color-error: var(--neon-red);
   --color-info: var(--neon-cyan);
+
+  /* Accent aliases */
+  --accent-blue: var(--neon-cyan);
 
   /* Difficulty Colors */
   --difficulty-easy: var(--neon-lime);
@@ -264,6 +272,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Form elements don't inherit color/font by default — force inheritance
+   so text is visible on dark backgrounds instead of using OS system colors */
+button, input, select, textarea, optgroup, option {
+  color: inherit;
+  font: inherit;
 }
 
 html {

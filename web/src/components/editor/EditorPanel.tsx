@@ -1,7 +1,45 @@
+import { useState, useRef } from 'react';
 import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
-import Editor from '@monaco-editor/react';
-import type { EditorTab, TestCase, InterviewStage, SystemDesignTopicId } from '../../types';
+import Editor, { type BeforeMount } from '@monaco-editor/react';
+import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import SystemDesignEditor from './SystemDesignEditor';
+import { stripTypeAnnotations } from '../../utils/stripTypes';
+
+type CodeLanguage = 'typescript' | 'javascript';
+
+// Configure Monaco to be more lenient with TypeScript
+const handleEditorWillMount: BeforeMount = (monaco) => {
+  // Disable TypeScript diagnostics (no red squiggly lines)
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: false, // Keep syntax validation for obvious errors
+  });
+
+  // Set compiler options for better standalone experience
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
+    allowNonTsExtensions: true,
+    moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    noEmit: true,
+    esModuleInterop: true,
+    jsx: monaco.languages.typescript.JsxEmit.React,
+    allowJs: true,
+    strict: false,
+  });
+
+  // Configure JavaScript defaults too
+  monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+    noSyntaxValidation: false,
+  });
+  monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    target: monaco.languages.typescript.ScriptTarget.ESNext,
+    allowNonTsExtensions: true,
+    allowJs: true,
+    checkJs: false,
+  });
+};
 
 interface EditorPanelProps {
   activeTab: EditorTab;
@@ -13,10 +51,13 @@ interface EditorPanelProps {
   onTestCodeChange: (code: string) => void;
   onNotesChange: (notes: string) => void;
   onRunTests: () => void;
+  runningTests?: boolean;
   testResults: TestCase[];
+  consoleLogs: ConsoleMessage[];
   consoleOpen: boolean;
   onToggleConsole: () => void;
   hidden?: boolean;
+  problemId?: string;
   interviewStage?: InterviewStage | null;
   systemDesignTopicId?: SystemDesignTopicId | null;
   onSendMessage?: (message: string) => void;
@@ -43,14 +84,45 @@ export default function EditorPanel({
   onTestCodeChange,
   onNotesChange,
   onRunTests,
+  runningTests,
   testResults,
+  consoleLogs,
   consoleOpen,
   onToggleConsole,
   hidden,
+  problemId,
   interviewStage,
   systemDesignTopicId,
   onSendMessage,
 }: EditorPanelProps) {
+  const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
+  const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
+  const codeCache = useRef<Record<CodeLanguage, { solution: string; tests: string } | null>>({
+    typescript: null,
+    javascript: null,
+  });
+
+  const handleLanguageChange = (newLang: CodeLanguage) => {
+    if (newLang === codeLanguage) return;
+
+    // Cache current code for the current language
+    codeCache.current[codeLanguage] = { solution: code, tests: testCode };
+
+    const cached = codeCache.current[newLang];
+    if (cached) {
+      // Restore previously cached code for this language
+      onCodeChange(cached.solution);
+      onTestCodeChange(cached.tests);
+    } else if (newLang === 'javascript') {
+      // First switch to JS: strip type annotations
+      onCodeChange(stripTypeAnnotations(code));
+      onTestCodeChange(stripTypeAnnotations(testCode));
+    }
+    // JS → TS first time: JS is valid TS, code stays as-is
+
+    setCodeLanguage(newLang);
+  };
+
   const isSystemDesign = interviewStage === 'system-design';
   const currentTabs = isSystemDesign ? sdTabs : tabs;
 
@@ -62,7 +134,10 @@ export default function EditorPanel({
   const passCount = testResults.filter((t) => t.passed).length;
   const totalCount = testResults.length;
 
-  const editorLanguage = activeTab === 'notes' ? 'markdown' : 'typescript';
+  const editorLanguage = activeTab === 'notes' ? 'markdown' : codeLanguage;
+  const ext = codeLanguage === 'typescript' ? 'ts' : 'js';
+  const pid = problemId ?? 'default';
+  const editorPath = activeTab === 'notes' ? `${pid}-notes.md` : `${pid}-${activeTab}.${ext}`;
 
   return (
     <div className={`editor-panel ${hidden ? 'panel-hidden' : ''}`}>
@@ -79,10 +154,20 @@ export default function EditorPanel({
           ))}
         </div>
         <div className="editor-actions">
+          {!isSystemDesign && activeTab !== 'notes' && (
+            <select
+              className="language-select"
+              value={codeLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value as CodeLanguage)}
+            >
+              <option value="typescript">TypeScript</option>
+              <option value="javascript">JavaScript</option>
+            </select>
+          )}
           {!isSystemDesign && (
-            <button className="btn btn-primary btn-sm" onClick={onRunTests}>
+            <button className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>
               <Play size={14} />
-              Run Tests
+              {runningTests ? 'Running...' : 'Run Tests'}
             </button>
           )}
         </div>
@@ -100,11 +185,14 @@ export default function EditorPanel({
           />
         ) : (
           <Editor
+            key={pid}
             height="100%"
+            path={editorPath}
             language={editorLanguage}
             theme="vs-dark"
             value={currentContent}
             onChange={(value) => currentHandler(value ?? '')}
+            beforeMount={handleEditorWillMount}
             options={{
               fontSize: 13,
               fontFamily: "'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace",
@@ -121,6 +209,7 @@ export default function EditorPanel({
               bracketPairColorization: { enabled: true },
               autoClosingBrackets: 'always',
               suggestOnTriggerCharacters: true,
+              fixedOverflowWidgets: true,
             }}
           />
         )}
@@ -128,48 +217,91 @@ export default function EditorPanel({
 
       {!isSystemDesign && (
         <div className="editor-console" style={{ height: consoleOpen ? 200 : 36 }}>
-          <div className="editor-console-header" onClick={onToggleConsole}>
-            <span className="editor-console-title">
+          <div className="editor-console-header">
+            <span className="editor-console-title" onClick={onToggleConsole} style={{ cursor: 'pointer' }}>
               {consoleOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
               Output
-              {totalCount > 0 && (
+              {outputTab === 'tests' && totalCount > 0 && (
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, marginLeft: 8 }}>
                   {passCount}/{totalCount} passed
                 </span>
               )}
+              {outputTab === 'console' && consoleLogs.length > 0 && (
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, marginLeft: 8 }}>
+                  {consoleLogs.length} {consoleLogs.length === 1 ? 'entry' : 'entries'}
+                </span>
+              )}
             </span>
+            {consoleOpen && (
+              <div className="output-tabs">
+                <button
+                  className={`output-tab ${outputTab === 'tests' ? 'output-tab-active' : ''}`}
+                  onClick={() => setOutputTab('tests')}
+                >
+                  Tests
+                </button>
+                <button
+                  className={`output-tab ${outputTab === 'console' ? 'output-tab-active' : ''}`}
+                  onClick={() => setOutputTab('console')}
+                >
+                  Console
+                  {consoleLogs.length > 0 && (
+                    <span className="output-tab-badge">{consoleLogs.length}</span>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
           {consoleOpen && (
             <div className="editor-console-content">
-              {testResults.length === 0 ? (
-                <div className="empty-state" style={{ padding: '16px' }}>
-                  <div className="empty-state-description">Run tests to see results here.</div>
-                </div>
-              ) : (
-                testResults.map((test, i) => (
-                  <div key={i} className={`test-result ${test.passed ? 'test-result-pass' : 'test-result-fail'} test-result-enter`}>
-                    <div className="test-result-icon">
-                      {test.passed ? (
-                        <CheckCircle2 size={14} />
-                      ) : (
-                        <XCircle size={14} />
-                      )}
-                    </div>
-                    <div className="test-result-content">
-                      <div className="test-result-input">Test {i + 1}: {test.input}</div>
-                      <div className="test-result-output">
-                        <span className="test-result-expected">
-                          <span className="test-result-label">Expected: </span>{test.expected}
-                        </span>
-                        {!test.passed && test.actual && (
-                          <span className="test-result-actual">
-                            <span className="test-result-label">Got: </span>{test.actual}
-                          </span>
+              {outputTab === 'tests' ? (
+                testResults.length === 0 ? (
+                  <div className="empty-state" style={{ padding: '16px' }}>
+                    <div className="empty-state-description">Run tests to see results here.</div>
+                  </div>
+                ) : (
+                  testResults.map((test, i) => (
+                    <div key={i} className={`test-result ${test.passed ? 'test-result-pass' : 'test-result-fail'} test-result-enter`}>
+                      <div className="test-result-icon">
+                        {test.passed ? (
+                          <CheckCircle2 size={14} />
+                        ) : (
+                          <XCircle size={14} />
                         )}
                       </div>
+                      <div className="test-result-content">
+                        <div className="test-result-input">Test {i + 1}: {test.input}</div>
+                        <div className="test-result-output">
+                          <span className="test-result-expected">
+                            <span className="test-result-label">Expected: </span>{test.expected}
+                          </span>
+                          {!test.passed && test.actual && (
+                            <span className="test-result-actual">
+                              <span className="test-result-label">Got: </span>{test.actual}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )
+              ) : (
+                consoleLogs.length === 0 ? (
+                  <div className="empty-state" style={{ padding: '16px' }}>
+                    <div className="empty-state-description">
+                      Add console.log() to your code and run tests to see output here.
                     </div>
                   </div>
-                ))
+                ) : (
+                  consoleLogs.map((log, i) => (
+                    <div key={i} className={`console-entry console-entry-${log.type}`}>
+                      <span className="console-entry-prefix">
+                        {log.type === 'error' ? '✕' : log.type === 'warn' ? '⚠' : log.type === 'info' ? 'ℹ' : '›'}
+                      </span>
+                      <pre className="console-entry-message">{log.message}</pre>
+                    </div>
+                  ))
+                )
               )}
             </div>
           )}

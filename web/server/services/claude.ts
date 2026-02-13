@@ -50,11 +50,7 @@ export function streamChatResponse(
 ): ClaudeStream {
   const prompt = buildPrompt(request.messages, request.context);
 
-  console.log('\n╔══════════════════════════════════════╗');
-  console.log('║       PROMPT SENT TO CLAUDE CLI      ║');
-  console.log('╠══════════════════════════════════════╣');
-  console.log(prompt);
-  console.log('╚══════════════════════════════════════╝\n');
+  console.log(`\n[Claude CLI] Prompt length: ${prompt.length} chars, Messages: ${request.messages.length}`);
 
   const env = { ...process.env };
   if (config.gitBashPath) {

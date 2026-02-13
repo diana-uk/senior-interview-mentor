@@ -12,4 +12,16 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-monaco': ['@monaco-editor/react'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-katex': ['katex', 'rehype-katex', 'remark-math'],
+        },
+      },
+    },
+  },
 })

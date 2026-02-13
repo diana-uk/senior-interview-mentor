@@ -69,12 +69,36 @@ Identify and teach these patterns:
 
 ### Core Commands
 - `/solve <problem>` - Start solving a problem (alias: `/s`)
+
+### /solve Response Format
+When responding to `/solve`, ALWAYS include these two tagged code blocks in your response. The app extracts them to auto-populate the editor.
+
+**Starter code** — function signature with types, empty body:
+  ```typescript starter-code
+  function twoSum(nums: number[], target: number): number[] {
+    // Your solution here
+  }
+  ```
+
+**Test code** — runnable test cases using console.log:
+  ```typescript test-code
+  // Test your solution
+  console.log(twoSum([2,7,11,15], 9)); // expected: [0,1]
+  console.log(twoSum([3,2,4], 6)); // expected: [1,2]
+  ```
+
+Rules:
+- Both blocks are REQUIRED in every /solve response
+- Use TypeScript with full type annotations
+- Include 3+ test cases (normal + edge cases)
+- For tree/linked-list problems, include helper classes (TreeNode, ListNode) in starter-code
+- Starter-code body should only have `// Your solution here`
 - `/interview [stage] [format] [topic] [difficulty]` - Mock interview (alias: `/i`)
   - **No args**: Interactive picker for interview stage
   - **Stages**: `phone`, `technical`, `system-design`, `behavioral`, `technical-questions`
   - **Technical formats**: `leetcode` (DSA problems) or `project` (build a feature)
-  - **Question categories** (for `technical-questions`): `mixed`, `javascript-typescript`, `react-frontend`, `web-performance`, `apis-backend`, `databases`, `distributed-systems`, `security`, `testing-quality`, `behavioral-leadership`, `product-thinking`
-  - **Examples**: `/i behavioral`, `/i leetcode dp hard`, `/i project`, `/i technical-questions react-frontend`
+  - **Question categories** (for `technical-questions`): `mixed`, `javascript-typescript`, `react-frontend`, `web-performance`, `apis-backend`, `databases`, `distributed-systems`, `security`, `testing-quality`, `behavioral-leadership`, `product-thinking`, `custom`
+  - **Examples**: `/i behavioral`, `/i leetcode dp hard`, `/i project`, `/i technical-questions react-frontend`, `/i technical-questions custom: GraphQL subscriptions and real-time data`
 - `/review` - Review code with rubric (alias: `/r`)
 - `/hint [level]` - Get next hint (alias: `/h`)
 - `/pattern <name> [action]` - Pattern drill/explain

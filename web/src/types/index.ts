@@ -16,7 +16,8 @@ export type TechnicalQuestionCategory =
   | 'security'
   | 'testing-quality'
   | 'behavioral-leadership'
-  | 'product-thinking';
+  | 'product-thinking'
+  | 'custom';
 
 export type PatternName =
   | 'Sliding Window'
@@ -48,6 +49,14 @@ export type TopicName =
   | 'Greedy'
   | 'Stack/Queue';
 
+export type SupportedLanguage = 'typescript' | 'javascript' | 'python';
+
+export interface MultiLangCode {
+  typescript: string;
+  javascript?: string;
+  python?: string;
+}
+
 export interface Problem {
   id: string;
   title: string;
@@ -56,7 +65,7 @@ export interface Problem {
   description: string;
   examples: string[];
   constraints: string[];
-  starterCode: string;
+  starterCode: string | MultiLangCode;
   testCases: TestCase[];
 }
 
@@ -65,6 +74,11 @@ export interface TestCase {
   expected: string;
   actual?: string;
   passed?: boolean;
+}
+
+export interface ConsoleMessage {
+  type: 'log' | 'warn' | 'error' | 'info';
+  message: string;
 }
 
 export interface ChatMessage {
@@ -142,6 +156,20 @@ export type SystemDesignTopicId =
   | 'rate-limiter'
   | 'file-storage'
   | 'chat-application'
+  | 'video-streaming'
+  | 'ride-sharing'
+  | 'search-engine'
+  | 'payment-system'
+  | 'news-feed'
+  | 'collaborative-editor'
+  | 'monitoring-system'
+  | 'key-value-store'
+  | 'web-crawler'
+  | 'proximity-service'
+  | 'ticket-booking'
+  | 'maps-navigation'
+  | 'ad-click-aggregator'
+  | 'hotel-reservation'
   | 'custom';
 
 export interface SystemDesignTopic {
@@ -205,9 +233,104 @@ export type SystemDesignAction =
   | { type: 'UPDATE_JUSTIFICATION'; justification: string }
   | { type: 'RESET' };
 
+/* ── Mistake Tracking & Spaced Repetition ── */
+
+export interface MistakeEntryFull {
+  id: string;
+  pattern: PatternName;
+  problemId: string | null;
+  problemTitle: string;
+  description: string;
+  createdAt: string;
+  nextReview: string;
+  interval: number;       // days until next review
+  easeFactor: number;     // SM-2 ease factor (>= 1.3)
+  repetitions: number;    // consecutive correct reviews
+  streak: number;         // visual streak indicator
+}
+
+/* ── Review Rubric ── */
+
+export type RubricDimensionId =
+  | 'correctness'
+  | 'time-complexity'
+  | 'space-complexity'
+  | 'code-quality'
+  | 'edge-cases'
+  | 'communication';
+
+export interface RubricDimension {
+  id: RubricDimensionId;
+  label: string;
+  description: string;
+  score: number;      // 0-4
+  maxScore: 4;
+}
+
+export interface ReviewResult {
+  id: string;
+  problemId: string | null;
+  problemTitle: string;
+  dimensions: RubricDimension[];
+  overallScore: number;
+  feedback: string;
+  improvementPlan: string[];
+  createdAt: string;
+}
+
+/* ── Statistics & Analytics ── */
+
+export type ProblemStatus = 'unseen' | 'attempted' | 'solved';
+
+export interface ProblemProgress {
+  problemId: string;
+  status: ProblemStatus;
+  attempts: number;
+  bestScore: number | null;
+  bestTime: number | null;  // seconds
+  lastAttempted: string;
+  hintsUsed: number;
+  code: string;
+}
+
+export interface SessionRecord {
+  id: string;
+  date: string;
+  problemId: string | null;
+  problemTitle: string;
+  mode: Mode;
+  duration: number;     // seconds
+  hintsUsed: number;
+  score: number | null;
+  patterns: PatternName[];
+}
+
+export interface PatternStrength {
+  pattern: PatternName;
+  solved: number;
+  attempted: number;
+  avgScore: number;
+  lastPracticed: string | null;
+}
+
+export interface StatsData {
+  problemsSolved: number;
+  totalAttempts: number;
+  totalTime: number;        // seconds
+  hintsUsed: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastActiveDate: string;
+  avgScore: number;
+  patternStrengths: PatternStrength[];
+  sessions: SessionRecord[];
+  problemProgress: Record<string, ProblemProgress>;
+  reviews: ReviewResult[];
+}
+
 export type EditorTab = 'solution' | 'tests' | 'notes';
 
-export type SidebarPanel = 'interview' | 'problems' | 'mistakes' | 'stats' | null;
+export type SidebarPanel = 'interview' | 'problems' | 'behavioral' | 'mistakes' | 'stats' | 'settings' | null;
 
 export interface AppState {
   mode: Mode;

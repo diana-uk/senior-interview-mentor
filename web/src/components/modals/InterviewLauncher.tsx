@@ -20,6 +20,7 @@ interface InterviewLauncherProps {
     category?: TechnicalQuestionCategory;
     systemDesignTopic?: SystemDesignTopicId;
     customSystemDesignPrompt?: string;
+    customTechnicalPrompt?: string;
   }) => void;
 }
 
@@ -53,6 +54,7 @@ const questionCategories: { id: TechnicalQuestionCategory; label: string }[] = [
   { id: 'testing-quality', label: 'Testing & Quality' },
   { id: 'behavioral-leadership', label: 'Leadership' },
   { id: 'product-thinking', label: 'Product Thinking' },
+  { id: 'custom', label: 'Custom Topic' },
 ];
 
 const systemDesignProblems: { id: SystemDesignTopicId; icon: string; title: string; desc: string }[] = [
@@ -62,6 +64,20 @@ const systemDesignProblems: { id: SystemDesignTopicId; icon: string; title: stri
   { id: 'rate-limiter', icon: 'speed', title: 'Rate Limiter', desc: 'Distributed rate limiting — token bucket, sliding window, Redis.' },
   { id: 'file-storage', icon: 'cloud_upload', title: 'File Storage', desc: 'Design Dropbox/Google Drive — upload, sync, chunking, dedup.' },
   { id: 'chat-application', icon: 'chat', title: 'Real-Time Chat', desc: 'Design WhatsApp/Slack — WebSockets, presence, message delivery.' },
+  { id: 'video-streaming', icon: 'play_circle', title: 'Video Streaming', desc: 'Design YouTube/Netflix — transcoding, CDN, adaptive bitrate.' },
+  { id: 'ride-sharing', icon: 'local_taxi', title: 'Ride Sharing', desc: 'Design Uber/Lyft — matching, location tracking, surge pricing.' },
+  { id: 'search-engine', icon: 'search', title: 'Search Engine', desc: 'Design Google Search — crawling, indexing, ranking, autocomplete.' },
+  { id: 'payment-system', icon: 'payments', title: 'Payment System', desc: 'Design Stripe/PayPal — transactions, ledger, fraud detection.' },
+  { id: 'news-feed', icon: 'feed', title: 'News Feed', desc: 'Design Facebook Feed — ranking, fan-out, real-time updates.' },
+  { id: 'collaborative-editor', icon: 'edit_document', title: 'Collaborative Editor', desc: 'Design Google Docs — CRDTs, real-time sync, conflict resolution.' },
+  { id: 'monitoring-system', icon: 'monitoring', title: 'Monitoring System', desc: 'Design Datadog — metrics, time-series, alerting, dashboards.' },
+  { id: 'key-value-store', icon: 'database', title: 'Key-Value Store', desc: 'Design DynamoDB/Redis — partitioning, replication, consistency.' },
+  { id: 'web-crawler', icon: 'bug_report', title: 'Web Crawler', desc: 'Distributed crawler — URL frontier, dedup, politeness policies.' },
+  { id: 'proximity-service', icon: 'near_me', title: 'Proximity Service', desc: 'Design Yelp/Places — geospatial indexing, nearby search.' },
+  { id: 'ticket-booking', icon: 'confirmation_number', title: 'Ticket Booking', desc: 'Design Ticketmaster — seat selection, flash sales, queues.' },
+  { id: 'maps-navigation', icon: 'map', title: 'Maps & Navigation', desc: 'Design Google Maps — routing, traffic, tile serving, ETA.' },
+  { id: 'ad-click-aggregator', icon: 'ads_click', title: 'Ad Click Aggregator', desc: 'Click event aggregation — stream processing, dedup, reporting.' },
+  { id: 'hotel-reservation', icon: 'hotel', title: 'Hotel Reservation', desc: 'Design Booking.com — inventory, search, double-booking prevention.' },
   { id: 'custom', icon: 'edit_note', title: 'Custom Topic', desc: 'Enter your own system design challenge.' },
 ];
 
@@ -104,6 +120,7 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
   const [category, setCategory] = useState<TechnicalQuestionCategory | null>(null);
   const [sdTopic, setSdTopic] = useState<SystemDesignTopicId | null>(null);
   const [customPrompt, setCustomPrompt] = useState('');
+  const [customTechnicalPrompt, setCustomTechnicalPrompt] = useState('');
 
   if (!open) return null;
 
@@ -115,6 +132,7 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
     setCategory(null);
     setSdTopic(null);
     setCustomPrompt('');
+    setCustomTechnicalPrompt('');
   }
 
   function handleClose() {
@@ -130,6 +148,7 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
     setCategory(null);
     setSdTopic(null);
     setCustomPrompt('');
+    setCustomTechnicalPrompt('');
   }
 
   function handleFormatSelect(f: TechnicalFormat) {
@@ -140,7 +159,11 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
 
   function canStart(): boolean {
     if (!stage) return false;
-    if (stage === 'technical-questions') return !!category;
+    if (stage === 'technical-questions') {
+      if (!category) return false;
+      if (category === 'custom') return customTechnicalPrompt.trim().length > 0;
+      return true;
+    }
     if (stage === 'system-design') {
       if (!sdTopic) return false;
       if (sdTopic === 'custom') return customPrompt.trim().length > 0;
@@ -162,6 +185,7 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
       category: category ?? undefined,
       systemDesignTopic: sdTopic ?? undefined,
       customSystemDesignPrompt: sdTopic === 'custom' ? customPrompt.trim() : undefined,
+      customTechnicalPrompt: category === 'custom' ? customTechnicalPrompt.trim() : undefined,
     });
     handleClose();
   }
@@ -308,17 +332,34 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
                 )}
 
                 {showCategorySection && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {questionCategories.map((c) => (
-                      <button
-                        key={c.id}
-                        className={`btn ${category === c.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                        onClick={() => setCategory(c.id)}
-                      >
-                        {c.label}
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {questionCategories.map((c) => (
+                        <button
+                          key={c.id}
+                          className={`btn ${category === c.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                          onClick={() => {
+                            setCategory(c.id);
+                            if (c.id !== 'custom') setCustomTechnicalPrompt('');
+                          }}
+                        >
+                          {c.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {category === 'custom' && (
+                      <div style={{ marginTop: 16 }}>
+                        <textarea
+                          className="input input-mono textarea"
+                          placeholder="Describe the topic you'd like to be quizzed on, e.g. 'GraphQL subscriptions', 'Docker networking', 'Webpack bundling internals'..."
+                          value={customTechnicalPrompt}
+                          onChange={(e) => setCustomTechnicalPrompt(e.target.value)}
+                          rows={3}
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {showSystemDesignSection && (

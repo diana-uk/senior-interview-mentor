@@ -1,24 +1,38 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import TopNav from './components/layout/TopNav';
 import Sidebar from './components/layout/Sidebar';
 import ChatPanel from './components/chat/ChatPanel';
-import EditorPanel from './components/editor/EditorPanel';
-import InterviewLauncher from './components/modals/InterviewLauncher';
 import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
-import SystemDesignRouter from './components/systemdesign/SystemDesignRouter';
+
+const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
+const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
+const InterviewLauncher = lazy(() => import('./components/modals/InterviewLauncher'));
+const ReviewRubric = lazy(() => import('./components/ReviewRubric'));
+const Landing = lazy(() => import('./components/Landing'));
 import { useChat } from './hooks/useChat';
+import { useSessionPersistence } from './hooks/useSessionPersistence';
+import { executeTests } from './utils/codeExecutor';
 import { useSystemDesignState } from './hooks/useSystemDesignState';
+import { useMistakeTracker } from './hooks/useMistakeTracker';
+import { useStats } from './hooks/useStats';
+import { useAdaptiveRecommendation } from './hooks/useAdaptiveRecommendation';
+import { problemsById } from './data/problems';
+import { getStarterCode, getTestCode } from './utils/problemLanguage';
 import type {
   ChatMessage,
   ChatContext,
   CommitmentGateItem,
+  ConsoleMessage,
   EditorTab,
   HintLevel,
   InterviewStage,
   Mode,
+  PatternName,
   Problem,
+  ReviewResult,
   SidebarPanel,
+  SupportedLanguage,
   SystemDesignTopicId,
   TechnicalFormat,
   TechnicalQuestionCategory,
@@ -109,6 +123,62 @@ const SD_TOPIC_TITLES: Record<Exclude<SystemDesignTopicId, 'custom'>, { title: s
     title: 'Real-Time Chat Application',
     prompt: 'Design a **real-time chat application** like WhatsApp or Slack — WebSocket connections, message delivery guarantees, presence, group chats, and message history.',
   },
+  'video-streaming': {
+    title: 'Video Streaming Platform',
+    prompt: 'Design a **video streaming platform** like YouTube or Netflix — video upload & transcoding, adaptive bitrate streaming, content delivery via CDN, recommendation engine, and comment/engagement systems.',
+  },
+  'ride-sharing': {
+    title: 'Ride-Sharing Service',
+    prompt: 'Design a **ride-sharing service** like Uber or Lyft — real-time driver matching, location tracking, trip management, surge pricing, ETA calculation, and payment processing.',
+  },
+  'search-engine': {
+    title: 'Web Search Engine',
+    prompt: 'Design a **web search engine** like Google — web crawling, indexing, ranking (PageRank), query processing, spelling correction, autocomplete, and serving results at scale.',
+  },
+  'payment-system': {
+    title: 'Payment Processing System',
+    prompt: 'Design a **payment processing system** like Stripe or PayPal — transaction processing, idempotency, ledger/double-entry accounting, fraud detection, multi-currency support, and PCI compliance.',
+  },
+  'news-feed': {
+    title: 'Personalized News Feed',
+    prompt: 'Design a **personalized news feed** like Facebook\'s — content aggregation, ranking algorithms, fan-out strategies (push vs pull), caching, real-time updates, and content moderation.',
+  },
+  'collaborative-editor': {
+    title: 'Collaborative Document Editor',
+    prompt: 'Design a **collaborative document editor** like Google Docs — real-time co-editing with operational transforms or CRDTs, conflict resolution, version history, cursor presence, and offline support.',
+  },
+  'monitoring-system': {
+    title: 'Distributed Monitoring System',
+    prompt: 'Design a **distributed monitoring & alerting system** like Datadog or Prometheus — metrics collection, time-series storage, aggregation pipelines, anomaly detection, dashboards, and alert routing.',
+  },
+  'key-value-store': {
+    title: 'Distributed Key-Value Store',
+    prompt: 'Design a **distributed key-value store** like DynamoDB or Redis Cluster — partitioning, replication, consistency models (eventual vs strong), conflict resolution, and failure handling.',
+  },
+  'web-crawler': {
+    title: 'Web Crawler',
+    prompt: 'Design a **distributed web crawler** — URL frontier management, politeness policies, deduplication, distributed coordination, content extraction, and handling dynamic pages at billions of pages scale.',
+  },
+  'proximity-service': {
+    title: 'Proximity/Location Service',
+    prompt: 'Design a **proximity service** like Yelp or Google Places — geospatial indexing (geohash, quadtree), nearby search, location updates, ranking by distance and relevance, and handling dense urban areas.',
+  },
+  'ticket-booking': {
+    title: 'Ticket Booking System',
+    prompt: 'Design a **ticket booking system** like Ticketmaster — seat selection with reservation holds, handling high-concurrency flash sales, inventory management, queue/waiting room, payment integration, and preventing overselling.',
+  },
+  'maps-navigation': {
+    title: 'Maps & Navigation System',
+    prompt: 'Design a **maps and navigation system** like Google Maps — map tile serving, route calculation (Dijkstra/A*), real-time traffic data, ETA estimation, turn-by-turn navigation, and offline maps.',
+  },
+  'ad-click-aggregator': {
+    title: 'Ad Click Event Aggregator',
+    prompt: 'Design an **ad click event aggregation system** — real-time event ingestion at massive scale, stream processing for click counting, deduplication and fraud detection, time-windowed aggregation, and reporting dashboards.',
+  },
+  'hotel-reservation': {
+    title: 'Hotel Reservation System',
+    prompt: 'Design a **hotel reservation system** like Booking.com — room inventory management, search with date/location/price filters, booking with double-booking prevention, pricing engine, cancellation policies, and review system.',
+  },
 };
 
 const initialMessages: ChatMessage[] = [
@@ -124,67 +194,76 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
 }
 
-/** Actually execute user code against test cases */
-function executeTests(code: string, testCases: TestCase[]): TestCase[] {
-  return testCases.map((tc) => {
-    try {
-      // Build a function that defines the user's code then calls the test input
-      const wrappedCode = `
-        ${code}
-        return JSON.stringify(${tc.input});
-      `;
-      const fn = new Function(wrappedCode);
-      const actualRaw = fn();
-      const actual = String(actualRaw);
-
-      // Normalize comparison: sort arrays for order-independent matching
-      let passed = false;
-      try {
-        const expectedParsed = JSON.parse(tc.expected);
-        const actualParsed = JSON.parse(actual);
-        if (Array.isArray(expectedParsed) && Array.isArray(actualParsed)) {
-          passed =
-            JSON.stringify([...expectedParsed].sort()) ===
-            JSON.stringify([...actualParsed].sort());
-        } else {
-          passed = JSON.stringify(expectedParsed) === JSON.stringify(actualParsed);
-        }
-      } catch {
-        passed = actual.replace(/\s/g, '') === tc.expected.replace(/\s/g, '');
-      }
-
-      return { ...tc, actual, passed };
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Runtime error';
-      return { ...tc, actual: `Error: ${msg}`, passed: false };
-    }
-  });
-}
-
 export default function App() {
-  const [mode, setMode] = useState<Mode>('TEACHER');
-  const [currentProblem, setCurrentProblem] = useState<Problem | null>(defaultProblem);
+  const { restored, restoreMessages, saveSession, clearSession } = useSessionPersistence();
+  const initial = restored ? {
+    mode: restored.mode,
+    currentProblem: restored.currentProblem,
+    editorTab: restored.editorTab,
+    hintsUsed: restored.hintsUsed,
+    timerSeconds: restored.timerSeconds,
+    timerRunning: restored.timerRunning,
+    editorCode: restored.editorCode,
+    testCode: restored.testCode,
+    notes: restored.notes,
+    commitmentGate: restored.commitmentGate,
+    hints: restored.hints,
+    interviewStage: restored.interviewStage,
+    interviewCategory: restored.interviewCategory,
+    sdTopicId: restored.sdTopicId,
+    messages: restoreMessages(restored.messages),
+  } : null;
+
+  const [showLanding, setShowLanding] = useState(!initial && !localStorage.getItem('sim-skip-landing'));
+  const [mode, setMode] = useState<Mode>(initial?.mode ?? 'TEACHER');
+  const [currentProblem, setCurrentProblem] = useState<Problem | null>(initial?.currentProblem ?? defaultProblem);
   const [sidebarPanel, setSidebarPanel] = useState<SidebarPanel>(null);
-  const [editorTab, setEditorTab] = useState<EditorTab>('solution');
+  const [editorTab, setEditorTab] = useState<EditorTab>(initial?.editorTab ?? 'solution');
   const [consoleOpen, setConsoleOpen] = useState(false);
   const [interviewModalOpen, setInterviewModalOpen] = useState(false);
   const [commitmentGateOpen, setCommitmentGateOpen] = useState(false);
-  const [hintsUsed, setHintsUsed] = useState(0);
-  const [timerSeconds, setTimerSeconds] = useState(2700);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [editorCode, setEditorCode] = useState(defaultProblem.starterCode);
-  const [testCode, setTestCode] = useState('// Write custom test cases here\nconsole.log(twoSum([2,7,11,15], 9)); // expected: [0,1]');
-  const [notes, setNotes] = useState('// Scratch pad\n// Pattern: HashMap\n// Key insight: store complement');
+  const [hintLadderOpen, setHintLadderOpen] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(initial?.hintsUsed ?? 0);
+  const [timerSeconds, setTimerSeconds] = useState(initial?.timerSeconds ?? 2700);
+  const [timerRunning, setTimerRunning] = useState(initial?.timerRunning ?? false);
+  const [editorCode, setEditorCode] = useState(initial?.editorCode ?? defaultProblem.starterCode);
+  const [testCode, setTestCode] = useState(initial?.testCode ?? '// Write custom test cases here\nconsole.log(twoSum([2,7,11,15], 9)); // expected: [0,1]');
+  const [notes, setNotes] = useState(initial?.notes ?? '// Scratch pad\n// Pattern: HashMap\n// Key insight: store complement');
   const [testResults, setTestResults] = useState<TestCase[]>([]);
-  const [commitmentGate, setCommitmentGate] = useState<CommitmentGateItem[]>(defaultGate);
-  const [hints, setHints] = useState<HintLevel[]>(defaultHints);
+  const [consoleLogs, setConsoleLogs] = useState<ConsoleMessage[]>([]);
+  const [runningTests, setRunningTests] = useState(false);
+  const [commitmentGate, setCommitmentGate] = useState<CommitmentGateItem[]>(initial?.commitmentGate ?? defaultGate);
+  const [hints, setHints] = useState<HintLevel[]>(initial?.hints ?? defaultHints);
   const [mobileView, setMobileView] = useState<'chat' | 'editor'>('chat');
-  const [interviewStage, setInterviewStage] = useState<InterviewStage | null>(null);
-  const [interviewCategory, setInterviewCategory] = useState<TechnicalQuestionCategory | null>(null);
-  const [sdTopicId, setSdTopicId] = useState<SystemDesignTopicId | null>(null);
+  const [language, setLanguage] = useState<SupportedLanguage>(() => {
+    const saved = localStorage.getItem('sim-settings');
+    if (saved) {
+      try { return JSON.parse(saved).language === 'javascript' ? 'javascript' : 'typescript'; } catch { /* ignore */ }
+    }
+    return 'typescript';
+  });
+  const [interviewStage, setInterviewStage] = useState<InterviewStage | null>(initial?.interviewStage ?? null);
+  const [interviewCategory, setInterviewCategory] = useState<TechnicalQuestionCategory | null>(initial?.interviewCategory ?? null);
+  const [sdTopicId, setSdTopicId] = useState<SystemDesignTopicId | null>(initial?.sdTopicId ?? null);
 
-  const { sdState, sdDispatch, advancePhase, PHASE_ORDER } = useSystemDesignState();
+  const [reviewRubricOpen, setReviewRubricOpen] = useState(false);
+
+  const { sdState, sdDispatch, advancePhase, PHASE_ORDER } = useSystemDesignState(restored?.sdState);
   const isSystemDesignActive = interviewStage === 'system-design' && sdState.active;
+
+  const {
+    mistakes, dueForReview, addMistake, reviewMistake, removeMistake,
+    getWeakPatterns,
+  } = useMistakeTracker();
+  const {
+    stats, recordProblemAttempt, recordReview,
+    updatePatternStrength, getProblemStatus,
+  } = useStats();
+  const { getNextProblem, getRecommendations, getReadinessScore } = useAdaptiveRecommendation({
+    patternStrengths: stats.patternStrengths,
+    getProblemStatus,
+    weakPatterns: getWeakPatterns(),
+  });
 
   const getContext = useCallback((): ChatContext | undefined => {
     return {
@@ -205,9 +284,18 @@ export default function App() {
     };
   }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory]);
 
-  const { messages, setMessages, isStreaming, sendMessage, stopStreaming } = useChat({
-    initialMessages,
+  const handleEditorUpdate = useCallback(
+    (starterCode: string, testCode: string) => {
+      if (starterCode) setEditorCode(starterCode);
+      if (testCode) setTestCode(testCode);
+    },
+    [],
+  );
+
+  const { messages, setMessages, isStreaming, sendMessage, sendSilentMessage, stopStreaming } = useChat({
+    initialMessages: initial?.messages ?? initialMessages,
     getContext,
+    onEditorUpdate: handleEditorUpdate,
   });
 
   useEffect(() => {
@@ -224,40 +312,160 @@ export default function App() {
     return () => clearInterval(interval);
   }, [timerRunning]);
 
+  // Auto-save session to localStorage (debounced, skips while streaming)
+  useEffect(() => {
+    if (isStreaming) return;
+    saveSession({
+      mode,
+      currentProblem,
+      editorTab,
+      hintsUsed,
+      timerSeconds,
+      timerRunning,
+      editorCode,
+      testCode,
+      notes,
+      commitmentGate,
+      hints,
+      interviewStage,
+      interviewCategory,
+      sdTopicId,
+      sdState,
+      messages,
+    });
+  }, [isStreaming, mode, currentProblem, editorTab, hintsUsed, timerSeconds, timerRunning, editorCode, testCode, notes, commitmentGate, hints, interviewStage, interviewCategory, sdTopicId, sdState, messages, saveSession]);
+
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
     // Local side effects for slash commands
-    if (content.startsWith('/hint')) {
+    if (content.startsWith('/hint') || content.startsWith('/stuck')) {
       const nextLevel = (hintsUsed + 1) as 1 | 2 | 3;
       if (nextLevel <= 3) {
         setHints((prev) =>
           prev.map((h) => (h.level === nextLevel ? { ...h, unlocked: true } : h))
         );
         setHintsUsed(nextLevel);
+        // Auto-log mistake when hint 3 is used (user is deeply stuck)
+        if (nextLevel === 3 && currentProblem) {
+          addMistake({
+            pattern: currentProblem.pattern as PatternName,
+            problemId: currentProblem.id,
+            problemTitle: currentProblem.title,
+            description: `Needed all 3 hints to solve ${currentProblem.title}`,
+          });
+        }
       }
-    } else if (content.startsWith('/stuck')) {
-      const nextLevel = (hintsUsed + 1) as 1 | 2 | 3;
-      if (nextLevel <= 3) {
-        setHints((prev) =>
-          prev.map((h) => (h.level === nextLevel ? { ...h, unlocked: true } : h))
-        );
-        setHintsUsed(nextLevel);
-      }
-    } else if (content.startsWith('/solve')) {
-      setCommitmentGateOpen(true);
+      setHintLadderOpen(true);
     } else if (content.startsWith('/review')) {
       setMode('REVIEWER');
+      setReviewRubricOpen(true);
+      // Auto-include code context for AI review
+      if (currentProblem && editorCode) {
+        const codeContext = `\n\n**My code for ${currentProblem.title}:**\n\`\`\`typescript\n${editorCode}\n\`\`\``;
+        sendMessage(content + codeContext);
+        return;
+      }
+    } else if (content.startsWith('/next')) {
+      const arg = content.replace('/next', '').trim().toLowerCase();
+      const difficulty = arg === 'easy' ? 'Easy' : arg === 'medium' ? 'Medium' : arg === 'hard' ? 'Hard' : undefined;
+      const rec = getNextProblem(difficulty as Difficulty | undefined);
+      if (rec) {
+        const problem = problemsById[rec.id];
+        if (problem) {
+          setCurrentProblem(problem);
+          setEditorCode(getStarterCode(problem, language));
+          setTestCode(getTestCode(problem, language));
+          setTestResults([]);
+          setHintsUsed(0);
+          setHints((prev) => prev.map((h) => ({ ...h, unlocked: false, content: '' })));
+          setCommitmentGate(defaultGate.map((g) => ({ ...g, completed: false })));
+        }
+      }
+    } else if (content.startsWith('/check')) {
+      // Auto-include editor code for approach validation
+      if (currentProblem && editorCode) {
+        const codeContext = `\n\n**My current code for ${currentProblem.title}:**\n\`\`\`typescript\n${editorCode}\n\`\`\``;
+        sendMessage(content + codeContext);
+        return;
+      }
+    } else if (content.startsWith('/continue')) {
+      // Enrich with session state so Claude can recap
+      const gateStatus = commitmentGate.map((g) => `${g.completed ? '[x]' : '[ ]'} ${g.label}`).join(', ');
+      const parts = [
+        currentProblem ? `Problem: ${currentProblem.title} (${currentProblem.difficulty}, ${currentProblem.pattern})` : 'No active problem',
+        `Mode: ${mode}`,
+        `Hints: ${hintsUsed}/3`,
+        `Gate: ${gateStatus}`,
+        interviewStage ? `Interview: ${interviewStage}` : null,
+        timerRunning ? `Timer: ${Math.floor(timerSeconds / 60)}m left` : null,
+      ].filter(Boolean).join(' | ');
+      sendMessage(`/continue\n\n[Session: ${parts}]`);
+      return;
+    } else if (content.startsWith('/recap')) {
+      // Enrich with detailed session state
+      const gateLines = commitmentGate.map((g) => `- [${g.completed ? 'x' : ' '}] ${g.label}`).join('\n');
+      const sessionInfo = [
+        currentProblem ? `**Problem:** ${currentProblem.title} (${currentProblem.difficulty}, ${currentProblem.pattern})` : '**Problem:** None',
+        `**Mode:** ${mode}`,
+        `**Hints used:** ${hintsUsed}/3`,
+        `**Commitment gate:**\n${gateLines}`,
+        interviewStage ? `**Interview stage:** ${interviewStage}` : null,
+        timerRunning ? `**Timer:** ${Math.floor(timerSeconds / 60)}m ${timerSeconds % 60}s remaining` : null,
+      ].filter(Boolean).join('\n');
+      sendMessage(`/recap\n\n${sessionInfo}`);
+      return;
     }
 
     // Send to Claude API
     sendMessage(content);
-  }, [hintsUsed, sendMessage]);
+  }, [hintsUsed, sendMessage, currentProblem, addMistake, getNextProblem, language, editorCode, mode, commitmentGate, interviewStage, timerRunning, timerSeconds]);
 
-  function handleRunTests() {
-    if (!currentProblem) return;
-    const results = executeTests(editorCode, currentProblem.testCases);
-    setTestResults(results);
+  async function handleRunTests() {
+    if (!currentProblem || runningTests) return;
+    setRunningTests(true);
     setConsoleOpen(true);
+
+    try {
+      const { results, logs } = await executeTests(editorCode, currentProblem.testCases);
+      setTestResults(results);
+      setConsoleLogs(logs);
+
+      const passed = results.filter((r) => r.passed).length;
+      const total = results.length;
+      const allPassed = passed === total;
+
+      // Record problem attempt in stats
+      recordProblemAttempt({
+        problemId: currentProblem.id,
+        status: allPassed ? 'solved' : 'attempted',
+        score: allPassed ? 4 : null,
+        time: null,
+        hintsUsed,
+        code: editorCode,
+      });
+
+      // Update pattern strength
+      if (currentProblem.pattern) {
+        updatePatternStrength(
+          currentProblem.pattern as PatternName,
+          allPassed,
+          allPassed ? 4 : (passed / total) * 4,
+        );
+      }
+
+      // Auto-log mistake when tests fail
+      if (!allPassed) {
+        const failedCount = total - passed;
+        addMistake({
+          pattern: currentProblem.pattern as PatternName,
+          problemId: currentProblem.id,
+          problemTitle: currentProblem.title,
+          description: `Failed ${failedCount}/${total} test cases`,
+        });
+      }
+    } finally {
+      setRunningTests(false);
+    }
   }
 
   function handleToggleGateItem(id: string) {
@@ -284,7 +492,10 @@ export default function App() {
     category?: TechnicalQuestionCategory;
     systemDesignTopic?: SystemDesignTopicId;
     customSystemDesignPrompt?: string;
+    customTechnicalPrompt?: string;
   }) {
+    clearSession();
+    // Set UI state
     setMode('INTERVIEWER');
     setTimerRunning(true);
     setTimerSeconds(2700);
@@ -297,6 +508,9 @@ export default function App() {
     setInterviewStage(config.stage);
     setInterviewCategory(config.category ?? null);
     setSdTopicId(config.systemDesignTopic ?? null);
+
+    // Clear messages for fresh interview
+    setMessages([]);
 
     // Reset editor content based on interview type
     if (config.stage === 'system-design') {
@@ -319,9 +533,9 @@ export default function App() {
       }
       sdDispatch({ type: 'INIT', topicTitle: sdTitle, topicPrompt: sdPrompt });
     } else if (config.stage === 'technical') {
-      setCurrentProblem(defaultProblem);
-      setEditorCode(defaultProblem.starterCode);
-      setTestCode('// Write custom test cases here');
+      setCurrentProblem(null); // Will be set by Claude's response
+      setEditorCode('// Your solution here\n');
+      setTestCode('// Write test cases here');
       setNotes('');
     } else {
       setCurrentProblem(null);
@@ -330,46 +544,53 @@ export default function App() {
       setNotes('');
     }
 
-    const categoryLabel = config.category
-      ? questionCategories.find((c) => c.id === config.category)?.label ?? config.category
-      : 'Mixed';
-
-    // Build system design prompt dynamically
-    let sdPromptText = '';
-    if (config.stage === 'system-design') {
+    // Build command based on selection
+    let command = '';
+    if (config.stage === 'technical' && config.format === 'leetcode') {
+      command = `/interview technical leetcode ${config.topic ?? 'arrays'} ${config.difficulty ?? 'medium'}`;
+    } else if (config.stage === 'technical' && config.format === 'project') {
+      command = `/interview technical project`;
+    } else if (config.stage === 'system-design') {
       if (config.systemDesignTopic === 'custom' && config.customSystemDesignPrompt) {
-        sdPromptText = config.customSystemDesignPrompt;
-      } else if (config.systemDesignTopic && config.systemDesignTopic !== 'custom') {
-        sdPromptText = SD_TOPIC_TITLES[config.systemDesignTopic].prompt;
+        command = `/interview system-design custom: ${config.customSystemDesignPrompt}`;
       } else {
-        sdPromptText = 'Design a **URL shortening service** like bit.ly.';
+        command = `/interview system-design ${config.systemDesignTopic ?? 'url-shortener'}`;
       }
+    } else if (config.stage === 'technical-questions') {
+      if (config.category === 'custom' && config.customTechnicalPrompt) {
+        command = `/interview technical-questions custom: ${config.customTechnicalPrompt}`;
+      } else {
+        command = `/interview technical-questions ${config.category ?? 'mixed'}`;
+      }
+    } else if (config.stage === 'phone') {
+      command = `/interview phone`;
+    } else if (config.stage === 'behavioral') {
+      command = `/interview behavioral`;
     }
 
-    const msg: ChatMessage = {
-      id: generateId(),
-      role: 'mentor',
-      content: config.stage === 'technical'
-        ? `**Interview Started — Technical Coding**\n\nTimer is running: **45 minutes**.\n\nFormat: **${config.format === 'leetcode' ? 'LeetCode / Algorithms' : 'Project-based'}**${config.topic ? `\nTopic: **${config.topic}**` : ''}${config.difficulty ? `\nDifficulty: **${config.difficulty}**` : ''}\n\nLet's begin. Read the problem carefully and start by clarifying any questions about constraints.`
-        : config.stage === 'system-design'
-        ? `**Interview Started — System Design**\n\nTimer is running: **45 minutes**.\n\n${sdPromptText}\n\nThe right panel has a **structured design workspace** with 6 sections:\n1. **Requirements & Scope** — Start here. Clarify functional and non-functional requirements.\n2. **API Design** — Define your endpoints and contracts.\n3. **Data Model** — Schema, storage choice, indexing.\n4. **High-Level Architecture** — Describe components and data flow in text.\n5. **Deep Dives** — Pick 2-3 areas to explore tradeoffs.\n6. **Scaling & Reliability** — How does it handle 100x traffic?\n\nFill out each section in the design workspace. Write in plain text — describe components, data flow, and tradeoffs.\n\nStart by clarifying the **requirements**. What questions would you ask the interviewer?`
-        : config.stage === 'behavioral'
-        ? `**Interview Started — Behavioral**\n\nTimer is running: **45 minutes**.\n\nTell me about a time you had to make a difficult technical decision under time pressure.\n\nUse the **STAR format**:\n- **Situation**: Set the context\n- **Task**: What was your responsibility?\n- **Action**: What did you do?\n- **Result**: What was the outcome?\n\nYou can use the editor panel on the right to draft your notes.`
-        : config.stage === 'technical-questions'
-        ? `**Interview Started — Technical Questions**\n\nTimer is running: **45 minutes**.\n\nCategory: **${categoryLabel}**\n\nThis is a conceptual interview — no coding required. I'll ask you a series of knowledge-based questions about **${categoryLabel.toLowerCase()}** topics.\n\nFor each question:\n- Think out loud and explain your reasoning\n- Discuss tradeoffs, not just definitions\n- Give real-world examples when possible\n- Ask clarifying questions if needed\n\nUse the editor to jot notes if it helps.\n\nLet's begin with the first question.`
-        : `**Interview Started — Phone Screen**\n\nTimer is running: **45 minutes**.\n\nLet's start with a brief introduction. Tell me about your background and a recent project you're proud of.\n\nI'll follow up with a mix of:\n- Technical knowledge questions\n- Light coding problems\n- Behavioral questions\n\nUse the editor to take notes or write code snippets as needed.`,
-      timestamp: new Date(),
-    };
-    setMessages([msg]);
+    // Send silently - only Claude's response appears in chat
+    if (command) {
+      console.log('[App] Sending silent command:', command);
+      sendSilentMessage(command);
+    } else {
+      console.warn('[App] No command built for config:', config);
+    }
   }
 
-  function handleSelectProblem(_id: string) {
-    setCurrentProblem(defaultProblem);
-    setEditorCode(defaultProblem.starterCode);
-    setTestCode('// Write custom test cases here\nconsole.log(twoSum([2,7,11,15], 9)); // expected: [0,1]');
+  function handleSelectProblem(id: string) {
+    const problem = problemsById[id];
+    if (!problem) return;
+
+    // Load full problem data into editor (language-aware)
+    setCurrentProblem(problem);
+    setEditorCode(getStarterCode(problem, language));
+    setTestCode(getTestCode(problem, language));
+
+    // Reset UI state
     setTestResults([]);
     setConsoleOpen(false);
     setHintsUsed(0);
+    setHintLadderOpen(false);
     setHints(defaultHints);
     setCommitmentGate(defaultGate);
     setInterviewStage(null);
@@ -377,20 +598,49 @@ export default function App() {
     setMode('TEACHER');
     setTimerRunning(false);
     setEditorTab('solution');
+    setNotes('');
     sdDispatch({ type: 'RESET' });
+
+    // Close sidebar
+    setSidebarPanel(null);
+
+    // Build mentor message from hardcoded problem data (no API call needed)
+    const examplesBlock = problem.examples.map((ex) => `\`\`\`\n${ex}\n\`\`\``).join('\n\n');
+    const constraintsBlock = problem.constraints.map((c) => `- \`${c}\``).join('\n');
+
+    const mentorContent =
+      `**${problem.title}** — ${problem.difficulty} · ${problem.pattern}\n\n` +
+      `${problem.description}\n\n` +
+      `**Examples:**\n${examplesBlock}\n\n` +
+      `**Constraints:**\n${constraintsBlock}\n\n` +
+      `---\n\n` +
+      `Take a moment to read through the problem. When you're ready, please start by clarifying your understanding and walking me through your initial thoughts.\n\n` +
+      `What questions do you have, and how are you thinking about approaching this?`;
+
     setMessages([
       {
         id: generateId(),
-        role: 'mentor',
-        content: `**Loaded: ${defaultProblem.title}** (${defaultProblem.difficulty})\n\n${defaultProblem.description}\n\n**Examples:**\n\`\`\`\n${defaultProblem.examples[0]}\n\`\`\`\n\n**Constraints:**\n${defaultProblem.constraints.map((c) => `- \`${c}\``).join('\n')}\n\nStart by recapping the constraints and identifying the pattern.`,
+        role: 'mentor' as const,
+        content: mentorContent,
         timestamp: new Date(),
       },
     ]);
-    setSidebarPanel(null);
   }
 
+  const readinessScore = getReadinessScore();
   const gateCompleted = commitmentGate.filter((i) => i.completed).length;
-  const progressPercent = currentProblem ? (gateCompleted / commitmentGate.length) * 100 : 0;
+  const progressPercent = readinessScore > 0 ? readinessScore : (currentProblem ? (gateCompleted / commitmentGate.length) * 100 : 0);
+
+  if (showLanding) {
+    return (
+      <Suspense fallback={null}>
+        <Landing onEnterApp={() => {
+          localStorage.setItem('sim-skip-landing', '1');
+          setShowLanding(false);
+        }} />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="app-shell">
@@ -410,9 +660,18 @@ export default function App() {
           onLaunchInterview={() => setInterviewModalOpen(true)}
           onSelectProblem={handleSelectProblem}
           currentProblemId={currentProblem?.id || null}
+          mistakes={mistakes}
+          dueForReview={dueForReview}
+          onReviewMistake={reviewMistake}
+          onRemoveMistake={removeMistake}
+          onAddMistake={addMistake}
+          stats={stats}
+          getProblemStatus={getProblemStatus}
+          recommendations={getRecommendations(3)}
         />
 
         <div className="workspace">
+          <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: 'var(--text-muted)' }}>Loading...</div>}>
           {isSystemDesignActive ? (
             <SystemDesignRouter
               sdState={sdState}
@@ -436,6 +695,7 @@ export default function App() {
               }
               editorPanel={
                 <EditorPanel
+                  problemId={currentProblem?.id}
                   activeTab={editorTab}
                   onTabChange={setEditorTab}
                   code={editorCode}
@@ -445,7 +705,9 @@ export default function App() {
                   onTestCodeChange={setTestCode}
                   onNotesChange={setNotes}
                   onRunTests={handleRunTests}
+                  runningTests={runningTests}
                   testResults={testResults}
+                  consoleLogs={consoleLogs}
                   consoleOpen={consoleOpen}
                   onToggleConsole={() => setConsoleOpen(!consoleOpen)}
                   hidden={false}
@@ -466,6 +728,7 @@ export default function App() {
                 onStopStreaming={stopStreaming}
               />
               <EditorPanel
+                problemId={currentProblem?.id}
                 activeTab={editorTab}
                 onTabChange={setEditorTab}
                 code={editorCode}
@@ -475,7 +738,9 @@ export default function App() {
                 onTestCodeChange={setTestCode}
                 onNotesChange={setNotes}
                 onRunTests={handleRunTests}
+                runningTests={runningTests}
                 testResults={testResults}
+                consoleLogs={consoleLogs}
                 consoleOpen={consoleOpen}
                 onToggleConsole={() => setConsoleOpen(!consoleOpen)}
                 hidden={mobileView !== 'editor'}
@@ -485,6 +750,7 @@ export default function App() {
               />
             </>
           )}
+          </Suspense>
         </div>
 
         <CommitmentGate
@@ -510,13 +776,35 @@ export default function App() {
         </button>
       </div>
 
-      <InterviewLauncher
-        open={interviewModalOpen}
-        onClose={() => setInterviewModalOpen(false)}
-        onStart={handleStartInterview}
-      />
+      <Suspense fallback={null}>
+        {interviewModalOpen && (
+          <InterviewLauncher
+            open={interviewModalOpen}
+            onClose={() => setInterviewModalOpen(false)}
+            onStart={handleStartInterview}
+          />
+        )}
 
-      {hintsUsed > 0 && sidebarPanel === null && !commitmentGateOpen && (
+        {reviewRubricOpen && (
+          <ReviewRubric
+          problemTitle={currentProblem?.title ?? 'Current Problem'}
+          problemId={currentProblem?.id ?? null}
+          onSubmit={(review: ReviewResult) => {
+            recordReview(review);
+            if (currentProblem?.pattern) {
+              updatePatternStrength(
+                currentProblem.pattern as PatternName,
+                review.overallScore >= 3,
+                review.overallScore,
+              );
+            }
+          }}
+          onClose={() => setReviewRubricOpen(false)}
+        />
+      )}
+      </Suspense>
+
+      {hintsUsed > 0 && hintLadderOpen && (
         <div
           style={{
             position: 'fixed',
@@ -531,8 +819,14 @@ export default function App() {
             boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
           }}
         >
-          <div style={{ padding: '0 12px 8px', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+          <div style={{ padding: '0 12px 8px', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             Hint Ladder
+            <button
+              onClick={() => setHintLadderOpen(false)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
+            >
+              ×
+            </button>
           </div>
           <HintLadder hints={hints} onRequestHint={handleRequestHint} />
         </div>

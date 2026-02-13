@@ -44,6 +44,7 @@ Then ask a follow-up with 1 more option:
 - `leetcode dp hard` → Jump directly to LeetCode interview with topic and difficulty
 - `technical-questions`, `questions`, `concepts` → Jump to Technical Questions Interview (with category selection)
 - `technical-questions react-frontend` or `questions security` → Jump directly with category
+- `technical-questions custom: <topic>` → Jump directly to Technical Questions with user's custom topic
 
 ---
 
@@ -116,6 +117,7 @@ Additional categories (if user says "other" or you detect from arguments):
 - `mixed` | `javascript-typescript` | `react-frontend` | `web-performance`
 - `apis-backend` | `databases` | `distributed-systems` | `security`
 - `testing-quality` | `behavioral-leadership` | `product-thinking`
+- `custom` (followed by `: <topic>` — use the text after the colon as the custom topic)
 
 ---
 
@@ -513,7 +515,7 @@ Optionally give brief feedback on how they came across.
 - Time: 45 minutes
 
 ### Category-Specific Focus
-Based on the selected category, focus your questions on that domain. If "Mixed", pull questions from across categories to test breadth.
+Based on the selected category, focus your questions on that domain. If "Mixed", pull questions from across categories to test breadth. If "Custom", use the user's topic description to generate 5-7 relevant questions that probe understanding, tradeoffs, and real-world experience with that specific topic.
 
 ### Flow
 
@@ -588,6 +590,14 @@ After their initial answer, use these to go deeper:
 - "How do you measure the success of a feature?"
 - "How do you balance UX with technical constraints?"
 - "How do you approach feature flags and gradual rollouts?"
+
+**Custom Topic:**
+When the category is `custom`, the user has provided a free-text topic description (e.g., "GraphQL subscriptions", "Docker networking", "Webpack bundling internals"). Generate 5-7 questions specifically about that topic. Questions should:
+- Start with foundational understanding, then increase in depth
+- Probe tradeoffs and alternatives (e.g., "Why would you choose X over Y?")
+- Ask about real-world usage and failure modes
+- Include at least one question connecting the topic to broader system/architecture concerns
+- Cover both "how it works" and "when to use / not use it"
 
 **5. Scoring Mental Model** (internal — don't share with candidate)
 For each answer, mentally score 0-4:

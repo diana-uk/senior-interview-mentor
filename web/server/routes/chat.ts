@@ -4,7 +4,31 @@ import { validate } from '../middleware/validate.js';
 import { chatLimiter } from '../middleware/rateLimiter.js';
 import { streamChatResponse } from '../services/claude.js';
 
-const router = Router();
+/**
+ * Extract specially-tagged code blocks from Claude's /solve response.
+ * Returns the blocks (starterCode, testCode) and the cleaned text
+ * with tags removed so the chat still renders normal code fences.
+ */
+function extractEditorBlocks(text: string) {
+  const starterRe = /```typescript\s+starter-code\s*\n([\s\S]*?)```/;
+  const testRe = /```typescript\s+test-code\s*\n([\s\S]*?)```/;
+  const starterMatch = text.match(starterRe);
+  const testMatch = text.match(testRe);
+
+  if (!starterMatch && !testMatch) return { blocks: null, cleaned: text };
+
+  let cleaned = text;
+  if (starterMatch) cleaned = cleaned.replace(starterRe, '```typescript\n' + starterMatch[1] + '```');
+  if (testMatch) cleaned = cleaned.replace(testRe, '```typescript\n' + testMatch[1] + '```');
+
+  return {
+    blocks: {
+      starterCode: starterMatch?.[1]?.trimEnd() ?? '',
+      testCode: testMatch?.[1]?.trimEnd() ?? '',
+    },
+    cleaned,
+  };
+}
 
 /**
  * Drip-feed text to the SSE response in word-sized chunks.
@@ -22,6 +46,8 @@ async function simulateStream(
     await new Promise((r) => setTimeout(r, 15));
   }
 }
+
+const router = Router();
 
 router.post('/chat', chatLimiter, validate(chatRequestSchema), (req, res) => {
   res.writeHead(200, {
@@ -41,8 +67,17 @@ router.post('/chat', chatLimiter, validate(chatRequestSchema), (req, res) => {
   const stream = streamChatResponse(req.body, abortController.signal);
 
   stream.onText((text) => {
+    // Extract editor blocks from the full response
+    const { blocks, cleaned } = extractEditorBlocks(text);
+
+    // Send editor-update event before streaming the text
+    if (blocks && (blocks.starterCode || blocks.testCode)) {
+      res.write(`data: ${JSON.stringify({ type: 'editor-update', ...blocks })}\n\n`);
+    }
+
+    // Simulate streaming for the cleaned text (typing effect)
     streamingDone = simulateStream(
-      text,
+      cleaned,
       (chunk) => {
         if (!abortController.signal.aborted) {
           const data = JSON.stringify({ type: 'delta', text: chunk });

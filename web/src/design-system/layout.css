@@ -636,6 +636,34 @@
   gap: var(--space-2);
 }
 
+.language-select {
+  height: 28px;
+  padding: 0 var(--space-2);
+  background: var(--bg-inset);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.language-select:hover {
+  border-color: var(--border-emphasis);
+  color: var(--text-primary);
+}
+
+.language-select:focus {
+  border-color: var(--accent-blue);
+}
+
+.language-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
 .editor-content {
   flex: 1;
   overflow: hidden;
@@ -711,6 +739,100 @@
   padding: var(--space-3);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+}
+
+/* Output panel tabs (Tests / Console) */
+.output-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.output-tab {
+  padding: 2px 10px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.output-tab:hover {
+  color: var(--text-secondary);
+  background: var(--bg-inset);
+}
+
+.output-tab-active {
+  color: var(--text-primary);
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+}
+
+.output-tab-badge {
+  font-size: 9px;
+  min-width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--neon-cyan-subtle);
+  color: var(--neon-cyan);
+  font-weight: var(--font-semibold);
+}
+
+/* Console log entries */
+.console-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.console-entry:last-child {
+  border-bottom: none;
+}
+
+.console-entry-prefix {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.console-entry-message {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text-secondary);
+}
+
+.console-entry-log .console-entry-message {
+  color: var(--text-primary);
+}
+
+.console-entry-warn .console-entry-prefix,
+.console-entry-warn .console-entry-message {
+  color: var(--color-warning);
+}
+
+.console-entry-error .console-entry-prefix,
+.console-entry-error .console-entry-message {
+  color: var(--color-error);
+}
+
+.console-entry-info .console-entry-prefix,
+.console-entry-info .console-entry-message {
+  color: var(--color-info);
 }
 
 .test-result {

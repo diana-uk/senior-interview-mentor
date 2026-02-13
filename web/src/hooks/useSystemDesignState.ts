@@ -116,8 +116,8 @@ function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDe
   }
 }
 
-export function useSystemDesignState() {
-  const [sdState, sdDispatch] = useReducer(reducer, initialState);
+export function useSystemDesignState(restoredState?: SystemDesignState) {
+  const [sdState, sdDispatch] = useReducer(reducer, restoredState ?? initialState);
 
   const advancePhase = useCallback(() => {
     const idx = PHASE_ORDER.indexOf(sdState.currentPhase);

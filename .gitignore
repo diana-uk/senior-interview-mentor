@@ -16,3 +16,15 @@ sessions/
 
 # MCP config (contains tokens)
 .mcp.json
+
+# Windows artifacts
+nul
+
+# Generated HTML docs
+html/
+
+# Playwright MCP screenshots
+.playwright-mcp/
+
+# Claude plans (temporary)
+.claude/plans/
