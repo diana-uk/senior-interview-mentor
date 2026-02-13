@@ -306,4 +306,107 @@ export const treesProblems: FullProblem[] = [
       { input: 'maxPathSum(buildTree([-3]))', expected: '-3' },
     ],
   },
+  {
+    group: 'Trees',
+    id: 'tr-12',
+    title: 'Diameter of Binary Tree',
+    difficulty: 'Easy',
+    pattern: 'Trees' as PatternName,
+    description:
+      'Given the `root` of a binary tree, return the length of the diameter of the tree.\n\nThe diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the `root`.\n\nThe length of a path between two nodes is represented by the number of edges between them.',
+    examples: [
+      'Input: root = [1,2,3,4,5]\nOutput: 3\nExplanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].',
+      'Input: root = [1,2]\nOutput: 1',
+    ],
+    constraints: [
+      'The number of nodes in the tree is in the range [1, 10^4].',
+      '-100 <= Node.val <= 100',
+    ],
+    starterCode:
+      TREE_HELPERS +
+      `// Your solution below\nfunction diameterOfBinaryTree(root: TreeNode | null): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'diameterOfBinaryTree(buildTree([1,2,3,4,5]))', expected: '3' },
+      { input: 'diameterOfBinaryTree(buildTree([1,2]))', expected: '1' },
+      { input: 'diameterOfBinaryTree(buildTree([1]))', expected: '0' },
+    ],
+  },
+  {
+    group: 'Trees',
+    id: 'tr-13',
+    title: 'Balanced Binary Tree',
+    difficulty: 'Easy',
+    pattern: 'Trees' as PatternName,
+    description:
+      'Given a binary tree, determine if it is height-balanced.\n\nA height-balanced binary tree is a binary tree in which the depth of the two subtrees of every node never differs by more than one.',
+    examples: [
+      'Input: root = [3,9,20,null,null,15,7]\nOutput: true',
+      'Input: root = [1,2,2,3,3,null,null,4,4]\nOutput: false',
+      'Input: root = []\nOutput: true',
+    ],
+    constraints: [
+      'The number of nodes in the tree is in the range [0, 5000].',
+      '-10^4 <= Node.val <= 10^4',
+    ],
+    starterCode:
+      TREE_HELPERS +
+      `// Your solution below\nfunction isBalanced(root: TreeNode | null): boolean {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'isBalanced(buildTree([3,9,20,null,null,15,7]))', expected: 'true' },
+      { input: 'isBalanced(buildTree([1,2,2,3,3,null,null,4,4]))', expected: 'false' },
+      { input: 'isBalanced(buildTree([]))', expected: 'true' },
+    ],
+  },
+  {
+    group: 'Trees',
+    id: 'tr-14',
+    title: 'Binary Tree Right Side View',
+    difficulty: 'Medium',
+    pattern: 'Trees' as PatternName,
+    description:
+      'Given the `root` of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.',
+    examples: [
+      'Input: root = [1,2,3,null,5,null,4]\nOutput: [1,3,4]',
+      'Input: root = [1,null,3]\nOutput: [1,3]',
+      'Input: root = []\nOutput: []',
+    ],
+    constraints: [
+      'The number of nodes in the tree is in the range [0, 100].',
+      '-100 <= Node.val <= 100',
+    ],
+    starterCode:
+      TREE_HELPERS +
+      `// Your solution below\nfunction rightSideView(root: TreeNode | null): number[] {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'rightSideView(buildTree([1,2,3,null,5,null,4]))', expected: '[1,3,4]' },
+      { input: 'rightSideView(buildTree([1,null,3]))', expected: '[1,3]' },
+      { input: 'rightSideView(buildTree([]))', expected: '[]' },
+    ],
+  },
+  {
+    group: 'Trees',
+    id: 'tr-15',
+    title: 'Count Good Nodes in Binary Tree',
+    difficulty: 'Medium',
+    pattern: 'Trees' as PatternName,
+    description:
+      'Given a binary tree `root`, a node X in the tree is named good if in the path from root to X there are no nodes with a value greater than X.\n\nReturn the number of good nodes in the binary tree.',
+    examples: [
+      'Input: root = [3,1,4,3,null,1,5]\nOutput: 4\nExplanation: Root node (3), node with value 3 in left subtree, node with value 4 and node with value 5 are good.',
+      'Input: root = [3,3,null,4,2]\nOutput: 3',
+      'Input: root = [1]\nOutput: 1',
+    ],
+    constraints: [
+      'The number of nodes in the binary tree is in the range [1, 10^5].',
+      'Each node\'s value is between [-10^4, 10^4].',
+    ],
+    starterCode:
+      TREE_HELPERS +
+      `// Your solution below\nfunction goodNodes(root: TreeNode | null): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'goodNodes(buildTree([3,1,4,3,null,1,5]))', expected: '4' },
+      { input: 'goodNodes(buildTree([3,3,null,4,2]))', expected: '3' },
+      { input: 'goodNodes(buildTree([1]))', expected: '1' },
+    ],
+  },
 ];

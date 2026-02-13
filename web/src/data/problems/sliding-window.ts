@@ -93,4 +93,51 @@ export const slidingWindowProblems: FullProblem[] = [
       { input: 'maxProfit([2,4,1])', expected: '2' },
     ],
   },
+  {
+    group: 'Sliding Window',
+    id: 'sw-5',
+    title: 'Permutation in String',
+    difficulty: 'Medium',
+    pattern,
+    description:
+      'Given two strings `s1` and `s2`, return `true` if `s2` contains a permutation of `s1`, or `false` otherwise.\n\nIn other words, return `true` if one of `s1`\'s permutations is a substring of `s2`.',
+    examples: [
+      'Input: s1 = "ab", s2 = "eidbaooo"\nOutput: true\nExplanation: s2 contains one permutation of s1 ("ba").',
+      'Input: s1 = "ab", s2 = "eidboaoo"\nOutput: false',
+    ],
+    constraints: [
+      '1 <= s1.length, s2.length <= 10^4',
+      's1 and s2 consist of lowercase English letters.',
+    ],
+    starterCode: `function checkInclusion(s1: string, s2: string): boolean {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'checkInclusion("ab", "eidbaooo")', expected: 'true' },
+      { input: 'checkInclusion("ab", "eidboaoo")', expected: 'false' },
+      { input: 'checkInclusion("adc", "dcda")', expected: 'true' },
+    ],
+  },
+  {
+    group: 'Sliding Window',
+    id: 'sw-6',
+    title: 'Sliding Window Maximum',
+    difficulty: 'Hard',
+    pattern,
+    description:
+      'You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position.\n\nReturn the max sliding window.',
+    examples: [
+      'Input: nums = [1,3,-1,-3,5,3,6,7], k = 3\nOutput: [3,3,5,5,6,7]\nExplanation:\nWindow position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       3\n 1 [3  -1  -3] 5  3  6  7       3\n 1  3 [-1  -3  5] 3  6  7       5\n 1  3  -1 [-3  5  3] 6  7       5\n 1  3  -1  -3 [5  3  6] 7       6\n 1  3  -1  -3  5 [3  6  7]      7',
+      'Input: nums = [1], k = 1\nOutput: [1]',
+    ],
+    constraints: [
+      '1 <= nums.length <= 10^5',
+      '-10^4 <= nums[i] <= 10^4',
+      '1 <= k <= nums.length',
+    ],
+    starterCode: `function maxSlidingWindow(nums: number[], k: number): number[] {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'maxSlidingWindow([1,3,-1,-3,5,3,6,7], 3)', expected: '[3,3,5,5,6,7]' },
+      { input: 'maxSlidingWindow([1], 1)', expected: '[1]' },
+      { input: 'maxSlidingWindow([1,-1], 1)', expected: '[1,-1]' },
+    ],
+  },
 ];

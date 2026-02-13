@@ -124,4 +124,75 @@ export const heapProblems: FullProblem[] = [
       { input: 'topKFrequent([1,2], 2).sort((a,b) => a-b)', expected: '[1,2]' },
     ],
   },
+  {
+    group: 'Heap',
+    id: 'hp-5',
+    title: 'Last Stone Weight',
+    difficulty: 'Easy',
+    pattern,
+    description:
+      'You are given an array of integers `stones` where `stones[i]` is the weight of the `ith` stone.\n\nWe are playing a game with the stones. On each turn, we choose the heaviest two stones and smash them together. Suppose the heaviest two stones have weights `x` and `y` with `x <= y`. The result of this smash is:\n- If `x == y`, both stones are destroyed, and\n- If `x != y`, the stone of weight `x` is destroyed, and the stone of weight `y` has new weight `y - x`.\n\nAt the end of the game, there is at most one stone left. Return the weight of the last remaining stone. If there are no stones left, return `0`.',
+    examples: [
+      'Input: stones = [2,7,4,1,8,1]\nOutput: 1\nExplanation:\nWe combine 7 and 8 to get 1 so stones = [2,4,1,1,1]\nWe combine 2 and 4 to get 2 so stones = [2,1,1,1]\nWe combine 2 and 1 to get 1 so stones = [1,1,1]\nWe combine 1 and 1 to get 0 so stones = [1]\nThere is 1 stone left.',
+      'Input: stones = [1]\nOutput: 1',
+    ],
+    constraints: [
+      '1 <= stones.length <= 30',
+      '1 <= stones[i] <= 1000',
+    ],
+    starterCode: `function lastStoneWeight(stones: number[]): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'lastStoneWeight([2,7,4,1,8,1])', expected: '1' },
+      { input: 'lastStoneWeight([1])', expected: '1' },
+      { input: 'lastStoneWeight([2,2])', expected: '0' },
+    ],
+  },
+  {
+    group: 'Heap',
+    id: 'hp-6',
+    title: 'K Closest Points to Origin',
+    difficulty: 'Medium',
+    pattern,
+    description:
+      'Given an array of `points` where `points[i] = [xi, yi]` represents a point on the X-Y plane and an integer `k`, return the `k` closest points to the origin `(0, 0)`.\n\nThe distance between two points on the X-Y plane is the Euclidean distance (i.e., `sqrt(x1^2 + y1^2)`).\n\nYou may return the answer in any order. The answer is guaranteed to be unique.',
+    examples: [
+      'Input: points = [[1,3],[-2,2]], k = 1\nOutput: [[-2,2]]\nExplanation: The distance between (1, 3) and the origin is sqrt(10). The distance between (-2, 2) and the origin is sqrt(8). Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.',
+      'Input: points = [[3,3],[5,-1],[-2,4]], k = 2\nOutput: [[3,3],[-2,4]]',
+    ],
+    constraints: [
+      '1 <= k <= points.length <= 10^4',
+      '-10^4 <= xi, yi <= 10^4',
+    ],
+    starterCode: `function kClosest(points: number[][], k: number): number[][] {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'kClosest([[1,3],[-2,2]], 1)', expected: '[[-2,2]]' },
+      { input: 'kClosest([[3,3],[5,-1],[-2,4]], 2).sort((a,b) => a[0]-b[0])', expected: '[[-2,4],[3,3]]' },
+      { input: 'kClosest([[0,1],[1,0]], 2).sort((a,b) => a[0]-b[0])', expected: '[[0,1],[1,0]]' },
+    ],
+  },
+  {
+    group: 'Heap',
+    id: 'hp-7',
+    title: 'Task Scheduler',
+    difficulty: 'Medium',
+    pattern,
+    description:
+      'You are given an array of CPU tasks, each represented by letters A to Z, and a cooling interval `n`. Each cycle or interval allows the completion of one task. Tasks can be completed in any order, but there\'s a constraint: identical tasks must be separated by at least `n` intervals due to cooling time.\n\nReturn the minimum number of intervals the CPU will take to finish all the given tasks.',
+    examples: [
+      'Input: tasks = ["A","A","A","B","B","B"], n = 2\nOutput: 8\nExplanation: A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.',
+      'Input: tasks = ["A","C","A","B","D","B"], n = 1\nOutput: 6\nExplanation: A possible sequence is: A -> B -> A -> C -> D -> B.',
+      'Input: tasks = ["A","A","A","B","B","B"], n = 0\nOutput: 6',
+    ],
+    constraints: [
+      '1 <= tasks.length <= 10^4',
+      'tasks[i] is an uppercase English letter.',
+      '0 <= n <= 100',
+    ],
+    starterCode: `function leastInterval(tasks: string[], n: number): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'leastInterval(["A","A","A","B","B","B"], 2)', expected: '8' },
+      { input: 'leastInterval(["A","C","A","B","D","B"], 1)', expected: '6' },
+      { input: 'leastInterval(["A","A","A","B","B","B"], 0)', expected: '6' },
+    ],
+  },
 ];

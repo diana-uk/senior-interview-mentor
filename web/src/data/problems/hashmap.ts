@@ -129,4 +129,57 @@ export const hashmapProblems: FullProblem[] = [
       { input: 'isAnagram("a", "ab")', expected: 'false' },
     ],
   },
+  {
+    group: 'HashMap',
+    id: 'hm-6',
+    title: 'Encode and Decode Strings',
+    difficulty: 'Medium',
+    pattern,
+    description:
+      'Design an algorithm to encode a list of strings to a single string. The encoded string is then decoded back to the original list of strings.\n\nImplement `encode` and `decode` functions.',
+    examples: [
+      'Input: strs = ["lint","code","love","you"]\nEncoded: "4#lint4#code4#love3#you"\nOutput: ["lint","code","love","you"]',
+      'Input: strs = ["we","say",":","yes"]\nOutput: ["we","say",":","yes"]',
+    ],
+    constraints: [
+      '0 <= strs.length <= 200',
+      '0 <= strs[i].length <= 200',
+      'strs[i] contains any possible characters out of 256 valid ASCII characters.',
+    ],
+    starterCode: `function encode(strs: string[]): string {\n  // Your solution here\n  \n}\n\nfunction decode(s: string): string[] {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'JSON.stringify(decode(encode(["lint","code","love","you"])))', expected: 'JSON.stringify(["lint","code","love","you"])' },
+      { input: 'JSON.stringify(decode(encode(["we","say",":","yes"])))', expected: 'JSON.stringify(["we","say",":","yes"])' },
+      { input: 'JSON.stringify(decode(encode([""])))', expected: 'JSON.stringify([""])' },
+    ],
+  },
+  {
+    group: 'HashMap',
+    id: 'hm-7',
+    title: 'Valid Sudoku',
+    difficulty: 'Medium',
+    pattern,
+    description:
+      'Determine if a `9 x 9` Sudoku board is valid. Only the filled cells need to be validated according to the following rules:\n\n1. Each row must contain the digits `1-9` without repetition.\n2. Each column must contain the digits `1-9` without repetition.\n3. Each of the nine `3 x 3` sub-boxes of the grid must contain the digits `1-9` without repetition.\n\nNote: A Sudoku board (partially filled) could be valid but is not necessarily solvable. Only the filled cells need to be validated.',
+    examples: [
+      'Input: board =\n[["5","3",".",".","7",".",".",".","."]\n,["6",".",".","1","9","5",".",".","."]\n,[".","9","8",".",".",".",".","6","."]\n,["8",".",".",".","6",".",".",".","3"]\n,["4",".",".","8",".","3",".",".","1"]\n,["7",".",".",".","2",".",".",".","6"]\n,[".","6",".",".",".",".","2","8","."]\n,[".",".",".","4","1","9",".",".","5"]\n,[".",".",".",".","8",".",".","7","9"]]\nOutput: true',
+      'Input: board (with duplicate "8" in first column)\nOutput: false',
+    ],
+    constraints: [
+      'board.length == 9',
+      'board[i].length == 9',
+      'board[i][j] is a digit 1-9 or \'.\'.',
+    ],
+    starterCode: `function isValidSudoku(board: string[][]): boolean {\n  // Your solution here\n  \n}`,
+    testCases: [
+      {
+        input: 'isValidSudoku([["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]])',
+        expected: 'true',
+      },
+      {
+        input: 'isValidSudoku([["8","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]])',
+        expected: 'false',
+      },
+    ],
+  },
 ];

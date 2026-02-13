@@ -73,4 +73,41 @@ export const trieProblems: FullProblem[] = [
       },
     ],
   },
+  {
+    group: 'Trie',
+    id: 'tri-3',
+    title: 'Design Add and Search Words Data Structure',
+    difficulty: 'Medium',
+    pattern: 'Backtracking' as PatternName,
+    description:
+      'Design a data structure that supports adding new words and finding if a string matches any previously added string.\n\nImplement the `WordDictionary` class:\n- `WordDictionary()` Initializes the object.\n- `addWord(word)` Adds `word` to the data structure, it can be matched later.\n- `search(word)` Returns `true` if there is any string in the data structure that matches `word` or `false` otherwise. `word` may contain dots `\'.\'` where dots can be matched with any letter.',
+    examples: [
+      'Input:\n["WordDictionary","addWord","addWord","addWord","search","search","search","search"]\n[[],["bad"],["dad"],["mad"],["pad"],["bad"],[".ad"],["b.."]]\nOutput: [null,null,null,null,false,true,true,true]',
+    ],
+    constraints: [
+      '1 <= word.length <= 25',
+      'word in addWord consists of lowercase English letters.',
+      'word in search consist of \'.\' or lowercase English letters.',
+      'There will be at most 3 dots in word for search queries.',
+      'At most 10^4 calls will be made to addWord and search.',
+    ],
+    starterCode: `class WordDictionary {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  addWord(word: string): void {\n    // Your solution here\n  }\n\n  search(word: string): boolean {\n    // Your solution here\n  }\n}`,
+    testCases: [
+      {
+        input:
+          '(() => { const wd = new WordDictionary(); wd.addWord("bad"); wd.addWord("dad"); wd.addWord("mad"); return wd.search("pad"); })()',
+        expected: 'false',
+      },
+      {
+        input:
+          '(() => { const wd = new WordDictionary(); wd.addWord("bad"); wd.addWord("dad"); wd.addWord("mad"); return wd.search("bad"); })()',
+        expected: 'true',
+      },
+      {
+        input:
+          '(() => { const wd = new WordDictionary(); wd.addWord("bad"); wd.addWord("dad"); wd.addWord("mad"); return wd.search(".ad"); })()',
+        expected: 'true',
+      },
+    ],
+  },
 ];

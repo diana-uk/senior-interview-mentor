@@ -116,4 +116,50 @@ export const bitManipulationProblems: FullProblem[] = [
       { input: 'getSum(-1,1)', expected: '0' },
     ],
   },
+  {
+    group: 'Bit Manipulation',
+    id: 'bm-6',
+    title: 'Single Number',
+    difficulty: 'Easy',
+    pattern: 'Bit Manipulation' as PatternName,
+    description:
+      'Given a non-empty array of integers `nums`, every element appears twice except for one. Find that single one.\n\nYou must implement a solution with a linear runtime complexity and use only constant extra space.',
+    examples: [
+      'Input: nums = [2,2,1]\nOutput: 1',
+      'Input: nums = [4,1,2,1,2]\nOutput: 4',
+      'Input: nums = [1]\nOutput: 1',
+    ],
+    constraints: [
+      '1 <= nums.length <= 3 * 10^4',
+      '-3 * 10^4 <= nums[i] <= 3 * 10^4',
+      'Each element in the array appears twice except for one element which appears only once.',
+    ],
+    starterCode: `function singleNumber(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'singleNumber([2,2,1])', expected: '1' },
+      { input: 'singleNumber([4,1,2,1,2])', expected: '4' },
+      { input: 'singleNumber([1])', expected: '1' },
+    ],
+  },
+  {
+    group: 'Bit Manipulation',
+    id: 'bm-7',
+    title: 'Reverse Integer',
+    difficulty: 'Medium',
+    pattern: 'Bit Manipulation' as PatternName,
+    description:
+      'Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing `x` causes the value to go outside the signed 32-bit integer range `[-2^31, 2^31 - 1]`, then return `0`.\n\nAssume the environment does not allow you to store 64-bit integers (signed or unsigned).',
+    examples: [
+      'Input: x = 123\nOutput: 321',
+      'Input: x = -123\nOutput: -321',
+      'Input: x = 120\nOutput: 21',
+    ],
+    constraints: ['-2^31 <= x <= 2^31 - 1'],
+    starterCode: `function reverse(x: number): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'reverse(123)', expected: '321' },
+      { input: 'reverse(-123)', expected: '-321' },
+      { input: 'reverse(120)', expected: '21' },
+    ],
+  },
 ];
