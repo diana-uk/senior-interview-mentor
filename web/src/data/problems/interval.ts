@@ -170,4 +170,29 @@ export const intervalProblems: FullProblem[] = [
       },
     ],
   },
+  {
+    group: 'Intervals',
+    id: 'iv-6',
+    title: 'Minimum Interval to Include Each Query',
+    difficulty: 'Hard',
+    pattern: 'Intervals' as PatternName,
+    description:
+      'You are given a 2D integer array `intervals`, where `intervals[i] = [lefti, righti]` describes the `ith` interval starting at `lefti` and ending at `righti` (inclusive). The size of an interval is defined as the number of integers it contains, or more formally `righti - lefti + 1`.\n\nYou are also given an integer array `queries`. The answer to the `jth` query is the size of the smallest interval `i` such that `lefti <= queries[j] <= righti`. If no such interval exists, the answer is `-1`.\n\nReturn an array containing the answers to the queries.',
+    examples: [
+      'Input: intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5]\nOutput: [3,3,1,4]',
+      'Input: intervals = [[2,3],[2,5],[1,8],[20,25]], queries = [2,19,5,22]\nOutput: [2,-1,4,6]',
+    ],
+    constraints: [
+      '1 <= intervals.length <= 10^5',
+      '1 <= queries.length <= 10^5',
+      'intervals[i].length == 2',
+      '1 <= lefti <= righti <= 10^7',
+      '1 <= queries[j] <= 10^7',
+    ],
+    starterCode: `function minInterval(intervals: number[][], queries: number[]): number[] {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'minInterval([[1,4],[2,4],[3,6],[4,4]], [2,3,4,5])', expected: '[3,3,1,4]' },
+      { input: 'minInterval([[2,3],[2,5],[1,8],[20,25]], [2,19,5,22])', expected: '[2,-1,4,6]' },
+    ],
+  },
 ];

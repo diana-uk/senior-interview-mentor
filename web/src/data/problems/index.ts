@@ -17,6 +17,10 @@ import { trieProblems } from './trie';
 import { dpProblems } from './dynamic-programming';
 import { graphsProblems } from './graphs';
 import { heapProblems } from './heap';
+import { backtrackingProblems } from './backtracking';
+import { greedyProblems } from './greedy';
+import { advancedGraphsProblems } from './advanced-graphs';
+import { mathGeometryProblems } from './math-geometry';
 
 // ── Aggregate all problems ──
 
@@ -37,6 +41,10 @@ const allProblems: FullProblem[] = [
   ...dpProblems,
   ...graphsProblems,
   ...heapProblems,
+  ...backtrackingProblems,
+  ...greedyProblems,
+  ...advancedGraphsProblems,
+  ...mathGeometryProblems,
 ];
 
 // ── Derived exports (same interface as original problems.ts) ──

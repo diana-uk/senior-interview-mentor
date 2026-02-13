@@ -24,6 +24,8 @@ export type PatternName =
   | 'Two Pointers'
   | 'HashMap'
   | 'Prefix Sum'
+  | 'Stack'
+  | 'Linked List'
   | 'BFS/DFS'
   | 'Topological Sort'
   | 'Union-Find'
@@ -33,6 +35,7 @@ export type PatternName =
   | 'Greedy'
   | 'Dynamic Programming'
   | 'Backtracking'
+  | 'Bit Manipulation'
   | 'Trees';
 
 export type TopicName =

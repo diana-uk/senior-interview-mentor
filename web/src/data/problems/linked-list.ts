@@ -171,4 +171,167 @@ export const linkedListProblems: FullProblem[] = [
       },
     ],
   },
+  {
+    group: 'Linked List',
+    id: 'll-6',
+    title: 'Add Two Numbers',
+    difficulty: 'Medium',
+    pattern: 'Linked List' as PatternName,
+    description:
+      'You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself.',
+    examples: [
+      'Input: l1 = [2,4,3], l2 = [5,6,4]\nOutput: [7,0,8]\nExplanation: 342 + 465 = 807.',
+      'Input: l1 = [0], l2 = [0]\nOutput: [0]',
+      'Input: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]\nOutput: [8,9,9,9,0,0,0,1]',
+    ],
+    constraints: [
+      'The number of nodes in each linked list is in the range [1, 100].',
+      '0 <= Node.val <= 9',
+      'It is guaranteed that the list represents a number that does not have leading zeros.',
+    ],
+    starterCode:
+      LIST_HELPERS +
+      `// Your solution below\nfunction addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+    testCases: [
+      {
+        input: 'listToArray(addTwoNumbers(buildList([2,4,3]), buildList([5,6,4])))',
+        expected: '[7,0,8]',
+      },
+      {
+        input: 'listToArray(addTwoNumbers(buildList([0]), buildList([0])))',
+        expected: '[0]',
+      },
+      {
+        input: 'listToArray(addTwoNumbers(buildList([9,9,9,9,9,9,9]), buildList([9,9,9,9])))',
+        expected: '[8,9,9,9,0,0,0,1]',
+      },
+    ],
+  },
+  {
+    group: 'Linked List',
+    id: 'll-7',
+    title: 'Copy List with Random Pointer',
+    difficulty: 'Medium',
+    pattern: 'Linked List' as PatternName,
+    description:
+      'A linked list of length `n` is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`.\n\nConstruct a deep copy of the list. The deep copy should consist of exactly `n` brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state.',
+    examples: [
+      'Input: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]\nOutput: [[7,null],[13,0],[11,4],[10,2],[1,0]]',
+      'Input: head = [[1,1],[2,1]]\nOutput: [[1,1],[2,1]]',
+    ],
+    constraints: [
+      '0 <= n <= 1000',
+      '-10^4 <= Node.val <= 10^4',
+      'Node.random is null or is pointing to some node in the linked list.',
+    ],
+    starterCode: `class RNode {\n  val: number;\n  next: RNode | null;\n  random: RNode | null;\n  constructor(val = 0, next: RNode | null = null, random: RNode | null = null) {\n    this.val = val;\n    this.next = next;\n    this.random = random;\n  }\n}\n\nfunction copyRandomList(head: RNode | null): RNode | null {\n  // Your solution here\n  \n}`,
+    testCases: [
+      {
+        input:
+          '(() => { const n1 = new RNode(7); const n2 = new RNode(13); const n3 = new RNode(11); n1.next = n2; n2.next = n3; n2.random = n1; n3.random = n1; const c = copyRandomList(n1); return c !== n1 && c!.val === 7 && c!.next!.random!.val === 7; })()',
+        expected: 'true',
+      },
+      {
+        input: 'copyRandomList(null)',
+        expected: 'null',
+      },
+    ],
+  },
+  {
+    group: 'Linked List',
+    id: 'll-8',
+    title: 'Find the Duplicate Number',
+    difficulty: 'Medium',
+    pattern: 'Two Pointers' as PatternName,
+    description:
+      'Given an array of integers `nums` containing `n + 1` integers where each integer is in the range `[1, n]` inclusive.\n\nThere is only one repeated number in `nums`, return this repeated number.\n\nYou must solve the problem without modifying the array `nums` and using only constant extra space.',
+    examples: [
+      'Input: nums = [1,3,4,2,2]\nOutput: 2',
+      'Input: nums = [3,1,3,4,2]\nOutput: 3',
+      'Input: nums = [3,3,3,3,3]\nOutput: 3',
+    ],
+    constraints: [
+      '1 <= n <= 10^5',
+      'nums.length == n + 1',
+      '1 <= nums[i] <= n',
+      'All the integers in nums appear only once except for precisely one integer which appears two or more times.',
+    ],
+    starterCode: `function findDuplicate(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    testCases: [
+      { input: 'findDuplicate([1,3,4,2,2])', expected: '2' },
+      { input: 'findDuplicate([3,1,3,4,2])', expected: '3' },
+      { input: 'findDuplicate([3,3,3,3,3])', expected: '3' },
+    ],
+  },
+  {
+    group: 'Linked List',
+    id: 'll-9',
+    title: 'LRU Cache',
+    difficulty: 'Medium',
+    pattern: 'Linked List' as PatternName,
+    description:
+      'Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.\n\nImplement the `LRUCache` class:\n- `LRUCache(capacity)` Initialize the LRU cache with positive size `capacity`.\n- `get(key)` Return the value of the key if the key exists, otherwise return `-1`.\n- `put(key, value)` Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the `capacity`, evict the least recently used key.\n\nThe functions `get` and `put` must each run in `O(1)` average time complexity.',
+    examples: [
+      'Input:\n["LRUCache","put","put","get","put","get","put","get","get","get"]\n[[2],[1,1],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]\nOutput: [null,null,null,1,null,-1,null,-1,3,4]',
+    ],
+    constraints: [
+      '1 <= capacity <= 3000',
+      '0 <= key <= 10^4',
+      '0 <= value <= 10^5',
+      'At most 2 * 10^5 calls will be made to get and put.',
+    ],
+    starterCode: `class LRUCache {\n  constructor(capacity: number) {\n    // Initialize your data structure here\n  }\n\n  get(key: number): number {\n    // Your solution here\n  }\n\n  put(key: number, value: number): void {\n    // Your solution here\n  }\n}`,
+    testCases: [
+      {
+        input:
+          '(() => { const c = new LRUCache(2); c.put(1,1); c.put(2,2); return c.get(1); })()',
+        expected: '1',
+      },
+      {
+        input:
+          '(() => { const c = new LRUCache(2); c.put(1,1); c.put(2,2); c.put(3,3); return c.get(2); })()',
+        expected: '-1',
+      },
+      {
+        input:
+          '(() => { const c = new LRUCache(2); c.put(1,1); c.put(2,2); c.get(1); c.put(3,3); return c.get(2); })()',
+        expected: '-1',
+      },
+    ],
+  },
+  {
+    group: 'Linked List',
+    id: 'll-10',
+    title: 'Reverse Nodes in k-Group',
+    difficulty: 'Hard',
+    pattern: 'Linked List' as PatternName,
+    description:
+      'Given the `head` of a linked list, reverse the nodes of the list `k` at a time, and return the modified list.\n\n`k` is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of `k` then left-out nodes, in the end, should remain as it is.\n\nYou may not alter the values in the list\'s nodes, only nodes themselves may be changed.',
+    examples: [
+      'Input: head = [1,2,3,4,5], k = 2\nOutput: [2,1,4,3,5]',
+      'Input: head = [1,2,3,4,5], k = 3\nOutput: [3,2,1,4,5]',
+    ],
+    constraints: [
+      'The number of nodes in the list is n.',
+      '1 <= k <= n <= 5000',
+      '0 <= Node.val <= 1000',
+    ],
+    starterCode:
+      LIST_HELPERS +
+      `// Your solution below\nfunction reverseKGroup(head: ListNode | null, k: number): ListNode | null {\n  // Your solution here\n  \n}`,
+    testCases: [
+      {
+        input: 'listToArray(reverseKGroup(buildList([1,2,3,4,5]), 2))',
+        expected: '[2,1,4,3,5]',
+      },
+      {
+        input: 'listToArray(reverseKGroup(buildList([1,2,3,4,5]), 3))',
+        expected: '[3,2,1,4,5]',
+      },
+      {
+        input: 'listToArray(reverseKGroup(buildList([1,2,3,4,5]), 1))',
+        expected: '[1,2,3,4,5]',
+      },
+    ],
+  },
 ];
