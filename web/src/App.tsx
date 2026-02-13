@@ -19,6 +19,8 @@ import { useStats } from './hooks/useStats';
 import { useAdaptiveRecommendation } from './hooks/useAdaptiveRecommendation';
 import { problemsById } from './data/problems';
 import { getStarterCode, getTestCode } from './utils/problemLanguage';
+import { buildMemorySummary } from './utils/memoryBuilder';
+import { getSettings } from './components/panels/SettingsPanel';
 import type {
   ChatMessage,
   ChatContext,
@@ -266,6 +268,8 @@ export default function App() {
   });
 
   const getContext = useCallback((): ChatContext | undefined => {
+    const settings = getSettings();
+    const memory = buildMemorySummary(stats, mistakes, settings);
     return {
       mode,
       currentProblem: currentProblem
@@ -281,8 +285,9 @@ export default function App() {
       commitmentGateCompleted: commitmentGate.filter((i) => i.completed).length,
       interviewStage,
       technicalQuestionCategory: interviewCategory ?? undefined,
+      memory,
     };
-  }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory]);
+  }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory, stats, mistakes]);
 
   const handleEditorUpdate = useCallback(
     (starterCode: string, testCode: string) => {
