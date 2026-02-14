@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { chatRequestSchema } from '../types.js';
 import { validate } from '../middleware/validate.js';
 import { chatLimiter } from '../middleware/rateLimiter.js';
-import { streamChatResponse } from '../services/claude.js';
+import { streamChat } from '../services/ai.js';
 
 /**
  * Extract specially-tagged code blocks from Claude's /solve response.
@@ -64,7 +64,7 @@ router.post('/chat', chatLimiter, validate(chatRequestSchema), (req, res) => {
     abortController.abort();
   });
 
-  const stream = streamChatResponse(req.body, abortController.signal);
+  const stream = streamChat(req.body, abortController.signal);
 
   stream.onText((text) => {
     // Extract editor blocks from the full response
