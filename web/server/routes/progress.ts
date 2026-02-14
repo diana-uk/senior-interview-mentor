@@ -1,5 +1,4 @@
 import { Router, type Request, type Response } from 'express';
-import { isSupabaseConfigured } from '../db/client.js';
 import {
   getProgressForUser,
   upsertProgress,
@@ -17,38 +16,17 @@ import {
   syncFromLocalStorage,
   type SyncPayload,
 } from '../db/queries.js';
+import { requireAuth, type AuthenticatedRequest } from '../middleware/auth.js';
 
 const router = Router();
-
-/**
- * Middleware: check Supabase is configured and extract user ID.
- * For now, user ID comes from X-User-Id header (placeholder until auth is wired).
- * When SIM-19 (Auth) is complete, this will use JWT verification.
- */
-function requireUser(req: Request, res: Response, next: () => void) {
-  if (!isSupabaseConfigured()) {
-    res.status(503).json({ error: 'Database not configured. Using localStorage fallback.' });
-    return;
-  }
-
-  const userId = req.headers['x-user-id'] as string;
-  if (!userId) {
-    res.status(401).json({ error: 'Missing X-User-Id header. Auth required.' });
-    return;
-  }
-
-  // Attach userId to request for downstream use
-  (req as Request & { userId: string }).userId = userId;
-  next();
-}
 
 // ═══════════════════════════════════════
 // PROBLEM PROGRESS
 // ═══════════════════════════════════════
 
-router.get('/progress', requireUser, async (req: Request, res: Response) => {
+router.get('/progress', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const data = await getProgressForUser(userId);
     res.json(data);
   } catch (err) {
@@ -56,9 +34,9 @@ router.get('/progress', requireUser, async (req: Request, res: Response) => {
   }
 });
 
-router.post('/progress', requireUser, async (req: Request, res: Response) => {
+router.post('/progress', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const { problemId, status, attempts, bestScore, bestTime, hintsUsed, code } = req.body;
     const data = await upsertProgress({
       user_id: userId,
@@ -82,9 +60,9 @@ router.post('/progress', requireUser, async (req: Request, res: Response) => {
 // SESSIONS
 // ═══════════════════════════════════════
 
-router.get('/sessions', requireUser, async (req: Request, res: Response) => {
+router.get('/sessions', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const limit = Math.min(Number(req.query.limit) || 50, 100);
     const data = await getSessionsForUser(userId, limit);
     res.json(data);
@@ -93,9 +71,9 @@ router.get('/sessions', requireUser, async (req: Request, res: Response) => {
   }
 });
 
-router.post('/sessions', requireUser, async (req: Request, res: Response) => {
+router.post('/sessions', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const { mode, problemId, problemTitle, duration, hintsUsed, score, patterns } = req.body;
     const data = await createSession({
       user_id: userId,
@@ -117,9 +95,9 @@ router.post('/sessions', requireUser, async (req: Request, res: Response) => {
 // MISTAKES
 // ═══════════════════════════════════════
 
-router.get('/mistakes', requireUser, async (req: Request, res: Response) => {
+router.get('/mistakes', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const data = await getMistakesForUser(userId);
     res.json(data);
   } catch (err) {
@@ -127,9 +105,9 @@ router.get('/mistakes', requireUser, async (req: Request, res: Response) => {
   }
 });
 
-router.get('/mistakes/due', requireUser, async (req: Request, res: Response) => {
+router.get('/mistakes/due', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const data = await getDueMistakes(userId);
     res.json(data);
   } catch (err) {
@@ -137,9 +115,9 @@ router.get('/mistakes/due', requireUser, async (req: Request, res: Response) => 
   }
 });
 
-router.post('/mistakes', requireUser, async (req: Request, res: Response) => {
+router.post('/mistakes', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const { pattern, problemId, problemTitle, description } = req.body;
     const data = await createMistake({
       user_id: userId,
@@ -154,9 +132,9 @@ router.post('/mistakes', requireUser, async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/mistakes/:id', requireUser, async (req: Request, res: Response) => {
+router.patch('/mistakes/:id', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const id = req.params.id as string;
     const { nextReview, intervalDays, easeFactor, repetitions, streak } = req.body;
     const data = await updateMistake(id, userId, {
@@ -172,9 +150,9 @@ router.patch('/mistakes/:id', requireUser, async (req: Request, res: Response) =
   }
 });
 
-router.delete('/mistakes/:id', requireUser, async (req: Request, res: Response) => {
+router.delete('/mistakes/:id', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const id = req.params.id as string;
     await deleteMistake(id, userId);
     res.json({ deleted: true });
@@ -187,9 +165,9 @@ router.delete('/mistakes/:id', requireUser, async (req: Request, res: Response) 
 // REVIEWS
 // ═══════════════════════════════════════
 
-router.get('/reviews', requireUser, async (req: Request, res: Response) => {
+router.get('/reviews', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const limit = Math.min(Number(req.query.limit) || 50, 100);
     const data = await getReviewsForUser(userId, limit);
     res.json(data);
@@ -198,9 +176,9 @@ router.get('/reviews', requireUser, async (req: Request, res: Response) => {
   }
 });
 
-router.post('/reviews', requireUser, async (req: Request, res: Response) => {
+router.post('/reviews', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const { problemId, problemTitle, dimensions, overallScore, feedback, improvementPlan } = req.body;
     const data = await createReview({
       user_id: userId,
@@ -226,9 +204,9 @@ router.post('/reviews', requireUser, async (req: Request, res: Response) => {
 // STREAKS
 // ═══════════════════════════════════════
 
-router.get('/streak', requireUser, async (req: Request, res: Response) => {
+router.get('/streak', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const data = await getStreak(userId);
     res.json(data ?? { current_streak: 0, longest_streak: 0, last_active_date: null });
   } catch (err) {
@@ -240,9 +218,9 @@ router.get('/streak', requireUser, async (req: Request, res: Response) => {
 // BULK SYNC (localStorage → DB migration)
 // ═══════════════════════════════════════
 
-router.post('/sync', requireUser, async (req: Request, res: Response) => {
+router.post('/sync', requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = (req as AuthenticatedRequest).userId;
     const payload = req.body as SyncPayload;
     const result = await syncFromLocalStorage(userId, payload);
     res.json(result);
