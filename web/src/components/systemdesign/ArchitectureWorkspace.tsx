@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -69,22 +69,57 @@ function ArchitectureWorkspaceInner({
   const reactFlowRef = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
 
-  const nodes: Node[] = useMemo(() =>
-    diagramNodes.map((n) => ({ ...n, type: 'system' })),
-    [diagramNodes],
-  );
+  // Local React Flow state — preserves internal properties like `measured`
+  // that React Flow needs to render nodes visibly after measurement.
+  const [nodes, setNodes] = useState<Node[]>([]);
   const edges: Edge[] = useMemo(() => diagramEdges as Edge[], [diagramEdges]);
 
+  // Sync parent diagramNodes → local nodes, preserving React Flow internals
+  useEffect(() => {
+    setNodes(prev => {
+      const prevMap = new Map(prev.map(n => [n.id, n]));
+      return diagramNodes.map(n => {
+        const existing = prevMap.get(n.id);
+        return {
+          ...n,
+          type: 'system' as const,
+          ...(existing?.measured ? { measured: existing.measured } : {}),
+          ...(existing?.width != null ? { width: existing.width, height: existing.height } : {}),
+        };
+      });
+    });
+  }, [diagramNodes]);
+
   const onNodesChange: OnNodesChange = useCallback((changes) => {
-    const updated = applyNodeChanges(changes, nodes);
-    const serialized = updated.map((n) => ({
-      id: n.id,
-      type: n.type ?? 'system',
-      position: n.position,
-      data: n.data as DiagramNodeData,
-    }));
-    onUpdateDiagram(serialized, diagramEdges);
-  }, [nodes, diagramEdges, onUpdateDiagram]);
+    setNodes(nds => {
+      const updated = applyNodeChanges(changes, nds);
+      // Sync node removals to parent immediately
+      if (changes.some(c => c.type === 'remove')) {
+        const serialized = updated.map(n => ({
+          id: n.id,
+          type: n.type ?? 'system',
+          position: n.position,
+          data: n.data as DiagramNodeData,
+        }));
+        onUpdateDiagram(serialized, diagramEdges);
+      }
+      return updated;
+    });
+  }, [diagramEdges, onUpdateDiagram]);
+
+  // Sync node position changes to parent on drag stop
+  const onNodeDragStop = useCallback(() => {
+    setNodes(nds => {
+      const serialized = nds.map(n => ({
+        id: n.id,
+        type: n.type ?? 'system',
+        position: n.position,
+        data: n.data as DiagramNodeData,
+      }));
+      onUpdateDiagram(serialized, diagramEdges);
+      return nds;
+    });
+  }, [diagramEdges, onUpdateDiagram]);
 
   const onEdgesChange: OnEdgesChange = useCallback((changes) => {
     const updated = applyEdgeChanges(changes, edges);
@@ -183,6 +218,7 @@ function ArchitectureWorkspaceInner({
               onConnect={onConnect}
               onDragOver={handleDragOver}
               onDrop={handleDrop}
+              onNodeDragStop={onNodeDragStop}
               nodeTypes={nodeTypes}
               fitView
               proOptions={{ hideAttribution: true }}
