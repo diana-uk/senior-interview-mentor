@@ -19,7 +19,10 @@ export const stringProblems: FullProblem[] = [
       '1 <= s.length <= 2 * 10^5',
       's consists only of printable ASCII characters.',
     ],
-    starterCode: `function isPalindrome(s: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isPalindrome(s: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_palindrome(s: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isPalindrome("A man, a plan, a canal: Panama")', expected: 'true' },
       { input: 'isPalindrome("race a car")', expected: 'false' },
@@ -42,7 +45,10 @@ export const stringProblems: FullProblem[] = [
       '1 <= s.length <= 1000',
       's consist of only digits and English letters.',
     ],
-    starterCode: `function longestPalindrome(s: string): string {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function longestPalindrome(s: string): string {\n  // Your solution here\n  \n}`,
+      python: `def longest_palindrome(s: str) -> str:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: '["bab","aba"].includes(longestPalindrome("babad"))', expected: 'true' },
       { input: 'longestPalindrome("cbbd")', expected: '"bb"' },
@@ -65,7 +71,10 @@ export const stringProblems: FullProblem[] = [
       '1 <= s.length <= 1000',
       's consists of lowercase English letters.',
     ],
-    starterCode: `function countSubstrings(s: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function countSubstrings(s: string): number {\n  // Your solution here\n  \n}`,
+      python: `def count_substrings(s: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'countSubstrings("abc")', expected: '3' },
       { input: 'countSubstrings("aaa")', expected: '6' },
@@ -89,7 +98,10 @@ export const stringProblems: FullProblem[] = [
       's consists of only uppercase English letters.',
       '0 <= k <= s.length',
     ],
-    starterCode: `function characterReplacement(s: string, k: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function characterReplacement(s: string, k: number): number {\n  // Your solution here\n  \n}`,
+      python: `def character_replacement(s: str, k: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'characterReplacement("ABAB", 2)', expected: '4' },
       { input: 'characterReplacement("AABABBA", 1)', expected: '4' },

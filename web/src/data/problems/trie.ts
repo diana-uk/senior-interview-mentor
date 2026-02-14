@@ -18,7 +18,10 @@ export const trieProblems: FullProblem[] = [
       'word and prefix consist only of lowercase English letters.',
       'At most 3 * 10^4 calls in total will be made to insert, search, and startsWith.',
     ],
-    starterCode: `class Trie {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  insert(word: string): void {\n    // Your solution here\n  }\n\n  search(word: string): boolean {\n    // Your solution here\n  }\n\n  startsWith(prefix: string): boolean {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class Trie {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  insert(word: string): void {\n    // Your solution here\n  }\n\n  search(word: string): boolean {\n    // Your solution here\n  }\n\n  startsWith(prefix: string): boolean {\n    // Your solution here\n  }\n}`,
+      python: `class Trie:\n    def __init__(self):\n        # Your solution here\n        pass\n\n    def insert(self, word: str) -> None:\n        pass\n\n    def search(self, word: str) -> bool:\n        pass\n\n    def starts_with(self, prefix: str) -> bool:\n        pass`,
+    },
     testCases: [
       {
         input:
@@ -59,7 +62,10 @@ export const trieProblems: FullProblem[] = [
       'words[i] consists of lowercase English letters.',
       'All the strings of words are unique.',
     ],
-    starterCode: `function findWords(board: string[][], words: string[]): string[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findWords(board: string[][], words: string[]): string[] {\n  // Your solution here\n  \n}`,
+      python: `def find_words(board: list[list[str]], words: list[str]) -> list[str]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -91,7 +97,10 @@ export const trieProblems: FullProblem[] = [
       'There will be at most 3 dots in word for search queries.',
       'At most 10^4 calls will be made to addWord and search.',
     ],
-    starterCode: `class WordDictionary {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  addWord(word: string): void {\n    // Your solution here\n  }\n\n  search(word: string): boolean {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class WordDictionary {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  addWord(word: string): void {\n    // Your solution here\n  }\n\n  search(word: string): boolean {\n    // Your solution here\n  }\n}`,
+      python: `class WordDictionary:\n    def __init__(self):\n        # Your solution here\n        pass\n\n    def add_word(self, word: str) -> None:\n        pass\n\n    def search(self, word: str) -> bool:\n        pass`,
+    },
     testCases: [
       {
         input:

@@ -117,6 +117,7 @@ export interface ChatContext {
   commitmentGateCompleted: number;
   interviewStage: string | null;
   technicalQuestionCategory?: TechnicalQuestionCategory;
+  language?: SupportedLanguage;
   memory?: MemoryContext;
 }
 

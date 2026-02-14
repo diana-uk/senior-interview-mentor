@@ -46,7 +46,10 @@ export const hashmapProblems: FullProblem[] = [
       '0 <= strs[i].length <= 100',
       'strs[i] consists of lowercase English letters.',
     ],
-    starterCode: `function groupAnagrams(strs: string[]): string[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function groupAnagrams(strs: string[]): string[][] {\n  // Your solution here\n  \n}`,
+      python: `def group_anagrams(strs: list[str]) -> list[list[str]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'groupAnagrams(["eat","tea","tan","ate","nat","bat"]).map(g => [...g].sort())',
@@ -75,7 +78,10 @@ export const hashmapProblems: FullProblem[] = [
       'Input: nums = [0,3,7,2,5,8,4,6,0,1]\nOutput: 9',
     ],
     constraints: ['0 <= nums.length <= 10^5', '-10^9 <= nums[i] <= 10^9'],
-    starterCode: `function longestConsecutive(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function longestConsecutive(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def longest_consecutive(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'longestConsecutive([100,4,200,1,3,2])', expected: '4' },
       { input: 'longestConsecutive([0,3,7,2,5,8,4,6,0,1])', expected: '9' },
@@ -99,7 +105,10 @@ export const hashmapProblems: FullProblem[] = [
       '1 <= nums.length <= 10^5',
       '-10^9 <= nums[i] <= 10^9',
     ],
-    starterCode: `function containsDuplicate(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function containsDuplicate(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def contains_duplicate(nums: list[int]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'containsDuplicate([1,2,3,1])', expected: 'true' },
       { input: 'containsDuplicate([1,2,3,4])', expected: 'false' },
@@ -122,7 +131,10 @@ export const hashmapProblems: FullProblem[] = [
       '1 <= s.length, t.length <= 5 * 10^4',
       's and t consist of lowercase English letters.',
     ],
-    starterCode: `function isAnagram(s: string, t: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isAnagram(s: string, t: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_anagram(s: str, t: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isAnagram("anagram", "nagaram")', expected: 'true' },
       { input: 'isAnagram("rat", "car")', expected: 'false' },
@@ -146,7 +158,10 @@ export const hashmapProblems: FullProblem[] = [
       '0 <= strs[i].length <= 200',
       'strs[i] contains any possible characters out of 256 valid ASCII characters.',
     ],
-    starterCode: `function encode(strs: string[]): string {\n  // Your solution here\n  \n}\n\nfunction decode(s: string): string[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function encode(strs: string[]): string {\n  // Your solution here\n  \n}\n\nfunction decode(s: string): string[] {\n  // Your solution here\n  \n}`,
+      python: `def encode(strs: list[str]) -> str:\n    # Your solution here\n    pass\n\ndef decode(s: str) -> list[str]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'JSON.stringify(decode(encode(["lint","code","love","you"])))', expected: 'JSON.stringify(["lint","code","love","you"])' },
       { input: 'JSON.stringify(decode(encode(["we","say",":","yes"])))', expected: 'JSON.stringify(["we","say",":","yes"])' },
@@ -170,7 +185,10 @@ export const hashmapProblems: FullProblem[] = [
       'board[i].length == 9',
       'board[i][j] is a digit 1-9 or \'.\'.',
     ],
-    starterCode: `function isValidSudoku(board: string[][]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isValidSudoku(board: string[][]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_valid_sudoku(board: list[list[str]]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'isValidSudoku([["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]])',

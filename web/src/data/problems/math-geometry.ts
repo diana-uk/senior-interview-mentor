@@ -15,7 +15,10 @@ export const mathGeometryProblems: FullProblem[] = [
       'Input: n = 2\nOutput: false',
     ],
     constraints: ['1 <= n <= 2^31 - 1'],
-    starterCode: `function isHappy(n: number): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isHappy(n: number): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_happy(n: int) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isHappy(19)', expected: 'true' },
       { input: 'isHappy(2)', expected: 'false' },
@@ -40,7 +43,10 @@ export const mathGeometryProblems: FullProblem[] = [
       '0 <= digits[i] <= 9',
       'digits does not contain any leading 0\'s.',
     ],
-    starterCode: `function plusOne(digits: number[]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function plusOne(digits: number[]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def plus_one(digits: list[int]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'plusOne([1,2,3])', expected: '[1,2,4]' },
       { input: 'plusOne([4,3,2,1])', expected: '[4,3,2,2]' },
@@ -67,7 +73,10 @@ export const mathGeometryProblems: FullProblem[] = [
       'Either x is not zero or n > 0.',
       '-10^4 <= x^n <= 10^4',
     ],
-    starterCode: `function myPow(x: number, n: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function myPow(x: number, n: number): number {\n  // Your solution here\n  \n}`,
+      python: `def my_pow(x: float, n: int) -> float:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'myPow(2.0, 10)', expected: '1024' },
       { input: 'Number(myPow(2.1, 3).toFixed(5))', expected: '9.261' },
@@ -91,7 +100,10 @@ export const mathGeometryProblems: FullProblem[] = [
       'num1 and num2 consist of digits only.',
       'Both num1 and num2 do not contain any leading zero, except the number 0 itself.',
     ],
-    starterCode: `function multiply(num1: string, num2: string): string {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function multiply(num1: string, num2: string): string {\n  // Your solution here\n  \n}`,
+      python: `def multiply(num1: str, num2: str) -> str:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'multiply("2", "3")', expected: '"6"' },
       { input: 'multiply("123", "456")', expected: '"56088"' },
@@ -114,7 +126,10 @@ export const mathGeometryProblems: FullProblem[] = [
       '0 <= x, y <= 1000',
       'At most 3000 calls in total will be made to add and count.',
     ],
-    starterCode: `class DetectSquares {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  add(point: number[]): void {\n    // Your solution here\n  }\n\n  count(point: number[]): number {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class DetectSquares {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  add(point: number[]): void {\n    // Your solution here\n  }\n\n  count(point: number[]): number {\n    // Your solution here\n  }\n}`,
+      python: `class DetectSquares:\n    def __init__(self):\n        # Initialize your data structure here\n        pass\n\n    def add(self, point: list[int]) -> None:\n        # Your solution here\n        pass\n\n    def count(self, point: list[int]) -> int:\n        # Your solution here\n        pass`,
+    },
     testCases: [
       {
         input:

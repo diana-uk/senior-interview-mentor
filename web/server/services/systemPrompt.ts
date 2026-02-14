@@ -93,6 +93,15 @@ export function buildSessionContext(context?: ChatRequest['context']): string {
     `- **Commitment Gate:** ${context.commitmentGateCompleted}/5 items completed`,
   );
 
+  if (context.language) {
+    parts.push(`- **Language:** ${context.language}`);
+    if (context.language === 'python') {
+      parts.push(
+        '  - Respond with Python code examples. Use Python idioms: list comprehensions, snake_case naming, type hints, f-strings. Use `def` instead of `function`.',
+      );
+    }
+  }
+
   if (context.currentProblem) {
     const p = context.currentProblem;
     parts.push(`\n### Current Problem: ${p.title}`);

@@ -18,7 +18,10 @@ export const bitManipulationProblems: FullProblem[] = [
     constraints: [
       '1 <= n <= 2^31 - 1',
     ],
-    starterCode: `function hammingWeight(n: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function hammingWeight(n: number): number {\n  // Your solution here\n  \n}`,
+      python: `def hamming_weight(n: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'hammingWeight(11)', expected: '3' },
       { input: 'hammingWeight(128)', expected: '1' },
@@ -40,7 +43,10 @@ export const bitManipulationProblems: FullProblem[] = [
     constraints: [
       '0 <= n <= 10^5',
     ],
-    starterCode: `function countBits(n: number): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function countBits(n: number): number[] {\n  // Your solution here\n  \n}`,
+      python: `def count_bits(n: int) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'countBits(2)', expected: '[0,1,1]' },
       { input: 'countBits(5)', expected: '[0,1,1,2,1,2]' },
@@ -66,7 +72,10 @@ export const bitManipulationProblems: FullProblem[] = [
       '0 <= nums[i] <= n',
       'All the numbers of nums are unique.',
     ],
-    starterCode: `function missingNumber(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function missingNumber(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def missing_number(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'missingNumber([3,0,1])', expected: '2' },
       { input: 'missingNumber([0,1])', expected: '2' },
@@ -88,7 +97,10 @@ export const bitManipulationProblems: FullProblem[] = [
     constraints: [
       'The input must be a binary string of length 32.',
     ],
-    starterCode: `function reverseBits(n: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function reverseBits(n: number): number {\n  // Your solution here\n  \n}`,
+      python: `def reverse_bits(n: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'reverseBits(43261596)', expected: '964176192' },
       { input: 'reverseBits(4294967293)', expected: '3221225471' },
@@ -109,7 +121,10 @@ export const bitManipulationProblems: FullProblem[] = [
     constraints: [
       '-1000 <= a, b <= 1000',
     ],
-    starterCode: `function getSum(a: number, b: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function getSum(a: number, b: number): number {\n  // Your solution here\n  \n}`,
+      python: `def get_sum(a: int, b: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'getSum(1,2)', expected: '3' },
       { input: 'getSum(2,3)', expected: '5' },
@@ -134,7 +149,10 @@ export const bitManipulationProblems: FullProblem[] = [
       '-3 * 10^4 <= nums[i] <= 3 * 10^4',
       'Each element in the array appears twice except for one element which appears only once.',
     ],
-    starterCode: `function singleNumber(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function singleNumber(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def single_number(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'singleNumber([2,2,1])', expected: '1' },
       { input: 'singleNumber([4,1,2,1,2])', expected: '4' },
@@ -155,7 +173,10 @@ export const bitManipulationProblems: FullProblem[] = [
       'Input: x = 120\nOutput: 21',
     ],
     constraints: ['-2^31 <= x <= 2^31 - 1'],
-    starterCode: `function reverse(x: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function reverse(x: number): number {\n  // Your solution here\n  \n}`,
+      python: `def reverse(x: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'reverse(123)', expected: '321' },
       { input: 'reverse(-123)', expected: '-321' },

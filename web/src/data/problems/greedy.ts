@@ -21,7 +21,10 @@ export const greedyProblems: FullProblem[] = [
       '0 <= nums[i] <= 1000',
       "It's guaranteed that you can reach nums[n - 1].",
     ],
-    starterCode: `function jump(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function jump(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def jump(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'jump([2,3,1,1,4])', expected: '2' },
       { input: 'jump([2,3,0,1,4])', expected: '2' },
@@ -45,7 +48,10 @@ export const greedyProblems: FullProblem[] = [
       '1 <= n <= 10^5',
       '0 <= gas[i], cost[i] <= 10^4',
     ],
-    starterCode: `function canCompleteCircuit(gas: number[], cost: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function canCompleteCircuit(gas: number[], cost: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def can_complete_circuit(gas: list[int], cost: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'canCompleteCircuit([1,2,3,4,5], [3,4,5,1,2])', expected: '3' },
       { input: 'canCompleteCircuit([2,3,4], [3,4,3])', expected: '-1' },
@@ -69,7 +75,10 @@ export const greedyProblems: FullProblem[] = [
       '0 <= hand[i] <= 10^9',
       '1 <= groupSize <= hand.length',
     ],
-    starterCode: `function isNStraightHand(hand: number[], groupSize: number): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isNStraightHand(hand: number[], groupSize: number): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_n_straight_hand(hand: list[int], group_size: int) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isNStraightHand([1,2,3,6,2,3,4,7,8], 3)', expected: 'true' },
       { input: 'isNStraightHand([1,2,3,4,5], 4)', expected: 'false' },
@@ -93,7 +102,10 @@ export const greedyProblems: FullProblem[] = [
       'triplets[i].length == target.length == 3',
       '1 <= ai, bi, ci, x, y, z <= 1000',
     ],
-    starterCode: `function mergeTriplets(triplets: number[][], target: number[]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function mergeTriplets(triplets: number[][], target: number[]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def merge_triplets(triplets: list[list[int]], target: list[int]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'mergeTriplets([[2,5,3],[1,8,4],[1,7,5]], [2,7,5])', expected: 'true' },
       { input: 'mergeTriplets([[3,4,5],[4,5,6]], [3,2,5])', expected: 'false' },
@@ -116,7 +128,10 @@ export const greedyProblems: FullProblem[] = [
       '1 <= s.length <= 500',
       's consists of lowercase English letters.',
     ],
-    starterCode: `function partitionLabels(s: string): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function partitionLabels(s: string): number[] {\n  // Your solution here\n  \n}`,
+      python: `def partition_labels(s: str) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'partitionLabels("ababcbacadefegdehijhklij")', expected: '[9,7,8]' },
       { input: 'partitionLabels("eccbbbbdec")', expected: '[10]' },
@@ -140,7 +155,10 @@ export const greedyProblems: FullProblem[] = [
       '1 <= s.length <= 100',
       "s[i] is '(', ')' or '*'.",
     ],
-    starterCode: `function checkValidString(s: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function checkValidString(s: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def check_valid_string(s: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'checkValidString("()")', expected: 'true' },
       { input: 'checkValidString("(*)")', expected: 'true' },

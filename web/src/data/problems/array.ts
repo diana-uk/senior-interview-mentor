@@ -19,7 +19,10 @@ export const arrayProblems: FullProblem[] = [
       '-30 <= nums[i] <= 30',
       'The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.',
     ],
-    starterCode: `function productExceptSelf(nums: number[]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function productExceptSelf(nums: number[]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def product_except_self(nums: list[int]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'productExceptSelf([1,2,3,4])', expected: '[24,12,8,6]' },
       { input: 'productExceptSelf([-1,1,0,-3,3])', expected: '[0,0,9,0,0]' },
@@ -43,7 +46,10 @@ export const arrayProblems: FullProblem[] = [
       '-10 <= nums[i] <= 10',
       'The product of any subarray of nums is guaranteed to fit in a 32-bit integer.',
     ],
-    starterCode: `function maxProduct(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxProduct(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_product(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxProduct([2,3,-2,4])', expected: '6' },
       { input: 'maxProduct([-2,0,-1])', expected: '0' },
