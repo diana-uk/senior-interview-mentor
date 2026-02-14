@@ -43,4 +43,6 @@ export const config = {
   projectRoot: path.resolve(__dirname, '..', '..'),
   gitBashPath: findGitBash(),
   claudeCliPath: findClaudeCliPath(),
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+  sentryDsn: process.env.SENTRY_DSN || '',
 };
