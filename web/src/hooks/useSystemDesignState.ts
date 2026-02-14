@@ -38,6 +38,8 @@ const initialState: SystemDesignState = {
   schema: '',
   dbChoice: '',
   dbJustification: '',
+  diagramNodes: [],
+  diagramEdges: [],
 };
 
 function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDesignState {
@@ -107,6 +109,9 @@ function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDe
 
     case 'UPDATE_JUSTIFICATION':
       return { ...state, dbJustification: action.justification };
+
+    case 'UPDATE_DIAGRAM':
+      return { ...state, diagramNodes: action.nodes, diagramEdges: action.edges };
 
     case 'RESET':
       return initialState;

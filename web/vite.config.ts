@@ -20,6 +20,7 @@ export default defineConfig({
           'vendor-monaco': ['@monaco-editor/react'],
           'vendor-icons': ['lucide-react'],
           'vendor-katex': ['katex', 'rehype-katex', 'remark-math'],
+          'vendor-reactflow': ['@xyflow/react'],
         },
       },
     },

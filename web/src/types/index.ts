@@ -188,6 +188,15 @@ export type SystemDesignTopicId =
   | 'hotel-reservation'
   | 'custom';
 
+export type SystemComponentType =
+  | 'client' | 'load-balancer' | 'api-gateway' | 'service'
+  | 'cache' | 'database' | 'queue' | 'cdn' | 'worker' | 'storage';
+
+export interface DiagramNodeData {
+  label: string;
+  componentType: SystemComponentType;
+}
+
 export interface SystemDesignTopic {
   id: SystemDesignTopicId;
   title: string;
@@ -237,6 +246,8 @@ export interface SystemDesignState {
   schema: string;
   dbChoice: DbChoice;
   dbJustification: string;
+  diagramNodes: Array<{ id: string; type: string; position: { x: number; y: number }; data: DiagramNodeData }>;
+  diagramEdges: Array<{ id: string; source: string; target: string; label?: string; animated?: boolean }>;
 }
 
 export type SystemDesignAction =
@@ -247,6 +258,7 @@ export type SystemDesignAction =
   | { type: 'UPDATE_SCHEMA'; schema: string }
   | { type: 'UPDATE_DB_CHOICE'; dbChoice: DbChoice }
   | { type: 'UPDATE_JUSTIFICATION'; justification: string }
+  | { type: 'UPDATE_DIAGRAM'; nodes: SystemDesignState['diagramNodes']; edges: SystemDesignState['diagramEdges'] }
   | { type: 'RESET' };
 
 /* ── Mistake Tracking & Spaced Repetition ── */

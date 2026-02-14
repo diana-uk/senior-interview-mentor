@@ -2,6 +2,7 @@ import type { ChatMessage, SystemDesignState, SystemDesignAction, SystemDesignPh
 import SystemDesignPlanOverview from './SystemDesignPlanOverview';
 import ApiContractWorkspace from './ApiContractWorkspace';
 import DataModelWorkspace from './DataModelWorkspace';
+import ArchitectureWorkspace from './ArchitectureWorkspace';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 
 interface SystemDesignRouterProps {
@@ -33,7 +34,7 @@ export default function SystemDesignRouter({
   chatPanel,
   editorPanel,
 }: SystemDesignRouterProps) {
-  const { currentPhase, phaseStatuses, topicTitle, topicPrompt, endpoints, schema, dbChoice, dbJustification } = sdState;
+  const { currentPhase, phaseStatuses, topicTitle, topicPrompt, endpoints, schema, dbChoice, dbJustification, diagramNodes, diagramEdges } = sdState;
 
   function handlePhaseClick(phase: SystemDesignPhase) {
     sdDispatch({ type: 'SET_PHASE', phase });
@@ -98,9 +99,20 @@ export default function SystemDesignRouter({
         />
       );
 
-    // Text-based phases: requirements, architecture, deepdive, scaling
-    case 'requirements':
     case 'architecture':
+      return (
+        <ArchitectureWorkspace
+          diagramNodes={diagramNodes}
+          diagramEdges={diagramEdges}
+          onUpdateDiagram={(nodes, edges) => sdDispatch({ type: 'UPDATE_DIAGRAM', nodes, edges })}
+          onAdvancePhase={advancePhase}
+          {...sidebarProps}
+          {...mentorProps}
+        />
+      );
+
+    // Text-based phases: requirements, deepdive, scaling
+    case 'requirements':
     case 'deepdive':
     case 'scaling':
       return (
