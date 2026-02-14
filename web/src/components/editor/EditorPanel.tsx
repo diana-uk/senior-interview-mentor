@@ -1,11 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import SystemDesignEditor from './SystemDesignEditor';
-import { stripTypeAnnotations } from '../../utils/stripTypes';
 
-type CodeLanguage = 'typescript' | 'javascript';
+export type CodeLanguage = 'typescript' | 'javascript' | 'python';
 
 // Configure Monaco to be more lenient with TypeScript
 const handleEditorWillMount: BeforeMount = (monaco) => {
@@ -61,6 +60,7 @@ interface EditorPanelProps {
   interviewStage?: InterviewStage | null;
   systemDesignTopicId?: SystemDesignTopicId | null;
   onSendMessage?: (message: string) => void;
+  onLanguageChange?: (language: CodeLanguage) => void;
 }
 
 const tabs: { id: EditorTab; label: string }[] = [
@@ -94,33 +94,16 @@ export default function EditorPanel({
   interviewStage,
   systemDesignTopicId,
   onSendMessage,
+  onLanguageChange,
 }: EditorPanelProps) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
-  const codeCache = useRef<Record<CodeLanguage, { solution: string; tests: string } | null>>({
-    typescript: null,
-    javascript: null,
-  });
 
   const handleLanguageChange = (newLang: CodeLanguage) => {
     if (newLang === codeLanguage) return;
-
-    // Cache current code for the current language
-    codeCache.current[codeLanguage] = { solution: code, tests: testCode };
-
-    const cached = codeCache.current[newLang];
-    if (cached) {
-      // Restore previously cached code for this language
-      onCodeChange(cached.solution);
-      onTestCodeChange(cached.tests);
-    } else if (newLang === 'javascript') {
-      // First switch to JS: strip type annotations
-      onCodeChange(stripTypeAnnotations(code));
-      onTestCodeChange(stripTypeAnnotations(testCode));
-    }
-    // JS → TS first time: JS is valid TS, code stays as-is
-
     setCodeLanguage(newLang);
+    // Notify parent — it handles language state and starter code loading
+    onLanguageChange?.(newLang);
   };
 
   const isSystemDesign = interviewStage === 'system-design';
@@ -135,7 +118,7 @@ export default function EditorPanel({
   const totalCount = testResults.length;
 
   const editorLanguage = activeTab === 'notes' ? 'markdown' : codeLanguage;
-  const ext = codeLanguage === 'typescript' ? 'ts' : 'js';
+  const ext = codeLanguage === 'python' ? 'py' : codeLanguage === 'typescript' ? 'ts' : 'js';
   const pid = problemId ?? 'default';
   const editorPath = activeTab === 'notes' ? `${pid}-notes.md` : `${pid}-${activeTab}.${ext}`;
 
@@ -162,6 +145,7 @@ export default function EditorPanel({
             >
               <option value="typescript">TypeScript</option>
               <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
             </select>
           )}
           {!isSystemDesign && (
@@ -201,7 +185,7 @@ export default function EditorPanel({
               lineNumbers: 'on',
               scrollBeyondLastLine: false,
               padding: { top: 12 },
-              tabSize: 2,
+              tabSize: codeLanguage === 'python' ? 4 : 2,
               wordWrap: activeTab === 'notes' ? 'on' : 'off',
               renderLineHighlight: 'line',
               cursorBlinking: 'smooth',

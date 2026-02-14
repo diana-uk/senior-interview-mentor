@@ -22,7 +22,10 @@ export const twoPointersProblems: FullProblem[] = [
       'numbers is sorted in non-decreasing order.',
       'Exactly one solution exists.',
     ],
-    starterCode: `function twoSumII(numbers: number[], target: number): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function twoSumII(numbers: number[], target: number): number[] {\n  // Your solution here\n  \n}`,
+      python: `def two_sum_ii(numbers: list[int], target: int) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'twoSumII([2,7,11,15], 9)', expected: '[1,2]' },
       { input: 'twoSumII([2,3,4], 6)', expected: '[1,3]' },
@@ -42,7 +45,10 @@ export const twoPointersProblems: FullProblem[] = [
       'Input: height = [1,1]\nOutput: 1',
     ],
     constraints: ['n == height.length', '2 <= n <= 10^5', '0 <= height[i] <= 10^4'],
-    starterCode: `function maxArea(height: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxArea(height: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_area(height: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxArea([1,8,6,2,5,4,8,3,7])', expected: '49' },
       { input: 'maxArea([1,1])', expected: '1' },
@@ -62,7 +68,10 @@ export const twoPointersProblems: FullProblem[] = [
       'Input: height = [4,2,0,3,2,5]\nOutput: 9',
     ],
     constraints: ['n == height.length', '1 <= n <= 2 * 10^4', '0 <= height[i] <= 10^5'],
-    starterCode: `function trap(height: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function trap(height: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def trap(height: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'trap([0,1,0,2,1,0,1,3,2,1,2,1])', expected: '6' },
       { input: 'trap([4,2,0,3,2,5])', expected: '9' },
@@ -86,7 +95,10 @@ export const twoPointersProblems: FullProblem[] = [
       '3 <= nums.length <= 3000',
       '-10^5 <= nums[i] <= 10^5',
     ],
-    starterCode: `function threeSum(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function threeSum(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def three_sum(nums: list[int]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'threeSum([-1,0,1,2,-1,-4])', expected: '[[-1,-1,2],[-1,0,1]]' },
       { input: 'threeSum([0,1,1])', expected: '[]' },

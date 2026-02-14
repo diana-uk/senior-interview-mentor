@@ -44,7 +44,10 @@ export const dpProblems: FullProblem[] = [
       'Input: nums = [0,1,0,3,2,3]\nOutput: 4',
     ],
     constraints: ['1 <= nums.length <= 2500', '-10^4 <= nums[i] <= 10^4'],
-    starterCode: `function lengthOfLIS(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function lengthOfLIS(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def length_of_lis(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'lengthOfLIS([10,9,2,5,3,7,101,18])', expected: '4' },
       { input: 'lengthOfLIS([0,1,0,3,2,3])', expected: '4' },
@@ -67,7 +70,10 @@ export const dpProblems: FullProblem[] = [
       '0 <= word1.length, word2.length <= 500',
       'word1 and word2 consist of lowercase English letters.',
     ],
-    starterCode: `function minDistance(word1: string, word2: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minDistance(word1: string, word2: string): number {\n  // Your solution here\n  \n}`,
+      python: `def min_distance(word1: str, word2: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minDistance("horse", "ros")', expected: '3' },
       { input: 'minDistance("intention", "execution")', expected: '5' },
@@ -96,7 +102,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= coins[i] <= 2^31 - 1',
       '0 <= amount <= 10^4',
     ],
-    starterCode: `function coinChange(coins: number[], amount: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function coinChange(coins: number[], amount: number): number {\n  // Your solution here\n  \n}`,
+      python: `def coin_change(coins: list[int], amount: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'coinChange([1,5,10,25], 30)', expected: '2' },
       { input: 'coinChange([2], 3)', expected: '-1' },
@@ -123,7 +132,10 @@ export const dpProblems: FullProblem[] = [
       's and wordDict[i] consist of only lowercase English letters.',
       'All the strings of wordDict are unique.',
     ],
-    starterCode: `function wordBreak(s: string, wordDict: string[]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function wordBreak(s: string, wordDict: string[]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def word_break(s: str, word_dict: list[str]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'wordBreak("leetcode", ["leet","code"])', expected: 'true' },
       { input: 'wordBreak("applepenapple", ["apple","pen"])', expected: 'true' },
@@ -146,7 +158,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= nums.length <= 100',
       '0 <= nums[i] <= 400',
     ],
-    starterCode: `function rob(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function rob(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def rob(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'rob([1,2,3,1])', expected: '4' },
       { input: 'rob([2,7,9,3,1])', expected: '12' },
@@ -170,7 +185,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= nums.length <= 100',
       '0 <= nums[i] <= 1000',
     ],
-    starterCode: `function robII(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function robII(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def rob_ii(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'robII([2,3,2])', expected: '3' },
       { input: 'robII([1,2,3,1])', expected: '4' },
@@ -194,7 +212,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= s.length <= 100',
       's contains only digits and may contain leading zero(s).',
     ],
-    starterCode: `function numDecodings(s: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function numDecodings(s: string): number {\n  // Your solution here\n  \n}`,
+      python: `def num_decodings(s: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'numDecodings("12")', expected: '2' },
       { input: 'numDecodings("226")', expected: '3' },
@@ -216,7 +237,10 @@ export const dpProblems: FullProblem[] = [
     constraints: [
       '1 <= m, n <= 100',
     ],
-    starterCode: `function uniquePaths(m: number, n: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function uniquePaths(m: number, n: number): number {\n  // Your solution here\n  \n}`,
+      python: `def unique_paths(m: int, n: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'uniquePaths(3, 7)', expected: '28' },
       { input: 'uniquePaths(3, 2)', expected: '3' },
@@ -239,7 +263,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= nums.length <= 10^4',
       '0 <= nums[i] <= 10^5',
     ],
-    starterCode: `function canJump(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function canJump(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def can_jump(nums: list[int]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'canJump([2,3,1,1,4])', expected: 'true' },
       { input: 'canJump([3,2,1,0,4])', expected: 'false' },
@@ -264,7 +291,10 @@ export const dpProblems: FullProblem[] = [
       'All the elements of nums are unique.',
       '1 <= target <= 1000',
     ],
-    starterCode: `function combinationSum4(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function combinationSum4(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+      python: `def combination_sum4(nums: list[int], target: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'combinationSum4([1,2,3], 4)', expected: '7' },
       { input: 'combinationSum4([9], 3)', expected: '0' },
@@ -288,7 +318,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= text1.length, text2.length <= 1000',
       'text1 and text2 consist of only lowercase English characters.',
     ],
-    starterCode: `function longestCommonSubsequence(text1: string, text2: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function longestCommonSubsequence(text1: string, text2: string): number {\n  // Your solution here\n  \n}`,
+      python: `def longest_common_subsequence(text1: str, text2: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'longestCommonSubsequence("abcde", "ace")', expected: '3' },
       { input: 'longestCommonSubsequence("abc", "abc")', expected: '3' },
@@ -315,7 +348,10 @@ export const dpProblems: FullProblem[] = [
       '2 <= cost.length <= 1000',
       '0 <= cost[i] <= 999',
     ],
-    starterCode: `function minCostClimbingStairs(cost: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minCostClimbingStairs(cost: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def min_cost_climbing_stairs(cost: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minCostClimbingStairs([10,15,20])', expected: '15' },
       { input: 'minCostClimbingStairs([1,100,1,1,1,100,1,1,100,1])', expected: '6' },
@@ -338,7 +374,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= nums.length <= 200',
       '1 <= nums[i] <= 100',
     ],
-    starterCode: `function canPartition(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function canPartition(nums: number[]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def can_partition(nums: list[int]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'canPartition([1,5,11,5])', expected: 'true' },
       { input: 'canPartition([1,2,3,5])', expected: 'false' },
@@ -365,7 +404,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= prices.length <= 5000',
       '0 <= prices[i] <= 1000',
     ],
-    starterCode: `function maxProfitCooldown(prices: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxProfitCooldown(prices: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_profit_cooldown(prices: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxProfitCooldown([1,2,3,0,2])', expected: '3' },
       { input: 'maxProfitCooldown([1])', expected: '0' },
@@ -391,7 +433,10 @@ export const dpProblems: FullProblem[] = [
       'All the values of coins are unique.',
       '0 <= amount <= 5000',
     ],
-    starterCode: `function change(amount: number, coins: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function change(amount: number, coins: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def change(amount: int, coins: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'change(5, [1,2,5])', expected: '4' },
       { input: 'change(3, [2])', expected: '0' },
@@ -416,7 +461,10 @@ export const dpProblems: FullProblem[] = [
       '0 <= sum(nums[i]) <= 1000',
       '-1000 <= target <= 1000',
     ],
-    starterCode: `function findTargetSumWays(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findTargetSumWays(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+      python: `def find_target_sum_ways(nums: list[int], target: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findTargetSumWays([1,1,1,1,1], 3)', expected: '5' },
       { input: 'findTargetSumWays([1], 1)', expected: '1' },
@@ -441,7 +489,10 @@ export const dpProblems: FullProblem[] = [
       '0 <= s3.length <= 200',
       's1, s2, and s3 consist of lowercase English letters.',
     ],
-    starterCode: `function isInterleave(s1: string, s2: string, s3: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isInterleave(s1: string, s2: string, s3: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_interleave(s1: str, s2: str, s3: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isInterleave("aabcc", "dbbca", "aadbbcbcac")', expected: 'true' },
       { input: 'isInterleave("aabcc", "dbbca", "aadbbbaccc")', expected: 'false' },
@@ -467,7 +518,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= m, n <= 200',
       '0 <= matrix[i][j] <= 2^31 - 1',
     ],
-    starterCode: `function longestIncreasingPath(matrix: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function longestIncreasingPath(matrix: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def longest_increasing_path(matrix: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'longestIncreasingPath([[9,9,4],[6,6,8],[2,1,1]])', expected: '4' },
       { input: 'longestIncreasingPath([[3,4,5],[3,2,6],[2,2,1]])', expected: '4' },
@@ -490,7 +544,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= s.length, t.length <= 1000',
       's and t consist of English letters.',
     ],
-    starterCode: `function numDistinct(s: string, t: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function numDistinct(s: string, t: string): number {\n  // Your solution here\n  \n}`,
+      python: `def num_distinct(s: str, t: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'numDistinct("rabbbit", "rabbit")', expected: '3' },
       { input: 'numDistinct("babgbag", "bag")', expected: '5' },
@@ -514,7 +571,10 @@ export const dpProblems: FullProblem[] = [
       '1 <= n <= 300',
       '0 <= nums[i] <= 100',
     ],
-    starterCode: `function maxCoins(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxCoins(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_coins(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxCoins([3,1,5,8])', expected: '167' },
       { input: 'maxCoins([1,5])', expected: '10' },
@@ -541,7 +601,10 @@ export const dpProblems: FullProblem[] = [
       "p contains only lowercase English letters, '.', and '*'.",
       "It is guaranteed for each appearance of the character '*', there will be a previous valid character to match.",
     ],
-    starterCode: `function isMatch(s: string, p: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isMatch(s: string, p: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_match(s: str, p: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isMatch("aa", "a")', expected: 'false' },
       { input: 'isMatch("aa", "a*")', expected: 'true' },
@@ -565,7 +628,10 @@ export const dpProblems: FullProblem[] = [
       '-10 <= nums[i] <= 10',
       'The product of any subarray of nums is guaranteed to fit in a 32-bit integer.',
     ],
-    starterCode: `function maxProduct(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxProduct(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_product(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxProduct([2,3,-2,4])', expected: '6' },
       { input: 'maxProduct([-2,0,-1])', expected: '0' },

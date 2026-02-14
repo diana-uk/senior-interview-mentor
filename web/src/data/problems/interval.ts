@@ -19,7 +19,10 @@ export const intervalProblems: FullProblem[] = [
       'intervals[i].length == 2',
       '0 <= starti <= endi <= 10^4',
     ],
-    starterCode: `function merge(intervals: number[][]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function merge(intervals: number[][]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def merge(intervals: list[list[int]]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'merge([[1,3],[2,6],[8,10],[15,18]])',
@@ -55,7 +58,10 @@ export const intervalProblems: FullProblem[] = [
       'newInterval.length == 2',
       '0 <= start <= end <= 10^5',
     ],
-    starterCode: `function insert(intervals: number[][], newInterval: number[]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function insert(intervals: number[][], newInterval: number[]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def insert(intervals: list[list[int]], new_interval: list[int]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'insert([[1,3],[6,9]],[2,5])',
@@ -89,7 +95,10 @@ export const intervalProblems: FullProblem[] = [
       'intervals[i].length == 2',
       '-5 * 10^4 <= starti < endi <= 5 * 10^4',
     ],
-    starterCode: `function eraseOverlapIntervals(intervals: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function eraseOverlapIntervals(intervals: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def erase_overlap_intervals(intervals: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'eraseOverlapIntervals([[1,2],[2,3],[3,4],[1,3]])',
@@ -122,7 +131,10 @@ export const intervalProblems: FullProblem[] = [
       'intervals[i].length == 2',
       '0 <= starti < endi <= 10^6',
     ],
-    starterCode: `function canAttendMeetings(intervals: number[][]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function canAttendMeetings(intervals: number[][]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def can_attend_meetings(intervals: list[list[int]]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'canAttendMeetings([[0,30],[5,10],[15,20]])',
@@ -154,7 +166,10 @@ export const intervalProblems: FullProblem[] = [
       '1 <= intervals.length <= 10^4',
       '0 <= starti < endi <= 10^6',
     ],
-    starterCode: `function minMeetingRooms(intervals: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minMeetingRooms(intervals: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def min_meeting_rooms(intervals: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'minMeetingRooms([[0,30],[5,10],[15,20]])',
@@ -189,7 +204,10 @@ export const intervalProblems: FullProblem[] = [
       '1 <= lefti <= righti <= 10^7',
       '1 <= queries[j] <= 10^7',
     ],
-    starterCode: `function minInterval(intervals: number[][], queries: number[]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minInterval(intervals: number[][], queries: number[]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def min_interval(intervals: list[list[int]], queries: list[int]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minInterval([[1,4],[2,4],[3,6],[4,4]], [2,3,4,5])', expected: '[3,3,1,4]' },
       { input: 'minInterval([[2,3],[2,5],[1,8],[20,25]], [2,19,5,22])', expected: '[2,-1,4,6]' },

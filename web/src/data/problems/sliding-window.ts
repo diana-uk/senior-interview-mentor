@@ -17,7 +17,10 @@ export const slidingWindowProblems: FullProblem[] = [
       'Input: nums = [1]\nOutput: 1',
     ],
     constraints: ['1 <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4'],
-    starterCode: `function maxSubArray(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxSubArray(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_sub_array(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxSubArray([-2,1,-3,4,-1,2,1,-5,4])', expected: '6' },
       { input: 'maxSubArray([1])', expected: '1' },
@@ -40,7 +43,10 @@ export const slidingWindowProblems: FullProblem[] = [
       '0 <= s.length <= 5 * 10^4',
       's consists of English letters, digits, symbols and spaces.',
     ],
-    starterCode: `function lengthOfLongestSubstring(s: string): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function lengthOfLongestSubstring(s: string): number {\n  // Your solution here\n  \n}`,
+      python: `def length_of_longest_substring(s: str) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'lengthOfLongestSubstring("abcabcbb")', expected: '3' },
       { input: 'lengthOfLongestSubstring("bbbbb")', expected: '1' },
@@ -63,7 +69,10 @@ export const slidingWindowProblems: FullProblem[] = [
       '1 <= s.length, t.length <= 10^5',
       's and t consist of uppercase and lowercase English letters.',
     ],
-    starterCode: `function minWindow(s: string, t: string): string {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minWindow(s: string, t: string): string {\n  // Your solution here\n  \n}`,
+      python: `def min_window(s: str, t: str) -> str:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minWindow("ADOBECODEBANC", "ABC")', expected: '"BANC"' },
       { input: 'minWindow("a", "a")', expected: '"a"' },
@@ -86,7 +95,10 @@ export const slidingWindowProblems: FullProblem[] = [
       '1 <= prices.length <= 10^5',
       '0 <= prices[i] <= 10^4',
     ],
-    starterCode: `function maxProfit(prices: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxProfit(prices: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_profit(prices: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxProfit([7,1,5,3,6,4])', expected: '5' },
       { input: 'maxProfit([7,6,4,3,1])', expected: '0' },
@@ -109,7 +121,10 @@ export const slidingWindowProblems: FullProblem[] = [
       '1 <= s1.length, s2.length <= 10^4',
       's1 and s2 consist of lowercase English letters.',
     ],
-    starterCode: `function checkInclusion(s1: string, s2: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function checkInclusion(s1: string, s2: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def check_inclusion(s1: str, s2: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'checkInclusion("ab", "eidbaooo")', expected: 'true' },
       { input: 'checkInclusion("ab", "eidboaoo")', expected: 'false' },
@@ -133,7 +148,10 @@ export const slidingWindowProblems: FullProblem[] = [
       '-10^4 <= nums[i] <= 10^4',
       '1 <= k <= nums.length',
     ],
-    starterCode: `function maxSlidingWindow(nums: number[], k: number): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxSlidingWindow(nums: number[], k: number): number[] {\n  // Your solution here\n  \n}`,
+      python: `def max_sliding_window(nums: list[int], k: int) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'maxSlidingWindow([1,3,-1,-3,5,3,6,7], 3)', expected: '[3,3,5,5,6,7]' },
       { input: 'maxSlidingWindow([1], 1)', expected: '[1]' },

@@ -1,5 +1,5 @@
 import type { PatternName } from '../../types';
-import { LIST_HELPERS, type FullProblem } from './helpers';
+import { LIST_HELPERS, PYTHON_LIST_HELPERS, type FullProblem } from './helpers';
 
 const pattern: PatternName = 'Heap';
 
@@ -20,7 +20,10 @@ export const heapProblems: FullProblem[] = [
       'Input: nums = [3,2,3,1,2,4,5,5,6], k = 4\nOutput: 4',
     ],
     constraints: ['1 <= k <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4'],
-    starterCode: `function findKthLargest(nums: number[], k: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findKthLargest(nums: number[], k: number): number {\n  // Your solution here\n  \n}`,
+      python: `def find_kth_largest(nums: list[int], k: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findKthLargest([3,2,1,5,6,4], 2)', expected: '5' },
       { input: 'findKthLargest([3,2,3,1,2,4,5,5,6], 4)', expected: '4' },
@@ -47,9 +50,14 @@ export const heapProblems: FullProblem[] = [
       'lists[i] is sorted in ascending order.',
       'The sum of lists[i].length will not exceed 10^4.',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction mergeKLists(lists: (ListNode | null)[]): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction mergeKLists(lists: (ListNode | null)[]): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef merge_k_lists(lists: list[Optional[ListNode]]) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -76,7 +84,10 @@ export const heapProblems: FullProblem[] = [
       'There will be at least one element before calling findMedian.',
       'At most 5 * 10^4 calls will be made to addNum and findMedian.',
     ],
-    starterCode: `class MedianFinder {\n  constructor() {\n    // Initialize your data structure here\n    \n  }\n\n  addNum(num: number): void {\n    // Your solution here\n    \n  }\n\n  findMedian(): number {\n    // Your solution here\n    \n  }\n}`,
+    starterCode: {
+      typescript: `class MedianFinder {\n  constructor() {\n    // Initialize your data structure here\n    \n  }\n\n  addNum(num: number): void {\n    // Your solution here\n    \n  }\n\n  findMedian(): number {\n    // Your solution here\n    \n  }\n}`,
+      python: `class MedianFinder:\n    def __init__(self):\n        # Initialize your data structure here\n        pass\n\n    def add_num(self, num: int) -> None:\n        # Your solution here\n        pass\n\n    def find_median(self) -> float:\n        # Your solution here\n        pass`,
+    },
     testCases: [
       {
         input:
@@ -117,7 +128,10 @@ export const heapProblems: FullProblem[] = [
       'k is in the range [1, the number of unique elements in the array].',
       'It is guaranteed that the answer is unique.',
     ],
-    starterCode: `function topKFrequent(nums: number[], k: number): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function topKFrequent(nums: number[], k: number): number[] {\n  // Your solution here\n  \n}`,
+      python: `def top_k_frequent(nums: list[int], k: int) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'topKFrequent([1,1,1,2,2,3], 2).sort((a,b) => a-b)', expected: '[1,2]' },
       { input: 'topKFrequent([1], 1)', expected: '[1]' },
@@ -140,7 +154,10 @@ export const heapProblems: FullProblem[] = [
       '1 <= stones.length <= 30',
       '1 <= stones[i] <= 1000',
     ],
-    starterCode: `function lastStoneWeight(stones: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function lastStoneWeight(stones: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def last_stone_weight(stones: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'lastStoneWeight([2,7,4,1,8,1])', expected: '1' },
       { input: 'lastStoneWeight([1])', expected: '1' },
@@ -163,7 +180,10 @@ export const heapProblems: FullProblem[] = [
       '1 <= k <= points.length <= 10^4',
       '-10^4 <= xi, yi <= 10^4',
     ],
-    starterCode: `function kClosest(points: number[][], k: number): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function kClosest(points: number[][], k: number): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def k_closest(points: list[list[int]], k: int) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'kClosest([[1,3],[-2,2]], 1)', expected: '[[-2,2]]' },
       { input: 'kClosest([[3,3],[5,-1],[-2,4]], 2).sort((a,b) => a[0]-b[0])', expected: '[[-2,4],[3,3]]' },
@@ -188,7 +208,10 @@ export const heapProblems: FullProblem[] = [
       'tasks[i] is an uppercase English letter.',
       '0 <= n <= 100',
     ],
-    starterCode: `function leastInterval(tasks: string[], n: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function leastInterval(tasks: string[], n: number): number {\n  // Your solution here\n  \n}`,
+      python: `def least_interval(tasks: list[str], n: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'leastInterval(["A","A","A","B","B","B"], 2)', expected: '8' },
       { input: 'leastInterval(["A","C","A","B","D","B"], 1)', expected: '6' },

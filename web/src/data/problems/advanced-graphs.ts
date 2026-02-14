@@ -22,7 +22,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       'fromi and toi consist of uppercase English letters.',
       'fromi != toi',
     ],
-    starterCode: `function findItinerary(tickets: string[][]): string[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findItinerary(tickets: string[][]): string[] {\n  // Your solution here\n  \n}`,
+      python: `def find_itinerary(tickets: list[list[str]]) -> list[str]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'findItinerary([["MUC","LHR"],["JFK","MUC"],["SFO","SJC"],["LHR","SFO"]])',
@@ -51,7 +54,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       '-10^6 <= xi, yi <= 10^6',
       'All pairs (xi, yi) are distinct.',
     ],
-    starterCode: `function minCostConnectPoints(points: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minCostConnectPoints(points: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def min_cost_connect_points(points: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minCostConnectPoints([[0,0],[2,2],[3,10],[5,2],[7,0]])', expected: '20' },
       { input: 'minCostConnectPoints([[3,12],[-2,5],[-4,1]])', expected: '18' },
@@ -80,7 +86,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       '0 <= wi <= 100',
       'All the pairs (ui, vi) are unique.',
     ],
-    starterCode: `function networkDelayTime(times: number[][], n: number, k: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function networkDelayTime(times: number[][], n: number, k: number): number {\n  // Your solution here\n  \n}`,
+      python: `def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'networkDelayTime([[2,1,1],[2,3,1],[3,4,1]], 4, 2)', expected: '2' },
       { input: 'networkDelayTime([[1,2,1]], 2, 1)', expected: '1' },
@@ -106,7 +115,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       '0 <= grid[i][j] < n^2',
       'Each value grid[i][j] is unique.',
     ],
-    starterCode: `function swimInWater(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function swimInWater(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def swim_in_water(grid: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'swimInWater([[0,2],[1,3]])', expected: '3' },
       { input: 'swimInWater([[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]])', expected: '16' },
@@ -131,7 +143,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       '1 <= words[i].length <= 100',
       'words[i] consists of only lowercase English letters.',
     ],
-    starterCode: `function alienOrder(words: string[]): string {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function alienOrder(words: string[]): string {\n  // Your solution here\n  \n}`,
+      python: `def alien_order(words: list[str]) -> str:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'alienOrder(["wrt","wrf","er","ett","rftt"])', expected: '"wertf"' },
       { input: 'alienOrder(["z","x"])', expected: '"zx"' },
@@ -161,7 +176,10 @@ export const advancedGraphsProblems: FullProblem[] = [
       '0 <= src, dst, k < n',
       'src != dst',
     ],
-    starterCode: `function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {\n  // Your solution here\n  \n}`,
+      python: `def find_cheapest_price(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findCheapestPrice(4, [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], 0, 3, 1)', expected: '700' },
       { input: 'findCheapestPrice(3, [[0,1,100],[1,2,100],[0,2,500]], 0, 2, 1)', expected: '200' },

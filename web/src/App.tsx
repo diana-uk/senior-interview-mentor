@@ -240,7 +240,10 @@ export default function App() {
   const [language, setLanguage] = useState<SupportedLanguage>(() => {
     const saved = localStorage.getItem('sim-settings');
     if (saved) {
-      try { return JSON.parse(saved).language === 'javascript' ? 'javascript' : 'typescript'; } catch { /* ignore */ }
+      try {
+        const lang = JSON.parse(saved).language;
+        if (lang === 'javascript' || lang === 'python') return lang;
+      } catch { /* ignore */ }
     }
     return 'typescript';
   });
@@ -285,9 +288,10 @@ export default function App() {
       commitmentGateCompleted: commitmentGate.filter((i) => i.completed).length,
       interviewStage,
       technicalQuestionCategory: interviewCategory ?? undefined,
+      language,
       memory,
     };
-  }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory, stats, mistakes]);
+  }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory, language, stats, mistakes]);
 
   const handleEditorUpdate = useCallback(
     (starterCode: string, testCode: string) => {
@@ -296,6 +300,17 @@ export default function App() {
     },
     [],
   );
+
+  const handleLanguageChange = useCallback((newLang: SupportedLanguage) => {
+    setLanguage(newLang);
+    // Load appropriate starter code for the new language
+    if (currentProblem) {
+      const starter = getStarterCode(currentProblem, newLang);
+      const tests = getTestCode(currentProblem, newLang);
+      if (starter) setEditorCode(starter);
+      if (tests) setTestCode(tests);
+    }
+  }, [currentProblem]);
 
   const { messages, setMessages, isStreaming, sendMessage, sendSilentMessage, stopStreaming } = useChat({
     initialMessages: initial?.messages ?? initialMessages,
@@ -431,7 +446,7 @@ export default function App() {
     setConsoleOpen(true);
 
     try {
-      const { results, logs } = await executeTests(editorCode, currentProblem.testCases);
+      const { results, logs } = await executeTests(editorCode, currentProblem.testCases, language);
       setTestResults(results);
       setConsoleLogs(logs);
 
@@ -719,6 +734,7 @@ export default function App() {
                   interviewStage={interviewStage}
                   systemDesignTopicId={sdTopicId}
                   onSendMessage={handleSendMessage}
+                  onLanguageChange={handleLanguageChange}
                 />
               }
             />
@@ -752,6 +768,7 @@ export default function App() {
                 interviewStage={interviewStage}
                 systemDesignTopicId={sdTopicId}
                 onSendMessage={handleSendMessage}
+                onLanguageChange={handleLanguageChange}
               />
             </>
           )}

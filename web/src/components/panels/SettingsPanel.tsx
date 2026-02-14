@@ -6,7 +6,7 @@ export type HintStyle = 'analogies' | 'pseudocode' | 'visual' | 'direct';
 export type DetailLevel = 'brief' | 'balanced' | 'detailed';
 
 export interface UserSettings {
-  language: 'typescript' | 'javascript';
+  language: 'typescript' | 'javascript' | 'python';
   editorFontSize: number;
   timerEnabled: boolean;
   timerDefaultMinutes: number;
@@ -80,14 +80,14 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
         </div>
         <div className="card-body">
           <div style={{ display: 'flex', gap: 8 }}>
-            {(['typescript', 'javascript'] as const).map((lang) => (
+            {(['typescript', 'javascript', 'python'] as const).map((lang) => (
               <button
                 key={lang}
                 className={`btn ${settings.language === lang ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                 onClick={() => update('language', lang)}
                 style={{ flex: 1, textTransform: 'capitalize' }}
               >
-                {lang === 'typescript' ? 'TypeScript' : 'JavaScript'}
+                {lang === 'typescript' ? 'TypeScript' : lang === 'javascript' ? 'JavaScript' : 'Python'}
               </button>
             ))}
           </div>

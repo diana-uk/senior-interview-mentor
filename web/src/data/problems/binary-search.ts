@@ -51,7 +51,10 @@ export const binarySearchProblems: FullProblem[] = [
       '-5000 <= nums[i] <= 5000',
       'All values are unique.',
     ],
-    starterCode: `function findMin(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findMin(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def find_min(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findMin([3,4,5,1,2])', expected: '1' },
       { input: 'findMin([4,5,6,7,0,1,2])', expected: '0' },
@@ -78,7 +81,10 @@ export const binarySearchProblems: FullProblem[] = [
       '1 <= m + n <= 2000',
       '-10^6 <= nums1[i], nums2[i] <= 10^6',
     ],
-    starterCode: `function findMedianSortedArrays(nums1: number[], nums2: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findMedianSortedArrays(nums1: number[], nums2: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def find_median_sorted_arrays(nums1: list[int], nums2: list[int]) -> float:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findMedianSortedArrays([1,3], [2])', expected: '2' },
       { input: 'findMedianSortedArrays([1,2], [3,4])', expected: '2.5' },
@@ -103,7 +109,10 @@ export const binarySearchProblems: FullProblem[] = [
       'All the integers in nums are unique.',
       'nums is sorted in ascending order.',
     ],
-    starterCode: `function binarySearch(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function binarySearch(nums: number[], target: number): number {\n  // Your solution here\n  \n}`,
+      python: `def binary_search(nums: list[int], target: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'binarySearch([-1,0,3,5,9,12], 9)', expected: '4' },
       { input: 'binarySearch([-1,0,3,5,9,12], 2)', expected: '-1' },
@@ -128,7 +137,10 @@ export const binarySearchProblems: FullProblem[] = [
       '1 <= m, n <= 100',
       '-10^4 <= matrix[i][j], target <= 10^4',
     ],
-    starterCode: `function searchMatrix(matrix: number[][], target: number): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function searchMatrix(matrix: number[][], target: number): boolean {\n  // Your solution here\n  \n}`,
+      python: `def search_matrix(matrix: list[list[int]], target: int) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'searchMatrix([[1,3,5,7],[10,11,16,20],[23,30,34,60]], 3)', expected: 'true' },
       { input: 'searchMatrix([[1,3,5,7],[10,11,16,20],[23,30,34,60]], 13)', expected: 'false' },
@@ -153,7 +165,10 @@ export const binarySearchProblems: FullProblem[] = [
       'piles.length <= h <= 10^9',
       '1 <= piles[i] <= 10^9',
     ],
-    starterCode: `function minEatingSpeed(piles: number[], h: number): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function minEatingSpeed(piles: number[], h: number): number {\n  // Your solution here\n  \n}`,
+      python: `def min_eating_speed(piles: list[int], h: int) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'minEatingSpeed([3,6,7,11], 8)', expected: '4' },
       { input: 'minEatingSpeed([30,11,23,4,20], 5)', expected: '30' },
@@ -178,7 +193,10 @@ export const binarySearchProblems: FullProblem[] = [
       'All the timestamps of set are strictly increasing.',
       'At most 2 * 10^5 calls will be made to set and get.',
     ],
-    starterCode: `class TimeMap {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  set(key: string, value: string, timestamp: number): void {\n    // Your solution here\n  }\n\n  get(key: string, timestamp: number): string {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class TimeMap {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  set(key: string, value: string, timestamp: number): void {\n    // Your solution here\n  }\n\n  get(key: string, timestamp: number): string {\n    // Your solution here\n  }\n}`,
+      python: `class TimeMap:\n    def __init__(self):\n        # Initialize your data structure here\n        pass\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        # Your solution here\n        pass\n\n    def get(self, key: str, timestamp: int) -> str:\n        # Your solution here\n        pass`,
+    },
     testCases: [
       {
         input:

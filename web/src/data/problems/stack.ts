@@ -20,7 +20,10 @@ export const stackProblems: FullProblem[] = [
       '1 <= s.length <= 10^4',
       's consists of parentheses only \'()[]{}\'.',
     ],
-    starterCode: `function isValid(s: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function isValid(s: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def is_valid(s: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'isValid("()")', expected: 'true' },
       { input: 'isValid("()[]{}")', expected: 'true' },
@@ -44,7 +47,10 @@ export const stackProblems: FullProblem[] = [
       'Methods pop, top and getMin operations will always be called on non-empty stacks.',
       'At most 3 * 10^4 calls will be made to push, pop, top, and getMin.',
     ],
-    starterCode: `class MinStack {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  push(val: number): void {\n    // Your solution here\n  }\n\n  pop(): void {\n    // Your solution here\n  }\n\n  top(): number {\n    // Your solution here\n  }\n\n  getMin(): number {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class MinStack {\n  constructor() {\n    // Initialize your data structure here\n  }\n\n  push(val: number): void {\n    // Your solution here\n  }\n\n  pop(): void {\n    // Your solution here\n  }\n\n  top(): number {\n    // Your solution here\n  }\n\n  getMin(): number {\n    // Your solution here\n  }\n}`,
+      python: `class MinStack:\n    def __init__(self):\n        # Initialize your data structure here\n        pass\n\n    def push(self, val: int) -> None:\n        # Your solution here\n        pass\n\n    def pop(self) -> None:\n        # Your solution here\n        pass\n\n    def top(self) -> int:\n        # Your solution here\n        pass\n\n    def get_min(self) -> int:\n        # Your solution here\n        pass`,
+    },
     testCases: [
       {
         input:
@@ -80,7 +86,10 @@ export const stackProblems: FullProblem[] = [
       '1 <= tokens.length <= 10^4',
       'tokens[i] is either an operator: "+", "-", "*", or "/", or an integer in the range [-200, 200].',
     ],
-    starterCode: `function evalRPN(tokens: string[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function evalRPN(tokens: string[]): number {\n  // Your solution here\n  \n}`,
+      python: `def eval_rpn(tokens: list[str]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'evalRPN(["2","1","+","3","*"])', expected: '9' },
       { input: 'evalRPN(["4","13","5","/","+"])', expected: '6' },
@@ -100,7 +109,10 @@ export const stackProblems: FullProblem[] = [
       'Input: n = 1\nOutput: ["()"]',
     ],
     constraints: ['1 <= n <= 8'],
-    starterCode: `function generateParenthesis(n: number): string[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function generateParenthesis(n: number): string[] {\n  // Your solution here\n  \n}`,
+      python: `def generate_parenthesis(n: int) -> list[str]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'generateParenthesis(3).length', expected: '5' },
       { input: 'generateParenthesis(1).length', expected: '1' },
@@ -124,7 +136,10 @@ export const stackProblems: FullProblem[] = [
       '1 <= temperatures.length <= 10^5',
       '30 <= temperatures[i] <= 100',
     ],
-    starterCode: `function dailyTemperatures(temperatures: number[]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function dailyTemperatures(temperatures: number[]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def daily_temperatures(temperatures: list[int]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'dailyTemperatures([73,74,75,71,69,72,76,73])', expected: '[1,1,4,2,1,1,0,0]' },
       { input: 'dailyTemperatures([30,40,50,60])', expected: '[1,1,1,0]' },
@@ -151,7 +166,10 @@ export const stackProblems: FullProblem[] = [
       '0 < speed[i] <= 10^6',
       'All the values of position are unique.',
     ],
-    starterCode: `function carFleet(target: number, position: number[], speed: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function carFleet(target: number, position: number[], speed: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def car_fleet(target: int, position: list[int], speed: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'carFleet(12, [10,8,0,5,3], [2,4,1,1,3])', expected: '3' },
       { input: 'carFleet(10, [3], [3])', expected: '1' },
@@ -174,7 +192,10 @@ export const stackProblems: FullProblem[] = [
       '1 <= heights.length <= 10^5',
       '0 <= heights[i] <= 10^4',
     ],
-    starterCode: `function largestRectangleArea(heights: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function largestRectangleArea(heights: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def largest_rectangle_area(heights: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'largestRectangleArea([2,1,5,6,2,3])', expected: '10' },
       { input: 'largestRectangleArea([2,4])', expected: '4' },

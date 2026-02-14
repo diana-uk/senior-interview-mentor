@@ -21,7 +21,10 @@ export const backtrackingProblems: FullProblem[] = [
       '-10 <= nums[i] <= 10',
       'All the numbers of nums are unique.',
     ],
-    starterCode: `function subsets(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function subsets(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def subsets(nums: list[int]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'subsets([1,2,3]).length', expected: '8' },
       { input: 'subsets([0]).length', expected: '2' },
@@ -47,7 +50,10 @@ export const backtrackingProblems: FullProblem[] = [
       'All elements of candidates are distinct.',
       '1 <= target <= 40',
     ],
-    starterCode: `function combinationSum(candidates: number[], target: number): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function combinationSum(candidates: number[], target: number): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'combinationSum([2,3,6,7], 7).length', expected: '2' },
       { input: 'combinationSum([2,3,5], 8).length', expected: '3' },
@@ -72,7 +78,10 @@ export const backtrackingProblems: FullProblem[] = [
       '-10 <= nums[i] <= 10',
       'All the integers of nums are unique.',
     ],
-    starterCode: `function permute(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function permute(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def permute(nums: list[int]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'permute([1,2,3]).length', expected: '6' },
       { input: 'permute([0,1]).length', expected: '2' },
@@ -95,7 +104,10 @@ export const backtrackingProblems: FullProblem[] = [
       '1 <= nums.length <= 10',
       '-10 <= nums[i] <= 10',
     ],
-    starterCode: `function subsetsWithDup(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function subsetsWithDup(nums: number[]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def subsets_with_dup(nums: list[int]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'subsetsWithDup([1,2,2]).length', expected: '6' },
       { input: 'subsetsWithDup([0]).length', expected: '2' },
@@ -119,7 +131,10 @@ export const backtrackingProblems: FullProblem[] = [
       '1 <= candidates[i] <= 50',
       '1 <= target <= 30',
     ],
-    starterCode: `function combinationSum2(candidates: number[], target: number): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function combinationSum2(candidates: number[], target: number): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def combination_sum2(candidates: list[int], target: int) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'combinationSum2([10,1,2,7,6,1,5], 8).length', expected: '4' },
       { input: 'combinationSum2([2,5,2,1,2], 5).length', expected: '2' },
@@ -142,7 +157,10 @@ export const backtrackingProblems: FullProblem[] = [
       '1 <= s.length <= 16',
       's contains only lowercase English letters.',
     ],
-    starterCode: `function partition(s: string): string[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function partition(s: string): string[][] {\n  // Your solution here\n  \n}`,
+      python: `def partition(s: str) -> list[list[str]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'partition("aab").length', expected: '2' },
       { input: 'partition("a").length', expected: '1' },
@@ -166,7 +184,10 @@ export const backtrackingProblems: FullProblem[] = [
       '0 <= digits.length <= 4',
       "digits[i] is a digit in the range ['2', '9'].",
     ],
-    starterCode: `function letterCombinations(digits: string): string[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function letterCombinations(digits: string): string[] {\n  // Your solution here\n  \n}`,
+      python: `def letter_combinations(digits: str) -> list[str]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'letterCombinations("23").length', expected: '9' },
       { input: 'letterCombinations("").length', expected: '0' },
@@ -186,7 +207,10 @@ export const backtrackingProblems: FullProblem[] = [
       'Input: n = 1\nOutput: [["Q"]]',
     ],
     constraints: ['1 <= n <= 9'],
-    starterCode: `function solveNQueens(n: number): string[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function solveNQueens(n: number): string[][] {\n  // Your solution here\n  \n}`,
+      python: `def solve_n_queens(n: int) -> list[list[str]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'solveNQueens(4).length', expected: '2' },
       { input: 'solveNQueens(1).length', expected: '1' },

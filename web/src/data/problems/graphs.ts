@@ -23,7 +23,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 300',
       "grid[i][j] is '0' or '1'.",
     ],
-    starterCode: `function numIslands(grid: string[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function numIslands(grid: string[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def num_islands(grid: list[list[str]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -57,7 +60,10 @@ export const graphsProblems: FullProblem[] = [
       '0 <= ai, bi < numCourses',
       'All pairs are unique.',
     ],
-    starterCode: `function canFinish(numCourses: number, prerequisites: number[][]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function canFinish(numCourses: number, prerequisites: number[][]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def can_finish(num_courses: int, prerequisites: list[list[int]]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'canFinish(2, [[1,0]])', expected: 'true' },
       { input: 'canFinish(2, [[1,0],[0,1]])', expected: 'false' },
@@ -83,7 +89,10 @@ export const graphsProblems: FullProblem[] = [
       'All words have the same length.',
       'All words consist of lowercase English letters.',
     ],
-    starterCode: `function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function ladderLength(beginWord: string, endWord: string, wordList: string[]): number {\n  // Your solution here\n  \n}`,
+      python: `def ladder_length(begin_word: str, end_word: str, word_list: list[str]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'ladderLength("hit", "cog", ["hot","dot","dog","lot","log","cog"])',
@@ -119,7 +128,10 @@ export const graphsProblems: FullProblem[] = [
       'There are no repeated edges and no self-loops in the graph.',
       'The graph is connected and all nodes can be visited starting from the given node.',
     ],
-    starterCode: `class GNode {\n  val: number;\n  neighbors: GNode[];\n  constructor(val = 0, neighbors: GNode[] = []) {\n    this.val = val;\n    this.neighbors = neighbors;\n  }\n}\n\nfunction cloneGraph(node: GNode | null): GNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `class GNode {\n  val: number;\n  neighbors: GNode[];\n  constructor(val = 0, neighbors: GNode[] = []) {\n    this.val = val;\n    this.neighbors = neighbors;\n  }\n}\n\nfunction cloneGraph(node: GNode | null): GNode | null {\n  // Your solution here\n  \n}`,
+      python: `from typing import Optional\n\nclass GNode:\n    def __init__(self, val: int = 0, neighbors: list['GNode'] | None = None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\ndef clone_graph(node: Optional[GNode]) -> Optional[GNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -155,7 +167,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 200',
       '0 <= heights[r][c] <= 10^5',
     ],
-    starterCode: `function pacificAtlantic(heights: number[][]): number[][] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function pacificAtlantic(heights: number[][]): number[][] {\n  // Your solution here\n  \n}`,
+      python: `def pacific_atlantic(heights: list[list[int]]) -> list[list[int]]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -193,7 +208,10 @@ export const graphsProblems: FullProblem[] = [
       'ai != bi',
       'There are no repeated edges.',
     ],
-    starterCode: `function countComponents(n: number, edges: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function countComponents(n: number, edges: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def count_components(n: int, edges: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'countComponents(5, [[0,1],[1,2],[3,4]])', expected: '2' },
       { input: 'countComponents(5, [[0,1],[1,2],[2,3],[3,4]])', expected: '1' },
@@ -218,7 +236,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 50',
       'grid[i][j] is either 0 or 1.',
     ],
-    starterCode: `function maxAreaOfIsland(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function maxAreaOfIsland(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def max_area_of_island(grid: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'maxAreaOfIsland([[0,0,1,0,0],[0,0,0,0,0],[0,1,1,0,0],[0,1,0,0,0]])',
@@ -245,7 +266,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 250',
       'rooms[i][j] is -1, 0, or 2147483647.',
     ],
-    starterCode: `function wallsAndGates(rooms: number[][]): void {\n  // Your solution here (modify rooms in-place)\n  \n}`,
+    starterCode: {
+      typescript: `function wallsAndGates(rooms: number[][]): void {\n  // Your solution here (modify rooms in-place)\n  \n}`,
+      python: `def walls_and_gates(rooms: list[list[int]]) -> None:\n    # Your solution here (modify rooms in-place)\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -278,7 +302,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 10',
       'grid[i][j] is 0, 1, or 2.',
     ],
-    starterCode: `function orangesRotting(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function orangesRotting(grid: number[][]): number {\n  // Your solution here\n  \n}`,
+      python: `def oranges_rotting(grid: list[list[int]]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'orangesRotting([[2,1,1],[1,1,0],[0,1,1]])', expected: '4' },
       { input: 'orangesRotting([[2,1,1],[0,1,1],[1,0,1]])', expected: '-1' },
@@ -303,7 +330,10 @@ export const graphsProblems: FullProblem[] = [
       '1 <= m, n <= 200',
       "board[i][j] is 'X' or 'O'.",
     ],
-    starterCode: `function solve(board: string[][]): void {\n  // Your solution here (modify board in-place)\n  \n}`,
+    starterCode: {
+      typescript: `function solve(board: string[][]): void {\n  // Your solution here (modify board in-place)\n  \n}`,
+      python: `def solve(board: list[list[str]]) -> None:\n    # Your solution here (modify board in-place)\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -338,7 +368,10 @@ export const graphsProblems: FullProblem[] = [
       'ai != bi',
       'All pairs [ai, bi] are distinct.',
     ],
-    starterCode: `function findOrder(numCourses: number, prerequisites: number[][]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findOrder(numCourses: number, prerequisites: number[][]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def find_order(num_courses: int, prerequisites: list[list[int]]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findOrder(2, [[1,0]])', expected: '[0,1]' },
       { input: 'findOrder(1, [])', expected: '[0]' },
@@ -365,7 +398,10 @@ export const graphsProblems: FullProblem[] = [
       'ai != bi',
       'There are no self-loops or repeated edges.',
     ],
-    starterCode: `function validTree(n: number, edges: number[][]): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function validTree(n: number, edges: number[][]): boolean {\n  // Your solution here\n  \n}`,
+      python: `def valid_tree(n: int, edges: list[list[int]]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'validTree(5, [[0,1],[0,2],[0,3],[1,4]])', expected: 'true' },
       { input: 'validTree(5, [[0,1],[1,2],[2,3],[1,3],[1,4]])', expected: 'false' },
@@ -393,7 +429,10 @@ export const graphsProblems: FullProblem[] = [
       'There are no repeated edges.',
       'The given graph is connected.',
     ],
-    starterCode: `function findRedundantConnection(edges: number[][]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findRedundantConnection(edges: number[][]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def find_redundant_connection(edges: list[list[int]]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findRedundantConnection([[1,2],[1,3],[2,3]])', expected: '[2,3]' },
       { input: 'findRedundantConnection([[1,2],[2,3],[3,4],[1,4],[1,5]])', expected: '[1,4]' },

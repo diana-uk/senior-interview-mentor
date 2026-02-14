@@ -52,6 +52,7 @@ export const chatRequestSchema = z.object({
       commitmentGateCompleted: z.number().min(0).max(5),
       interviewStage: z.string().nullable(),
       technicalQuestionCategory: z.string().optional(),
+      language: z.enum(['typescript', 'javascript', 'python']).optional(),
       memory: memorySchema,
     })
     .optional(),

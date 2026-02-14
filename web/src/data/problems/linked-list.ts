@@ -1,5 +1,5 @@
 import type { PatternName } from '../../types';
-import { LIST_HELPERS, type FullProblem } from './helpers';
+import { LIST_HELPERS, PYTHON_LIST_HELPERS, type FullProblem } from './helpers';
 
 export const linkedListProblems: FullProblem[] = [
   {
@@ -19,9 +19,14 @@ export const linkedListProblems: FullProblem[] = [
       'The number of nodes in the list is the range [0, 5000].',
       '-5000 <= Node.val <= 5000',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction reverseList(head: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction reverseList(head: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef reverse_list(head: Optional[ListNode]) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'listToArray(reverseList(buildList([1,2,3,4,5])))', expected: '[5,4,3,2,1]' },
       { input: 'listToArray(reverseList(buildList([1,2])))', expected: '[2,1]' },
@@ -46,9 +51,14 @@ export const linkedListProblems: FullProblem[] = [
       '-100 <= Node.val <= 100',
       'Both list1 and list2 are sorted in non-decreasing order.',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef merge_two_lists(list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'listToArray(mergeTwoLists(buildList([1,2,4]), buildList([1,3,4])))',
@@ -82,9 +92,14 @@ export const linkedListProblems: FullProblem[] = [
       '-10^5 <= Node.val <= 10^5',
       'pos is -1 or a valid index in the linked-list.',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction hasCycle(head: ListNode | null): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction hasCycle(head: ListNode | null): boolean {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef has_cycle(head: Optional[ListNode]) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -121,9 +136,14 @@ export const linkedListProblems: FullProblem[] = [
       '0 <= Node.val <= 100',
       '1 <= n <= sz',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'listToArray(removeNthFromEnd(buildList([1,2,3,4,5]), 2))',
@@ -155,9 +175,14 @@ export const linkedListProblems: FullProblem[] = [
       'The number of nodes in the list is in the range [1, 5 * 10^4].',
       '1 <= Node.val <= 1000',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction reorderList(head: ListNode | null): void {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction reorderList(head: ListNode | null): void {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef reorder_list(head: Optional[ListNode]) -> None:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -189,9 +214,14 @@ export const linkedListProblems: FullProblem[] = [
       '0 <= Node.val <= 9',
       'It is guaranteed that the list represents a number that does not have leading zeros.',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'listToArray(addTwoNumbers(buildList([2,4,3]), buildList([5,6,4])))',
@@ -224,7 +254,10 @@ export const linkedListProblems: FullProblem[] = [
       '-10^4 <= Node.val <= 10^4',
       'Node.random is null or is pointing to some node in the linked list.',
     ],
-    starterCode: `class RNode {\n  val: number;\n  next: RNode | null;\n  random: RNode | null;\n  constructor(val = 0, next: RNode | null = null, random: RNode | null = null) {\n    this.val = val;\n    this.next = next;\n    this.random = random;\n  }\n}\n\nfunction copyRandomList(head: RNode | null): RNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `class RNode {\n  val: number;\n  next: RNode | null;\n  random: RNode | null;\n  constructor(val = 0, next: RNode | null = null, random: RNode | null = null) {\n    this.val = val;\n    this.next = next;\n    this.random = random;\n  }\n}\n\nfunction copyRandomList(head: RNode | null): RNode | null {\n  // Your solution here\n  \n}`,
+      python: `from typing import Optional\n\nclass RNode:\n    def __init__(self, val: int = 0, next: 'Optional[RNode]' = None, random: 'Optional[RNode]' = None):\n        self.val = val\n        self.next = next\n        self.random = random\n\ndef copy_random_list(head: Optional[RNode]) -> Optional[RNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -256,7 +289,10 @@ export const linkedListProblems: FullProblem[] = [
       '1 <= nums[i] <= n',
       'All the integers in nums appear only once except for precisely one integer which appears two or more times.',
     ],
-    starterCode: `function findDuplicate(nums: number[]): number {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function findDuplicate(nums: number[]): number {\n  // Your solution here\n  \n}`,
+      python: `def find_duplicate(nums: list[int]) -> int:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       { input: 'findDuplicate([1,3,4,2,2])', expected: '2' },
       { input: 'findDuplicate([3,1,3,4,2])', expected: '3' },
@@ -280,7 +316,10 @@ export const linkedListProblems: FullProblem[] = [
       '0 <= value <= 10^5',
       'At most 2 * 10^5 calls will be made to get and put.',
     ],
-    starterCode: `class LRUCache {\n  constructor(capacity: number) {\n    // Initialize your data structure here\n  }\n\n  get(key: number): number {\n    // Your solution here\n  }\n\n  put(key: number, value: number): void {\n    // Your solution here\n  }\n}`,
+    starterCode: {
+      typescript: `class LRUCache {\n  constructor(capacity: number) {\n    // Initialize your data structure here\n  }\n\n  get(key: number): number {\n    // Your solution here\n  }\n\n  put(key: number, value: number): void {\n    // Your solution here\n  }\n}`,
+      python: `class LRUCache:\n    def __init__(self, capacity: int):\n        # Initialize your data structure here\n        pass\n\n    def get(self, key: int) -> int:\n        # Your solution here\n        pass\n\n    def put(self, key: int, value: int) -> None:\n        # Your solution here\n        pass`,
+    },
     testCases: [
       {
         input:
@@ -316,9 +355,14 @@ export const linkedListProblems: FullProblem[] = [
       '1 <= k <= n <= 5000',
       '0 <= Node.val <= 1000',
     ],
-    starterCode:
-      LIST_HELPERS +
-      `// Your solution below\nfunction reverseKGroup(head: ListNode | null, k: number): ListNode | null {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript:
+        LIST_HELPERS +
+        `// Your solution below\nfunction reverseKGroup(head: ListNode | null, k: number): ListNode | null {\n  // Your solution here\n  \n}`,
+      python:
+        PYTHON_LIST_HELPERS +
+        `# Your solution below\ndef reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'listToArray(reverseKGroup(buildList([1,2,3,4,5]), 2))',

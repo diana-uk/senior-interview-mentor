@@ -20,7 +20,10 @@ export const matrixProblems: FullProblem[] = [
       '1 <= m, n <= 200',
       '-2^31 <= matrix[i][j] <= 2^31 - 1',
     ],
-    starterCode: `function setZeroes(matrix: number[][]): void {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function setZeroes(matrix: number[][]): void {\n  // Your solution here\n  \n}`,
+      python: `def set_zeroes(matrix: list[list[int]]) -> None:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -52,7 +55,10 @@ export const matrixProblems: FullProblem[] = [
       '1 <= m, n <= 10',
       '-100 <= matrix[i][j] <= 100',
     ],
-    starterCode: `function spiralOrder(matrix: number[][]): number[] {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function spiralOrder(matrix: number[][]): number[] {\n  // Your solution here\n  \n}`,
+      python: `def spiral_order(matrix: list[list[int]]) -> list[int]:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input: 'spiralOrder([[1,2,3],[4,5,6],[7,8,9]])',
@@ -81,7 +87,10 @@ export const matrixProblems: FullProblem[] = [
       '1 <= n <= 20',
       '-1000 <= matrix[i][j] <= 1000',
     ],
-    starterCode: `function rotate(matrix: number[][]): void {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function rotate(matrix: number[][]): void {\n  // Your solution here\n  \n}`,
+      python: `def rotate(matrix: list[list[int]]) -> None:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
@@ -115,7 +124,10 @@ export const matrixProblems: FullProblem[] = [
       '1 <= word.length <= 15',
       'board and word consist of only lowercase and uppercase English letters.',
     ],
-    starterCode: `function exist(board: string[][], word: string): boolean {\n  // Your solution here\n  \n}`,
+    starterCode: {
+      typescript: `function exist(board: string[][], word: string): boolean {\n  // Your solution here\n  \n}`,
+      python: `def exist(board: list[list[str]], word: str) -> bool:\n    # Your solution here\n    pass`,
+    },
     testCases: [
       {
         input:
