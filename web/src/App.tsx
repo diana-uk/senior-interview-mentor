@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import TopNav from './components/layout/TopNav';
 import Sidebar from './components/layout/Sidebar';
 import ChatPanel from './components/chat/ChatPanel';
 import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
+import AuthPage from './components/auth/AuthPage';
+import { useAuth } from './hooks/useAuth';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -197,6 +199,87 @@ function generateId(): string {
 }
 
 export default function App() {
+  const { user, session, loading: authLoading, signIn, signUp, signInWithOAuth, signOut, isAuthenticated } = useAuth();
+  const [authSkipped, setAuthSkipped] = useState(() => localStorage.getItem('sim-auth-skipped') === '1');
+  const [syncing, setSyncing] = useState(false);
+  const [syncToast, setSyncToast] = useState('');
+  const syncAttempted = useRef(false);
+
+  const handleAuthSkip = useCallback(() => {
+    localStorage.setItem('sim-auth-skipped', '1');
+    setAuthSkipped(true);
+  }, []);
+
+  const handleSync = useCallback(async () => {
+    if (!session?.access_token) return;
+    setSyncing(true);
+    try {
+      const statsRaw = localStorage.getItem('sim-stats');
+      const mistakesRaw = localStorage.getItem('sim-mistakes');
+      const sessionsRaw = localStorage.getItem('sim-sessions');
+
+      const stats = statsRaw ? JSON.parse(statsRaw) : {};
+      const mistakesData = mistakesRaw ? JSON.parse(mistakesRaw) : [];
+      const sessionsData = sessionsRaw ? JSON.parse(sessionsRaw) : [];
+
+      const payload = {
+        progress: stats.problemProgress || {},
+        mistakes: Array.isArray(mistakesData) ? mistakesData : [],
+        sessions: Array.isArray(sessionsData) ? sessionsData : [],
+        reviews: stats.reviews || [],
+      };
+
+      const hasData = Object.keys(payload.progress).length > 0
+        || payload.mistakes.length > 0
+        || payload.sessions.length > 0
+        || payload.reviews.length > 0;
+
+      if (!hasData) {
+        setSyncToast('No local data to sync');
+        setTimeout(() => setSyncToast(''), 3000);
+        localStorage.setItem('sim-synced', '1');
+        setSyncing(false);
+        return;
+      }
+
+      const res = await fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        localStorage.setItem('sim-synced', '1');
+        setSyncToast('Data synced to cloud!');
+      } else {
+        setSyncToast('Sync failed - try again later');
+      }
+    } catch {
+      setSyncToast('Sync failed - try again later');
+    }
+    setSyncing(false);
+    setTimeout(() => setSyncToast(''), 3000);
+  }, [session]);
+
+  // Auto-sync on first login
+  useEffect(() => {
+    if (isAuthenticated && !localStorage.getItem('sim-synced') && !syncAttempted.current) {
+      syncAttempted.current = true;
+      void handleSync();
+    }
+  }, [isAuthenticated, handleSync]);
+
+  // Clear skip flag when user authenticates
+  useEffect(() => {
+    if (isAuthenticated && authSkipped) {
+      localStorage.removeItem('sim-auth-skipped');
+      setAuthSkipped(false);
+    }
+  }, [isAuthenticated, authSkipped]);
+
   const { restored, restoreMessages, saveSession, clearSession } = useSessionPersistence();
   const initial = restored ? {
     mode: restored.mode,
@@ -662,8 +745,29 @@ export default function App() {
     );
   }
 
+  if (authLoading) {
+    return (
+      <div className="auth-loading">
+        <div className="topnav-logo">S</div>
+        <span>Loading...</span>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated && !authSkipped) {
+    return (
+      <AuthPage
+        onSignIn={signIn}
+        onSignUp={signUp}
+        onOAuth={signInWithOAuth}
+        onSkip={handleAuthSkip}
+      />
+    );
+  }
+
   return (
     <div className="app-shell">
+      {syncToast && <div className="sync-toast">{syncToast}</div>}
       <TopNav
         mode={mode}
         problem={currentProblem}
@@ -671,6 +775,10 @@ export default function App() {
         timerRunning={timerRunning}
         hintsUsed={hintsUsed}
         progressPercent={progressPercent}
+        user={user}
+        onSignOut={signOut}
+        onSync={handleSync}
+        syncing={syncing}
       />
 
       <div className="app-body">

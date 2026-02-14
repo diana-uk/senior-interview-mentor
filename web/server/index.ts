@@ -6,6 +6,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import healthRouter from './routes/health.js';
 import chatRouter from './routes/chat.js';
 import progressRouter from './routes/progress.js';
+import authRouter from './routes/auth.js';
 import { isSupabaseConfigured } from './db/client.js';
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use('/api', healthRouter);
 app.use('/api', chatRouter);
 app.use('/api', progressRouter);
+app.use('/api/auth', authRouter);
 
 app.use(errorHandler);
 
