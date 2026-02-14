@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Square } from 'lucide-react';
 import type { ChatMessage } from '../../types';
 import ChatMessageItem from '../chat/ChatMessage';
+import VoiceButton from '../chat/VoiceButton';
+import type { FillerReport } from '../../utils/fillerDetector';
 
 interface MentorPanelProps {
   messages: ChatMessage[];
@@ -14,6 +16,15 @@ export default function MentorPanel({ messages, onSendMessage, isStreaming, onSt
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleVoiceTranscript = useCallback((text: string) => {
+    setInput((prev) => (prev ? prev + ' ' + text : text));
+    inputRef.current?.focus();
+  }, []);
+
+  const handleFillerUpdate = useCallback((_report: FillerReport) => {
+    // Filler badge shown on VoiceButton itself; no extra state needed here
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,6 +81,11 @@ export default function MentorPanel({ messages, onSendMessage, isStreaming, onSt
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           rows={1}
+          disabled={isStreaming}
+        />
+        <VoiceButton
+          onTranscript={handleVoiceTranscript}
+          onFillerUpdate={handleFillerUpdate}
           disabled={isStreaming}
         />
         {isStreaming ? (

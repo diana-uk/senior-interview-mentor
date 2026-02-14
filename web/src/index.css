@@ -1095,3 +1095,77 @@ body {
   background: var(--bg-error);
   color: var(--text-bright);
 }
+
+/* ================================================
+   Voice Button
+   ================================================ */
+.voice-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: var(--bg-overlay);
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.voice-btn:hover:not(:disabled) {
+  border-color: var(--border-active);
+  color: var(--text-primary);
+}
+
+.voice-btn--listening {
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  box-shadow: 0 0 0 0 var(--neon-red-glow);
+  animation: voice-pulse 1.5s ease-in-out infinite;
+}
+
+.voice-btn--unsupported {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.voice-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.voice-btn__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--neon-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+@keyframes voice-pulse {
+  0% { box-shadow: 0 0 0 0 var(--neon-red-glow); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 51, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
+}
+
+.chat-evaluate-btn {
+  border-color: var(--neon-purple) !important;
+  color: var(--neon-purple) !important;
+}
+
+.chat-evaluate-btn:hover {
+  background: var(--neon-purple-subtle) !important;
+}

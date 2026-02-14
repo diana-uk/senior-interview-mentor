@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Square } from 'lucide-react';
 import type { ChatMessage, Mode } from '../../types';
 import ChatMessageItem from './ChatMessage';
+import VoiceButton from './VoiceButton';
+import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
 
 interface ChatPanelProps {
   mode: Mode;
@@ -16,6 +18,7 @@ const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review
 
 export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming }: ChatPanelProps) {
   const [input, setInput] = useState('');
+  const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,6 +47,30 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
     setInput(e.target.value);
     e.target.style.height = 'auto';
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+  }
+
+  const handleVoiceTranscript = useCallback((text: string) => {
+    setInput((prev) => (prev ? prev + ' ' + text : text));
+    inputRef.current?.focus();
+  }, []);
+
+  const handleFillerUpdate = useCallback((report: FillerReport) => {
+    setFillerReport(report);
+  }, []);
+
+  function handleEvaluateCommunication() {
+    if (!fillerReport) return;
+    const feedback = getFillerFeedback(fillerReport);
+    const recentUserMessages = messages
+      .filter((m) => m.role === 'user')
+      .slice(-5)
+      .map((m) => m.content)
+      .join('\n');
+
+    onSendMessage(
+      `/check Please evaluate my verbal communication in this interview session.\n\nFiller word report: ${feedback}\n\nRecent transcript:\n${recentUserMessages}\n\nScore my communication on: clarity, technical terminology, structured thinking, and filler word usage.`
+    );
+    setFillerReport(null);
   }
 
   const modeClass = mode.toLowerCase();
@@ -91,6 +118,15 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
               {cmd}
             </button>
           ))}
+          {fillerReport && fillerReport.totalFillers > 0 && (
+            <button
+              className="chat-quick-action chat-evaluate-btn"
+              onClick={handleEvaluateCommunication}
+              disabled={isStreaming}
+            >
+              Evaluate Communication
+            </button>
+          )}
         </div>
         <div className="chat-input-wrapper">
           <textarea
@@ -101,6 +137,11 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             rows={1}
+            disabled={isStreaming}
+          />
+          <VoiceButton
+            onTranscript={handleVoiceTranscript}
+            onFillerUpdate={handleFillerUpdate}
             disabled={isStreaming}
           />
           {isStreaming ? (
