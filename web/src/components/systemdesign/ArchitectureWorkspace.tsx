@@ -8,6 +8,7 @@ import {
   addEdge,
   applyNodeChanges,
   applyEdgeChanges,
+  useReactFlow,
   type Node,
   type Edge,
   type OnNodesChange,
@@ -66,7 +67,7 @@ function ArchitectureWorkspaceInner({
   const [notesOpen, setNotesOpen] = useState(false);
   const [notes, setNotes] = useState('');
   const reactFlowRef = useRef<HTMLDivElement>(null);
-  const reactFlowInstance = useRef<{ screenToFlowPosition: (pos: { x: number; y: number }) => { x: number; y: number } } | null>(null);
+  const { screenToFlowPosition } = useReactFlow();
 
   const nodes: Node[] = useMemo(() =>
     diagramNodes.map((n) => ({ ...n, type: 'system' })),
@@ -123,9 +124,7 @@ function ArchitectureWorkspaceInner({
     const label = e.dataTransfer.getData('application/reactflow-label');
     if (!componentType) return;
 
-    const position = reactFlowInstance.current
-      ? reactFlowInstance.current.screenToFlowPosition({ x: e.clientX, y: e.clientY })
-      : { x: e.clientX - 300, y: e.clientY - 100 };
+    const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
 
     const newNode = {
       id: generateNodeId(),
@@ -175,8 +174,6 @@ function ArchitectureWorkspaceInner({
           <div
             className="arch-canvas"
             ref={reactFlowRef}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
           >
             <ReactFlow
               nodes={nodes}
@@ -184,7 +181,8 @@ function ArchitectureWorkspaceInner({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
-              onInit={(instance) => { reactFlowInstance.current = instance; }}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
               nodeTypes={nodeTypes}
               fitView
               proOptions={{ hideAttribution: true }}
