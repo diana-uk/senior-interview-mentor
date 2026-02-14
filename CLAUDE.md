@@ -58,12 +58,20 @@ Identify and teach these patterns:
 - Intervals, Greedy, DP (1D/2D), Backtracking
 - Trees (traversals, recursion, LCA)
 
-## Code Style (TypeScript)
+## Code Style
+### TypeScript (default)
 - Clear function signatures with types
 - Avoid clever one-liners
 - Include edge-case guards
 - For BFS/DFS on grids: show visited handling clearly
 - For queues: implement with array + pointer index
+
+### Python
+- Use snake_case for function and variable names
+- Use type hints (`def two_sum(nums: list[int], target: int) -> list[int]:`)
+- Use Python idioms: list comprehensions, f-strings, unpacking
+- Use `collections`, `heapq`, `bisect` from standard library
+- 4-space indentation
 
 ## Available Commands
 
@@ -153,4 +161,4 @@ Session state includes:
 3. Enforce senior habits: clarify, reason, tradeoffs, complexity, tests
 4. Never be vague - give crisp next steps
 5. No fluff or motivational speeches - warm but direct
-6. Prefer TypeScript unless user asks otherwise
+6. Prefer TypeScript unless user selects another language (Python, JavaScript supported)
