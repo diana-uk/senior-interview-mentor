@@ -113,6 +113,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
       overflowY: 'auto',
     }}>
       {/* Nav */}
+      <header>
       <nav style={{
         display: 'flex',
         alignItems: 'center',
@@ -126,7 +127,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
         zIndex: 100,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="material-symbols-outlined" style={{ color: 'var(--neon-cyan)', fontSize: 24 }}>terminal</span>
+          <span className="material-symbols-outlined" aria-hidden="true" style={{ color: 'var(--neon-cyan)', fontSize: 24 }}>terminal</span>
           <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 16, color: 'var(--text-bright)' }}>
             Senior<span style={{ color: 'var(--neon-cyan)' }}>Mentor</span>
           </span>
@@ -156,6 +157,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
           </button>
         </div>
       </nav>
+      </header>
 
       {/* Hero */}
       <section style={{
@@ -214,7 +216,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
             style={{ padding: '12px 32px', fontSize: 16 }}
           >
             Start Practicing Free
-            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
+            <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 20 }}>arrow_forward</span>
           </button>
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12 }}>
@@ -223,7 +225,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
       </section>
 
       {/* Content based on tab */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px 80px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px 80px' }}>
 
         {/* Features */}
         {activeTab === 'features' && (
@@ -249,7 +251,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
                       background: `color-mix(in srgb, ${f.color} 15%, transparent)`,
                       marginBottom: 16,
                     }}>
-                      <span className="material-symbols-outlined" style={{ color: f.color, fontSize: 22 }}>{f.icon}</span>
+                      <span className="material-symbols-outlined" aria-hidden="true" style={{ color: f.color, fontSize: 22 }}>{f.icon}</span>
                     </div>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-bright)', marginBottom: 8 }}>{f.title}</h3>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
@@ -413,7 +415,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
                           fontSize: 13,
                           color: 'var(--text-secondary)',
                         }}>
-                          <span className="material-symbols-outlined" style={{ color: 'var(--neon-lime)', fontSize: 16 }}>check</span>
+                          <span className="material-symbols-outlined" aria-hidden="true" style={{ color: 'var(--neon-lime)', fontSize: 16 }}>check</span>
                           {f}
                         </li>
                       ))}
@@ -434,7 +436,7 @@ export default function Landing({ onEnterApp }: LandingProps) {
             </div>
           </section>
         )}
-      </div>
+      </main>
 
       {/* Footer */}
       <footer style={{
