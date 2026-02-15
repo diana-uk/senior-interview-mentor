@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { chatRequestSchema } from '../types.js';
 import { validate } from '../middleware/validate.js';
 import { chatLimiter } from '../middleware/rateLimiter.js';
+import { optionalAuth } from '../middleware/auth.js';
+import { tierLimits } from '../middleware/tierLimits.js';
 import { streamChat } from '../services/ai.js';
 
 /**
@@ -49,7 +51,7 @@ async function simulateStream(
 
 const router = Router();
 
-router.post('/chat', chatLimiter, validate(chatRequestSchema), (req, res) => {
+router.post('/chat', chatLimiter, optionalAuth, tierLimits, validate(chatRequestSchema), (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',

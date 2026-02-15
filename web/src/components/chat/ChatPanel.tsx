@@ -5,6 +5,12 @@ import ChatMessageItem from './ChatMessage';
 import VoiceButton from './VoiceButton';
 import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
 
+interface RateLimitInfo {
+  remaining: number;
+  limit: number;
+  plan: string;
+}
+
 interface ChatPanelProps {
   mode: Mode;
   messages: ChatMessage[];
@@ -12,11 +18,13 @@ interface ChatPanelProps {
   hidden?: boolean;
   isStreaming?: boolean;
   onStopStreaming?: () => void;
+  rateLimitInfo?: RateLimitInfo | null;
+  onUpgrade?: () => void;
 }
 
 const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review'];
 
-export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming }: ChatPanelProps) {
+export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming, rateLimitInfo, onUpgrade }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -104,6 +112,38 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
       </div>
 
       <div className="chat-input-area">
+        {rateLimitInfo && rateLimitInfo.limit > 0 && rateLimitInfo.plan === 'free' && (
+          <div className="chat-rate-limit" style={{
+            padding: '4px 12px',
+            fontSize: 11,
+            color: rateLimitInfo.remaining <= 2 ? 'var(--color-error, #f87171)' : 'var(--text-secondary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid var(--border-subtle, rgba(255,255,255,0.06))',
+          }}>
+            <span>
+              {rateLimitInfo.remaining} / {rateLimitInfo.limit} messages remaining today
+              {rateLimitInfo.remaining <= 2 ? ' — running low!' : ''}
+            </span>
+            {onUpgrade && (
+              <button
+                onClick={onUpgrade}
+                style={{
+                  background: 'none',
+                  border: '1px solid var(--color-accent, #00e5ff)',
+                  color: 'var(--color-accent, #00e5ff)',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                Upgrade
+              </button>
+            )}
+          </div>
+        )}
         <div className="chat-quick-actions">
           {slashCommands.map((cmd) => (
             <button

@@ -10,6 +10,8 @@ interface UseChatOptions {
   initialMessages: ChatMessage[];
   getContext: () => ChatContext | undefined;
   onEditorUpdate?: (starterCode: string, testCode: string) => void;
+  accessToken?: string;
+  onRateLimit?: (remaining: number, limit: number, plan: string) => void;
 }
 
 interface UseChatReturn {
@@ -21,7 +23,7 @@ interface UseChatReturn {
   stopStreaming: () => void;
 }
 
-export function useChat({ initialMessages, getContext, onEditorUpdate }: UseChatOptions): UseChatReturn {
+export function useChat({ initialMessages, getContext, onEditorUpdate, accessToken, onRateLimit }: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [isStreaming, setIsStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -124,11 +126,13 @@ export function useChat({ initialMessages, getContext, onEditorUpdate }: UseChat
             abortRef.current = null;
           },
           onEditorUpdate,
+          onRateLimit,
         },
         abortController.signal,
+        { accessToken },
       );
     },
-    [isStreaming, getContext, wrappedSetMessages, onEditorUpdate],
+    [isStreaming, getContext, wrappedSetMessages, onEditorUpdate, accessToken, onRateLimit],
   );
 
   /**
@@ -205,11 +209,13 @@ export function useChat({ initialMessages, getContext, onEditorUpdate }: UseChat
             setIsStreaming(false);
             abortRef.current = null;
           },
+          onRateLimit,
         },
         abortController.signal,
+        { accessToken },
       );
     },
-    [isStreaming, getContext, wrappedSetMessages],
+    [isStreaming, getContext, wrappedSetMessages, accessToken, onRateLimit],
   );
 
   return { messages, setMessages: wrappedSetMessages, isStreaming, sendMessage, sendSilentMessage, stopStreaming };

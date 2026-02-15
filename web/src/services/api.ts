@@ -10,6 +10,11 @@ interface StreamCallbacks {
   onDone: () => void;
   onError: (message: string) => void;
   onEditorUpdate?: (starterCode: string, testCode: string) => void;
+  onRateLimit?: (remaining: number, limit: number, plan: string) => void;
+}
+
+interface StreamOptions {
+  accessToken?: string;
 }
 
 const RESPONSE_TIMEOUT_MS = 90_000;
@@ -18,6 +23,7 @@ export async function streamChat(
   payload: ChatPayload,
   callbacks: StreamCallbacks,
   signal?: AbortSignal,
+  options?: StreamOptions,
 ): Promise<void> {
   console.log('[API] Sending chat payload:', JSON.stringify(payload, null, 2));
 
@@ -28,11 +34,16 @@ export async function streamChat(
     ? AbortSignal.any([signal, timeoutController.signal])
     : timeoutController.signal;
 
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (options?.accessToken) {
+    headers['Authorization'] = `Bearer ${options.accessToken}`;
+  }
+
   let response: Response;
   try {
     response = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(payload),
       signal: combinedSignal,
     });
@@ -61,6 +72,16 @@ export async function streamChat(
     }
     callbacks.onError(message);
     return;
+  }
+
+  // Parse rate limit headers and notify frontend
+  const rlRemaining = response.headers.get('X-RateLimit-Remaining');
+  const rlLimit = response.headers.get('X-RateLimit-Limit');
+  const rlPlan = response.headers.get('X-RateLimit-Plan');
+  if (rlRemaining && rlLimit && rlPlan && callbacks.onRateLimit) {
+    const remaining = rlRemaining === 'unlimited' ? -1 : parseInt(rlRemaining, 10);
+    const limit = rlLimit === 'unlimited' ? -1 : parseInt(rlLimit, 10);
+    callbacks.onRateLimit(remaining, limit, rlPlan);
   }
 
   const reader = response.body?.getReader();
