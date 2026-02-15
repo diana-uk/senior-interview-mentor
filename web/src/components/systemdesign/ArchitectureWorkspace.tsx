@@ -75,8 +75,8 @@ function ArchitectureWorkspaceInner({
   const edges: Edge[] = useMemo(() => diagramEdges as Edge[], [diagramEdges]);
 
   // Sync parent diagramNodes → local nodes, preserving React Flow internals
-  useEffect(() => {
-    setNodes(prev => {
+  const syncedNodes = useMemo(() => {
+    return (prev: Node[]) => {
       const prevMap = new Map(prev.map(n => [n.id, n]));
       return diagramNodes.map(n => {
         const existing = prevMap.get(n.id);
@@ -87,8 +87,12 @@ function ArchitectureWorkspaceInner({
           ...(existing?.width != null ? { width: existing.width, height: existing.height } : {}),
         };
       });
-    });
+    };
   }, [diagramNodes]);
+
+  useEffect(() => {
+    setNodes(syncedNodes);
+  }, [syncedNodes]);
 
   const onNodesChange: OnNodesChange = useCallback((changes) => {
     setNodes(nds => {

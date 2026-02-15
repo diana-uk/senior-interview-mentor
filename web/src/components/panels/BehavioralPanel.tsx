@@ -49,13 +49,6 @@ function saveStories(stories: StoryEntry[]): void {
 
 type CommDimensionId = 'conciseness' | 'impact' | 'technical-depth' | 'self-awareness';
 
-interface CommScore {
-  id: CommDimensionId;
-  label: string;
-  description: string;
-  score: number; // 0-4
-}
-
 const COMM_DIMENSIONS: { id: CommDimensionId; label: string; description: string }[] = [
   { id: 'conciseness', label: 'Conciseness', description: 'Was the response focused and free of tangents?' },
   { id: 'impact', label: 'Impact', description: 'Were outcomes quantified with concrete metrics?' },

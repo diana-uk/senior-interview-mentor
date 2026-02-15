@@ -41,11 +41,14 @@ export function useSubscription(session: Session | null) {
     } catch {
       setState((s) => ({ ...s, loading: false }));
     }
-  }, [session?.access_token]);
+  }, [session]);
 
   useEffect(() => {
-    void fetchSubscription();
-  }, [fetchSubscription]);
+    if (!session?.access_token) return;
+    // Wrap in setTimeout to avoid synchronous setState in effect body
+    const timer = setTimeout(() => { void fetchSubscription(); }, 0);
+    return () => clearTimeout(timer);
+  }, [session, fetchSubscription]);
 
   const checkout = useCallback(async (priceId: string, interval: 'month' | 'year') => {
     if (!session?.access_token) return;
@@ -65,7 +68,7 @@ export function useSubscription(session: Session | null) {
     } catch (err) {
       console.error('[billing] Checkout error:', err);
     }
-  }, [session?.access_token]);
+  }, [session]);
 
   const manage = useCallback(async () => {
     if (!session?.access_token) return;
@@ -84,7 +87,7 @@ export function useSubscription(session: Session | null) {
     } catch (err) {
       console.error('[billing] Portal error:', err);
     }
-  }, [session?.access_token]);
+  }, [session]);
 
   return {
     ...state,

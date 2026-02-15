@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react';
 import type { Difficulty, PatternName, PatternStrength, ProblemStatus } from '../types';
 import {
   problemsByPattern,
-  problemsById,
   problemPatternMap,
   allProblemsList,
 } from '../data/problems';

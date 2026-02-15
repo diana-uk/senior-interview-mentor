@@ -22,6 +22,7 @@ export default function MentorPanel({ messages, onSendMessage, isStreaming, onSt
     inputRef.current?.focus();
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFillerUpdate = useCallback((_report: FillerReport) => {
     // Filler badge shown on VoiceButton itself; no extra state needed here
   }, []);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { PlanId } from '../../config/tiers';
 
 interface SubscriptionBannerProps {
@@ -13,11 +13,16 @@ export default function SubscriptionBanner({ plan, status, currentPeriodEnd, onU
     localStorage.getItem('sim-upgrade-dismissed') === '1'
   );
 
+  const [mountTime] = useState(() => Date.now());
+  const daysLeft = useMemo(() => {
+    if (status !== 'trialing' || !currentPeriodEnd) return 0;
+    return Math.max(0, Math.ceil((new Date(currentPeriodEnd).getTime() - mountTime) / 86400000));
+  }, [status, currentPeriodEnd, mountTime]);
+
   if (dismissed) return null;
 
   // Show trial countdown
   if (status === 'trialing' && currentPeriodEnd) {
-    const daysLeft = Math.max(0, Math.ceil((new Date(currentPeriodEnd).getTime() - Date.now()) / 86400000));
     return (
       <div className="subscription-banner subscription-banner--trial">
         <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>schedule</span>

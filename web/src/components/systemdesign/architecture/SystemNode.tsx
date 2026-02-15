@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import type { DiagramNodeData, SystemComponentType } from '../../../types';
 
 const COMPONENT_META: Record<SystemComponentType, { icon: string; color: string }> = {
@@ -24,15 +24,20 @@ function SystemNode({ data, id }: NodeProps & { data: DiagramNodeData }) {
     setEditing(true);
   }
 
-  function handleBlur() {
+  const { setNodes } = useReactFlow();
+
+  function commitLabel() {
     setEditing(false);
-    data.label = label;
+    setNodes(nds => nds.map(n => n.id === id ? { ...n, data: { ...n.data, label } } : n));
+  }
+
+  function handleBlur() {
+    commitLabel();
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter') {
-      setEditing(false);
-      data.label = label;
+      commitLabel();
     }
   }
 

@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { readSession, clearSession as clearStorage, createDebouncedSave } from './useSessionStorage';
 import type {
   ChatMessage,
@@ -67,12 +67,10 @@ function deserializeMessages(persisted: PersistedMessage[]): ChatMessage[] {
 }
 
 export function useSessionPersistence() {
-  const restoredRef = useRef<PersistedSession | null | undefined>(undefined);
-
-  // Read once on first call (lazy init via ref)
-  if (restoredRef.current === undefined) {
-    restoredRef.current = readSession<PersistedSession>(MAX_AGE_MS);
-  }
+  // Read once on mount via lazy useState initializer (avoids ref access in render)
+  const [restored] = useState<PersistedSession | null>(() =>
+    readSession<PersistedSession>(MAX_AGE_MS)
+  );
 
   const debouncedSave = useRef(createDebouncedSave<PersistedSession>(DEBOUNCE_MS)).current;
 
@@ -87,7 +85,7 @@ export function useSessionPersistence() {
   );
 
   return {
-    restored: restoredRef.current,
+    restored,
     restoreMessages: deserializeMessages,
     saveSession,
     clearSession: clearStorage,

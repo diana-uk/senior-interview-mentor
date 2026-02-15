@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { ChevronDown, ChevronRight, Send } from 'lucide-react';
 import type { SystemDesignTopicId } from '../../types';
 
@@ -151,24 +151,20 @@ export default function SystemDesignEditor({ value, onChange, topicId, onSubmitS
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync from parent value only on initial mount or external changes
-  const lastValueRef = useRef(value);
-  useEffect(() => {
-    if (value !== lastValueRef.current) {
-      const parsed = parseSections(value);
-      // Only update if significantly different (not from our own changes)
-      const currentSerialized = serializeSections(localSections);
-      if (value !== currentSerialized) {
-        setLocalSections(parsed);
-      }
-      lastValueRef.current = value;
-    }
-  }, [value, parseSections, localSections]);
-
   function serializeSections(data: Record<string, string>): string {
     return sections
       .map((s) => `## [${s.id}]\n${data[s.id] || ''}`)
       .join('\n\n');
+  }
+
+  // Sync from parent value only on external changes (not our own edits)
+  const [lastValue, setLastValue] = useState(value);
+  if (value !== lastValue) {
+    const currentSerialized = serializeSections(localSections);
+    if (value !== currentSerialized) {
+      setLocalSections(parseSections(value));
+    }
+    setLastValue(value);
   }
 
   // Debounced sync to parent

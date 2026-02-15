@@ -620,17 +620,21 @@ export function useCodeAnalysis(
   // Run analysis on code changes with debounce
   useEffect(() => {
     if (!enabled) {
-      setInsights([]);
-      setComplexity(null);
-      setIsAnalyzing(false);
-      return;
+      // Use timeout to avoid synchronous setState in effect body
+      const clearTimer = setTimeout(() => {
+        setInsights([]);
+        setComplexity(null);
+        setIsAnalyzing(false);
+      }, 0);
+      return () => clearTimeout(clearTimer);
     }
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
-    setIsAnalyzing(true);
+    // Use microtask to avoid synchronous setState in effect body
+    queueMicrotask(() => setIsAnalyzing(true));
 
     debounceRef.current = setTimeout(() => {
       const result = analyzeCode(code);

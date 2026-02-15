@@ -44,7 +44,6 @@ self.onmessage = (e: MessageEvent<WorkerInput>) => {
       return { result: JSON.stringify(${testInput}), logs: __logs };
     `;
 
-    // eslint-disable-next-line no-new-func
     const fn = new Function(wrappedCode);
     const output = fn() as { result: string; logs: LogEntry[] };
 
