@@ -186,7 +186,7 @@
 - [x] Pricing tiers defined: Free, Premium ($19/mo), Pro ($29/mo) — `config/tiers.ts`
 - [x] Pricing page with monthly/yearly toggle — `PricingPage.tsx`
 - [x] Subscription banner (upgrade/trial/past_due prompts) — `SubscriptionBanner.tsx`
-- [ ] Enforce tier limits (free: 5 messages/day, premium: unlimited)
+- [x] Enforce tier limits (free: 10 messages/day, premium/pro: unlimited) — `server/middleware/tierLimits.ts` (SIM-51)
 
 ### 7.2 Payment Integration
 - [x] Stripe Checkout integration — `server/services/stripe.ts`
@@ -197,9 +197,9 @@
 - [ ] Referral program
 
 ### 7.3 Usage Tracking & Limits
-- [ ] Rate limiting per tier
+- [x] Rate limiting per tier — `server/middleware/tierLimits.ts`, X-RateLimit-* headers (SIM-51)
 - [ ] Usage dashboard
-- [ ] Soft upgrade prompts
+- [x] Soft upgrade prompts — Rate limit indicator in ChatPanel with Upgrade button (SIM-51)
 
 ---
 
@@ -255,7 +255,7 @@
 
 ### 9.6 Testing
 - [x] Vitest setup with jsdom v25 + @testing-library/react
-- [x] Unit tests: stripTypes (13), codeExecutor (12), useSystemDesignState (14), useMistakeTracker (12), problemLanguage (16), useCodeAnalysis (26), useAchievements (21) — **115 tests, 8 files**
+- [x] Unit tests: stripTypes (13), codeExecutor (12), useSystemDesignState (14), useMistakeTracker (12), problemLanguage (16), memoryBuilder (12), pythonTestAdapter (15), useAchievements (21) — **115 tests, 8 files**
 - [ ] Component tests for critical UI flows
 - [ ] API integration tests
 - [ ] E2E tests (Playwright): signup → solve → review, interview flow, system design flow
