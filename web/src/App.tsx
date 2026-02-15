@@ -192,6 +192,7 @@ export default function App() {
   const [authSkipped, setAuthSkipped] = useState(() => localStorage.getItem('sim-auth-skipped') === '1');
   const [syncing, setSyncing] = useState(false);
   const [syncToast, setSyncToast] = useState('');
+  const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; limit: number; plan: string } | null>(null);
   const syncAttempted = useRef(false);
 
   const handleAuthSkip = useCallback(() => {
@@ -396,10 +397,16 @@ export default function App() {
     }
   }, [currentProblem]);
 
+  const handleRateLimit = useCallback((remaining: number, limit: number, plan: string) => {
+    setRateLimitInfo({ remaining, limit, plan });
+  }, []);
+
   const { messages, setMessages, isStreaming, sendMessage, sendSilentMessage, stopStreaming } = useChat({
     initialMessages: initial?.messages ?? initialMessages,
     getContext,
     onEditorUpdate: handleEditorUpdate,
+    accessToken: session?.access_token,
+    onRateLimit: handleRateLimit,
   });
 
   useEffect(() => {
@@ -834,6 +841,8 @@ export default function App() {
                   hidden={false}
                   isStreaming={isStreaming}
                   onStopStreaming={stopStreaming}
+                  rateLimitInfo={rateLimitInfo}
+                  onUpgrade={() => setSidebarPanel('settings')}
                 />
               }
               editorPanel={
@@ -870,6 +879,8 @@ export default function App() {
                 hidden={mobileView !== 'chat'}
                 isStreaming={isStreaming}
                 onStopStreaming={stopStreaming}
+                rateLimitInfo={rateLimitInfo}
+                onUpgrade={() => setSidebarPanel('settings')}
               />
               <EditorPanel
                 problemId={currentProblem?.id}
