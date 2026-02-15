@@ -20,6 +20,7 @@ import { useSystemDesignState } from './hooks/useSystemDesignState';
 import { useMistakeTracker } from './hooks/useMistakeTracker';
 import { useStats } from './hooks/useStats';
 import { useAdaptiveRecommendation } from './hooks/useAdaptiveRecommendation';
+import { useAchievements } from './hooks/useAchievements';
 import { problemsById } from './data/problems';
 import { getStarterCode, getTestCode } from './utils/problemLanguage';
 import { buildMemorySummary } from './utils/memoryBuilder';
@@ -354,6 +355,18 @@ export default function App() {
     getProblemStatus,
     weakPatterns: getWeakPatterns(),
   });
+  const { achievements, unlockedCount, totalCount, checkAchievements } = useAchievements();
+  const [achievementToast, setAchievementToast] = useState<string | null>(null);
+
+  // Check achievements when stats change
+  useEffect(() => {
+    const newlyUnlocked = checkAchievements(stats);
+    if (newlyUnlocked.length > 0) {
+      const first = newlyUnlocked[0];
+      setAchievementToast(`${first.icon} ${first.title} unlocked!`);
+      setTimeout(() => setAchievementToast(null), 4000);
+    }
+  }, [stats, checkAchievements]);
 
   const getContext = useCallback((): ChatContext | undefined => {
     const settings = getSettings();
@@ -774,6 +787,11 @@ export default function App() {
   return (
     <div className="app-shell">
       {syncToast && <div className="sync-toast">{syncToast}</div>}
+      {achievementToast && (
+        <div className="sync-toast" style={{ background: 'linear-gradient(135deg, rgba(0,240,255,0.15), rgba(163,255,0,0.1))', borderColor: 'var(--neon-cyan)' }}>
+          {achievementToast}
+        </div>
+      )}
       <TopNav
         mode={mode}
         problem={currentProblem}
@@ -804,6 +822,9 @@ export default function App() {
           stats={stats}
           getProblemStatus={getProblemStatus}
           recommendations={getRecommendations(3)}
+          achievements={achievements}
+          unlockedCount={unlockedCount}
+          totalCount={totalCount}
         />
 
         <div className="workspace">

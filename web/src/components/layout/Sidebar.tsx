@@ -4,14 +4,16 @@ import {
   AlertTriangle,
   BarChart3,
   MessageSquare,
+  Trophy,
   Settings,
   X,
 } from 'lucide-react';
-import type { MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsData } from '../../types';
+import type { Achievement, MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsData } from '../../types';
 import ProblemList from '../panels/ProblemList';
 import type { RecommendedProblemEntry } from '../panels/ProblemList';
 import MistakesPanel from '../panels/MistakesPanel';
 import StatsPanel from '../panels/StatsPanel';
+import AchievementsPanel from '../panels/AchievementsPanel';
 import BehavioralPanel from '../panels/BehavioralPanel';
 import SettingsPanel from '../panels/SettingsPanel';
 import type { BehavioralQuestion } from '../../data/behavioral';
@@ -40,6 +42,10 @@ interface SidebarProps {
   recommendations?: RecommendedProblemEntry[];
   // Behavioral props
   onStartBehavioral?: (question: BehavioralQuestion) => void;
+  // Achievement props
+  achievements?: Achievement[];
+  unlockedCount?: number;
+  totalCount?: number;
 }
 
 const icons = [
@@ -48,6 +54,7 @@ const icons = [
   { id: 'behavioral' as const, icon: MessageSquare, label: 'Behavioral' },
   { id: 'mistakes' as const, icon: AlertTriangle, label: 'Mistakes' },
   { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
+  { id: 'achievements' as const, icon: Trophy, label: 'Achievements' },
 ];
 
 const panelTitles: Record<string, string> = {
@@ -55,6 +62,7 @@ const panelTitles: Record<string, string> = {
   behavioral: 'Behavioral Interview',
   mistakes: 'Mistake Tracker',
   stats: 'Statistics',
+  achievements: 'Achievements',
   settings: 'Settings',
 };
 
@@ -73,6 +81,9 @@ export default function Sidebar({
   getProblemStatus,
   recommendations,
   onStartBehavioral,
+  achievements,
+  unlockedCount,
+  totalCount,
 }: SidebarProps) {
   function handleIconClick(id: SidebarPanel) {
     if (id === 'interview') {
@@ -152,6 +163,14 @@ export default function Sidebar({
               />
             )}
             {activePanel === 'stats' && <StatsPanel stats={stats} />}
+            {activePanel === 'achievements' && achievements && (
+              <AchievementsPanel
+                achievements={achievements}
+                unlockedCount={unlockedCount ?? 0}
+                totalCount={totalCount ?? 0}
+                stats={stats}
+              />
+            )}
             {activePanel === 'settings' && <SettingsPanel />}
           </div>
         </div>

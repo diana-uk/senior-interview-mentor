@@ -358,7 +358,43 @@ export interface StatsData {
 
 export type EditorTab = 'solution' | 'tests' | 'notes';
 
-export type SidebarPanel = 'interview' | 'problems' | 'behavioral' | 'mistakes' | 'stats' | 'settings' | null;
+export type SidebarPanel = 'interview' | 'problems' | 'behavioral' | 'mistakes' | 'stats' | 'achievements' | 'settings' | null;
+
+/* ── Achievements & Leaderboards ── */
+
+export type AchievementCategory = 'milestones' | 'streaks' | 'patterns' | 'speed' | 'mastery';
+
+export type AchievementId =
+  | 'first-solve'
+  | 'ten-solved'
+  | 'twenty-five-solved'
+  | 'fifty-solved'
+  | 'hundred-solved'
+  | 'all-clear'
+  | 'streak-3'
+  | 'streak-7'
+  | 'streak-14'
+  | 'streak-30'
+  | 'pattern-explorer'
+  | 'pattern-master'
+  | 'speed-demon'
+  | 'lightning-round'
+  | 'perfect-score'
+  | 'hint-free'
+  | 'review-ace';
+
+export interface Achievement {
+  id: AchievementId;
+  title: string;
+  description: string;
+  icon: string;
+  category: AchievementCategory;
+  unlockedAt?: string;
+}
+
+export interface AchievementsData {
+  unlocked: Record<AchievementId, string>; // id → ISO date
+}
 
 export interface AppState {
   mode: Mode;
