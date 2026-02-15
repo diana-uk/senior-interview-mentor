@@ -2072,3 +2072,203 @@ body {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ================================================
+   Billing / Subscription Styles
+   ================================================ */
+
+.badge-plan {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.badge-plan--premium {
+  background: color-mix(in srgb, var(--neon-cyan) 20%, transparent);
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan-dim);
+}
+
+.badge-plan--pro {
+  background: color-mix(in srgb, var(--neon-magenta) 20%, transparent);
+  color: var(--neon-magenta);
+  border: 1px solid color-mix(in srgb, var(--neon-magenta) 30%, transparent);
+}
+
+.subscription-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.subscription-banner--upgrade {
+  background: color-mix(in srgb, var(--neon-cyan) 8%, var(--bg-void));
+  color: var(--text-secondary);
+}
+
+.subscription-banner--trial {
+  background: color-mix(in srgb, var(--neon-amber) 8%, var(--bg-void));
+  color: var(--neon-amber);
+}
+
+.subscription-banner--warning {
+  background: color-mix(in srgb, var(--neon-red) 10%, var(--bg-void));
+  color: var(--neon-red);
+}
+
+.subscription-banner__dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.subscription-banner__dismiss:hover {
+  color: var(--text-primary);
+}
+
+.pricing-page {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.pricing-page__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+
+.pricing-page__subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.pricing-toggle {
+  display: inline-flex;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 32px;
+}
+
+.pricing-toggle__btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pricing-toggle__btn--active {
+  background: var(--neon-cyan);
+  color: var(--bg-void);
+}
+
+.pricing-toggle__savings {
+  font-size: 10px;
+  background: var(--neon-lime);
+  color: var(--bg-void);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.pricing-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+}
+
+.pricing-card--popular {
+  border-color: var(--neon-cyan);
+}
+
+.pricing-card__badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--neon-cyan);
+  color: var(--bg-void);
+  padding: 2px 12px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.pricing-card__name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pricing-card__price {
+  margin-bottom: 24px;
+}
+
+.pricing-card__amount {
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--text-bright);
+}
+
+.pricing-card__period {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.pricing-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  text-align: left;
+}
+
+.pricing-card__feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.pricing-card__cta {
+  width: 100%;
+}
+
+.pricing-card__trial {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}

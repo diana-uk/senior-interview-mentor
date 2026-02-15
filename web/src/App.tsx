@@ -6,6 +6,7 @@ import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
 import AuthPage from './components/auth/AuthPage';
 import { useAuth } from './hooks/useAuth';
+import { useSubscription } from './hooks/useSubscription';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -200,6 +201,7 @@ function generateId(): string {
 
 export default function App() {
   const { user, session, loading: authLoading, signIn, signUp, signInWithOAuth, signOut, isAuthenticated } = useAuth();
+  const subscription = useSubscription(session);
   const [authSkipped, setAuthSkipped] = useState(() => localStorage.getItem('sim-auth-skipped') === '1');
   const [syncing, setSyncing] = useState(false);
   const [syncToast, setSyncToast] = useState('');
@@ -737,10 +739,14 @@ export default function App() {
   if (showLanding) {
     return (
       <Suspense fallback={null}>
-        <Landing onEnterApp={() => {
-          localStorage.setItem('sim-skip-landing', '1');
-          setShowLanding(false);
-        }} />
+        <Landing
+          onEnterApp={() => {
+            localStorage.setItem('sim-skip-landing', '1');
+            setShowLanding(false);
+          }}
+          onCheckout={subscription.checkout}
+          isAuthenticated={isAuthenticated}
+        />
       </Suspense>
     );
   }
@@ -779,6 +785,8 @@ export default function App() {
         onSignOut={signOut}
         onSync={handleSync}
         syncing={syncing}
+        plan={subscription.plan}
+        onManageSubscription={subscription.manage}
       />
 
       <div className="app-body">

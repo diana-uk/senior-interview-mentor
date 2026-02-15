@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { PLAN_TIERS, getTrialDays } from '../config/tiers';
 
 interface LandingProps {
   onEnterApp: () => void;
+  onCheckout?: (priceId: string, interval: 'month' | 'year') => void;
+  isAuthenticated?: boolean;
 }
 
 const FEATURES = [
@@ -101,8 +104,10 @@ const TIERS = [
   },
 ];
 
-export default function Landing({ onEnterApp }: LandingProps) {
+export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: LandingProps) {
   const [activeTab, setActiveTab] = useState<'features' | 'compare' | 'pricing'>('features');
+  const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
+  const trialDays = getTrialDays();
 
   return (
     <div style={{
@@ -362,9 +367,36 @@ export default function Landing({ onEnterApp }: LandingProps) {
             <h2 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-bright)', textAlign: 'center', marginBottom: 8 }}>
               Simple, transparent pricing
             </h2>
-            <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 40 }}>
+            <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>
               Start free. Upgrade when you're ready to go all-in.
             </p>
+
+            {/* Billing interval toggle */}
+            <div className="pricing-toggle" style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 32, background: 'var(--bg-elevated)', borderRadius: 8, padding: 4, width: 'fit-content', margin: '0 auto 32px' }}>
+              <button
+                style={{
+                  padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6, border: 'none', cursor: 'pointer',
+                  background: billingInterval === 'month' ? 'var(--neon-cyan)' : 'transparent',
+                  color: billingInterval === 'month' ? 'var(--bg-void)' : 'var(--text-secondary)',
+                }}
+                onClick={() => setBillingInterval('month')}
+              >
+                Monthly
+              </button>
+              <button
+                style={{
+                  padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6, border: 'none', cursor: 'pointer',
+                  background: billingInterval === 'year' ? 'var(--neon-cyan)' : 'transparent',
+                  color: billingInterval === 'year' ? 'var(--bg-void)' : 'var(--text-secondary)',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}
+                onClick={() => setBillingInterval('year')}
+              >
+                Yearly
+                <span style={{ fontSize: 10, background: 'var(--neon-lime)', color: 'var(--bg-void)', padding: '1px 6px', borderRadius: 8, fontWeight: 700 }}>Save ~35%</span>
+              </button>
+            </div>
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -372,7 +404,15 @@ export default function Landing({ onEnterApp }: LandingProps) {
               maxWidth: 960,
               margin: '0 auto',
             }}>
-              {TIERS.map((tier) => (
+              {TIERS.map((tier) => {
+                const planTier = PLAN_TIERS[tier.name.toLowerCase() as keyof typeof PLAN_TIERS];
+                const price = tier.name === 'Free' ? '$0'
+                  : billingInterval === 'month' ? `$${planTier?.pricing.monthly ?? tier.price.replace('$', '')}`
+                  : `$${planTier?.pricing.yearly ?? 0}`;
+                const period = tier.name === 'Free' ? 'forever'
+                  : billingInterval === 'month' ? '/mo' : '/yr';
+
+                return (
                 <div
                   key={tier.name}
                   className="card"
@@ -402,8 +442,8 @@ export default function Landing({ onEnterApp }: LandingProps) {
                   <div className="card-body" style={{ padding: '32px 24px', textAlign: 'center' }}>
                     <h3 style={{ fontSize: 18, fontWeight: 700, color: tier.color, marginBottom: 8 }}>{tier.name}</h3>
                     <div style={{ marginBottom: 24 }}>
-                      <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--text-bright)' }}>{tier.price}</span>
-                      <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>{tier.period}</span>
+                      <span style={{ fontSize: 42, fontWeight: 800, color: 'var(--text-bright)' }}>{price}</span>
+                      <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>{period}</span>
                     </div>
                     <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', textAlign: 'left' }}>
                       {tier.features.map((f) => (
@@ -422,17 +462,29 @@ export default function Landing({ onEnterApp }: LandingProps) {
                     </ul>
                     <button
                       className={`btn ${tier.popular ? 'btn-primary' : 'btn-secondary'}`}
-                      onClick={onEnterApp}
+                      onClick={() => {
+                        if (tier.name === 'Free') {
+                          onEnterApp();
+                        } else if (onCheckout && isAuthenticated && planTier?.stripePriceIds) {
+                          const priceId = billingInterval === 'month'
+                            ? planTier.stripePriceIds.monthly
+                            : planTier.stripePriceIds.yearly;
+                          onCheckout(priceId, billingInterval);
+                        } else {
+                          onEnterApp();
+                        }
+                      }}
                       style={{ width: '100%' }}
                     >
-                      {tier.cta}
+                      {tier.name === 'Free' ? 'Get Started' : `Start ${trialDays}-Day Trial`}
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <div style={{ textAlign: 'center', marginTop: 24, fontSize: 12, color: 'var(--text-muted)' }}>
-              7-day free trial on all paid plans. Cancel anytime. Save 35% with annual billing.
+              {trialDays}-day free trial on all paid plans. Cancel anytime. Save ~35% with annual billing.
             </div>
           </section>
         )}

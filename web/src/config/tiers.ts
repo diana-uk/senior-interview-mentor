@@ -119,6 +119,10 @@ export const PLAN_TIERS: Record<PlanId, PlanTier> = {
     ],
     highlightFeature: 'Unlimited problems & AI coaching',
     recommended: true,
+    stripePriceIds: {
+      monthly: 'price_premium_monthly',
+      yearly: 'price_premium_yearly',
+    },
   },
 
   pro: {
@@ -156,6 +160,10 @@ export const PLAN_TIERS: Record<PlanId, PlanTier> = {
     ],
     highlightFeature: 'Company-specific prep paths',
     recommended: false,
+    stripePriceIds: {
+      monthly: 'price_pro_monthly',
+      yearly: 'price_pro_yearly',
+    },
   },
 };
 

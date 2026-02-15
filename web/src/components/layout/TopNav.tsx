@@ -2,6 +2,7 @@ import { Lightbulb, Timer } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import ProfileDropdown from '../auth/ProfileDropdown';
 import type { Difficulty, Mode, Problem } from '../../types';
+import type { PlanId } from '../../config/tiers';
 
 interface TopNavProps {
   mode: Mode;
@@ -14,6 +15,8 @@ interface TopNavProps {
   onSignOut?: () => Promise<void>;
   onSync?: () => void;
   syncing?: boolean;
+  plan?: PlanId;
+  onManageSubscription?: () => void;
 }
 
 function formatTime(seconds: number): string {
@@ -38,7 +41,7 @@ function getModeClass(mode: Mode): string {
   return `badge badge-pulse badge-${m}`;
 }
 
-export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent, user, onSignOut, onSync, syncing }: TopNavProps) {
+export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent, user, onSignOut, onSync, syncing, plan, onManageSubscription }: TopNavProps) {
   const circumference = 2 * Math.PI * 10;
   const offset = circumference - (progressPercent / 100) * circumference;
 
@@ -98,12 +101,20 @@ export default function TopNav({ mode, problem, timerSeconds, timerRunning, hint
           </svg>
         </div>
 
+        {plan && plan !== 'free' && (
+          <span className={`badge badge-plan badge-plan--${plan}`}>
+            {plan === 'premium' ? 'Premium' : 'Pro'}
+          </span>
+        )}
+
         {user && onSignOut && onSync && (
           <ProfileDropdown
             user={user}
             onSignOut={onSignOut}
             onSync={onSync}
             syncing={syncing ?? false}
+            plan={plan}
+            onManageSubscription={onManageSubscription}
           />
         )}
       </div>

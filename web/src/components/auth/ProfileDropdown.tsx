@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { LogOut, RefreshCw } from 'lucide-react';
+import { LogOut, RefreshCw, CreditCard } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import type { PlanId } from '../../config/tiers';
 
 interface ProfileDropdownProps {
   user: User;
   onSignOut: () => Promise<void>;
   onSync: () => void;
   syncing: boolean;
+  plan?: PlanId;
+  onManageSubscription?: () => void;
 }
 
 function getInitials(user: User): string {
@@ -15,7 +18,7 @@ function getInitials(user: User): string {
   return name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 }
 
-export default function ProfileDropdown({ user, onSignOut, onSync, syncing }: ProfileDropdownProps) {
+export default function ProfileDropdown({ user, onSignOut, onSync, syncing, plan, onManageSubscription }: ProfileDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -56,6 +59,16 @@ export default function ProfileDropdown({ user, onSignOut, onSync, syncing }: Pr
             <RefreshCw size={14} className={syncing ? 'spin' : ''} />
             {syncing ? 'Syncing...' : 'Sync Data'}
           </button>
+
+          {onManageSubscription && plan && plan !== 'free' && (
+            <button
+              className="profile-menu__item"
+              onClick={() => { onManageSubscription(); setOpen(false); }}
+            >
+              <CreditCard size={14} />
+              Manage Subscription
+            </button>
+          )}
 
           <div className="profile-menu__divider" />
 
