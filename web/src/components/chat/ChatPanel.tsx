@@ -22,7 +22,7 @@ interface ChatPanelProps {
   onUpgrade?: () => void;
 }
 
-const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review'];
+const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review', '/next', '/pattern', '/mistakes', '/continue'];
 
 export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming, rateLimitInfo, onUpgrade }: ChatPanelProps) {
   const [input, setInput] = useState('');
