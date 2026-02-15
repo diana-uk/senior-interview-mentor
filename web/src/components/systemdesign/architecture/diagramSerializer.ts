@@ -14,22 +14,64 @@ const TYPE_LABELS: Record<SystemComponentType, string> = {
   'cdn': 'CDN',
   'worker': 'Worker',
   'storage': 'Object Storage',
+  'dns': 'DNS',
+  'firewall': 'Firewall',
+  'container': 'Container',
+  'stream': 'Event Stream',
+  'third-party': 'Third-Party Service',
+  'users': 'Users/Mobile',
 };
+
+const STYLE_ARROWS: Record<string, { left: string; right: string }> = {
+  solid:  { left: '→', right: '→' },
+  dashed: { left: '⇢', right: '⇢' },
+  dotted: { left: '···>', right: '···>' },
+};
+
+function getEdgeArrow(edge: DiagramEdge): string {
+  const style = edge.data?.edgeStyle ?? 'solid';
+  return STYLE_ARROWS[style]?.right ?? '→';
+}
+
+function getEdgeStyleLabel(edge: DiagramEdge): string {
+  const style = edge.data?.edgeStyle;
+  if (!style || style === 'solid') return '';
+  if (style === 'dashed') return ' (async)';
+  if (style === 'dotted') return ' (optional)';
+  return '';
+}
 
 export function serializeDiagramToText(nodes: DiagramNode[], edges: DiagramEdge[]): string {
   if (nodes.length === 0) return 'No components placed yet.';
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+
+  // Separate zones from regular nodes
+  const zones = nodes.filter(n => n.type === 'group');
+  const regularNodes = nodes.filter(n => n.type !== 'group');
+
   const lines: string[] = ['Architecture Components:'];
 
-  for (const node of nodes) {
+  // List zones first
+  if (zones.length > 0) {
+    for (const zone of zones) {
+      const zoneStyle = zone.data.zoneStyle ?? 'vpc';
+      lines.push(`- [Zone: ${zoneStyle.toUpperCase()}] "${zone.data.label}"`);
+    }
+    lines.push('');
+  }
+
+  for (const node of regularNodes) {
     const typeLabel = TYPE_LABELS[node.data.componentType] ?? node.data.componentType;
     const outgoing = edges
       .filter((e) => e.source === node.id)
       .map((e) => {
         const target = nodeMap.get(e.target);
         const targetName = target ? `"${target.data.label}"` : e.target;
-        return e.label ? `${targetName} (${e.label})` : targetName;
+        const arrow = getEdgeArrow(e);
+        const styleLabel = getEdgeStyleLabel(e);
+        const edgeLabel = e.label ? ` [${e.label}]` : '';
+        return `${arrow} ${targetName}${edgeLabel}${styleLabel}`;
       });
     const incoming = edges
       .filter((e) => e.target === node.id)
@@ -39,7 +81,7 @@ export function serializeDiagramToText(nodes: DiagramNode[], edges: DiagramEdge[
       });
 
     let line = `- [${typeLabel}] "${node.data.label}"`;
-    if (outgoing.length > 0) line += ` → connects to: ${outgoing.join(', ')}`;
+    if (outgoing.length > 0) line += ` ${outgoing.join(', ')}`;
     if (incoming.length > 0) line += ` ← receives from: ${incoming.join(', ')}`;
     lines.push(line);
   }
@@ -53,7 +95,9 @@ export function serializeDiagramToText(nodes: DiagramNode[], edges: DiagramEdge[
       const srcName = src ? src.data.label : edge.source;
       const tgtName = tgt ? tgt.data.label : edge.target;
       const label = edge.label ? ` [${edge.label}]` : '';
-      lines.push(`- ${srcName} → ${tgtName}${label}`);
+      const arrow = getEdgeArrow(edge);
+      const styleLabel = getEdgeStyleLabel(edge);
+      lines.push(`- ${srcName} ${arrow} ${tgtName}${label}${styleLabel}`);
     }
   }
 

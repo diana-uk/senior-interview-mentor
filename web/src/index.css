@@ -2272,3 +2272,314 @@ body {
   color: var(--text-muted);
   margin-top: 8px;
 }
+
+/* ================================================
+   Architecture Workspace Upgrade — Handles, Labels,
+   Groups, Toolbar, Context Menu
+   ================================================ */
+
+/* Multi-directional handles — Left & Right */
+.system-node__handle--left,
+.system-node__handle--right {
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--border-active) !important;
+  border: 2px solid var(--bg-elevated) !important;
+}
+
+.system-node__handle--left:hover,
+.system-node__handle--right:hover {
+  background: var(--neon-cyan) !important;
+}
+
+/* ── Edge Label ── */
+.edge-label-container {
+  font-size: 11px;
+  z-index: 10;
+}
+
+.edge-label-container--selected .edge-label__pill {
+  box-shadow: 0 0 0 2px var(--neon-cyan);
+}
+
+.edge-label__pill {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.edge-label__pill:hover {
+  border-color: var(--neon-cyan);
+  color: var(--text-primary);
+}
+
+.edge-label__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s ease;
+}
+
+.react-flow__edge:hover .edge-label__add,
+.edge-label-container:hover .edge-label__add {
+  opacity: 1;
+}
+
+.edge-label__add:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: var(--bg-elevated);
+}
+
+.edge-label__input {
+  padding: 2px 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  outline: none;
+  width: 80px;
+  text-align: center;
+}
+
+/* ── Target handles (overlapping, behind source) ── */
+.system-node__handle--target {
+  z-index: 0 !important;
+}
+
+/* ── Edge Inline Toolbar (replaces context menu) ── */
+.edge-inline-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.edge-inline-toolbar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.edge-inline-toolbar__btn:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.edge-inline-toolbar__btn--active {
+  background: var(--neon-cyan-subtle);
+  color: var(--neon-cyan);
+}
+
+.edge-inline-toolbar__btn--delete {
+  color: var(--text-muted);
+}
+
+.edge-inline-toolbar__btn--delete:hover {
+  background: rgba(255, 68, 102, 0.1);
+  color: var(--neon-red);
+}
+
+.edge-inline-toolbar__label {
+  padding: 2px 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  outline: none;
+  width: 72px;
+  text-align: center;
+}
+
+.edge-inline-toolbar__label:focus {
+  border-color: var(--neon-cyan);
+}
+
+/* ── Style line icons (toolbar + inline) ── */
+.style-line {
+  display: inline-block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.style-line--dashed {
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0px,
+    currentColor 5px,
+    transparent 5px,
+    transparent 9px
+  );
+}
+
+.style-line--dotted {
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0px,
+    currentColor 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
+
+/* ── Canvas toolbar edge label ── */
+.canvas-toolbar__edge-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 0 4px;
+  user-select: none;
+}
+
+/* ── Group / Zone Node ── */
+.group-node {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--neon-cyan);
+  border-radius: 12px;
+  background: rgba(0, 240, 255, 0.04);
+  min-width: 200px;
+  min-height: 150px;
+}
+
+.group-node__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: default;
+}
+
+.group-node__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.group-node__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.group-node__input {
+  background: var(--bg-primary);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  outline: none;
+  width: 120px;
+}
+
+/* ── Canvas Toolbar ── */
+.canvas-toolbar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-toolbar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.canvas-toolbar__btn:hover:not(:disabled) {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+}
+
+.canvas-toolbar__btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.canvas-toolbar__btn--active {
+  background: var(--neon-cyan-subtle);
+  color: var(--neon-cyan);
+}
+
+.canvas-toolbar__btn--danger:hover:not(:disabled) {
+  background: rgba(255, 68, 102, 0.1);
+  color: var(--neon-red);
+}
+
+.canvas-toolbar__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-default);
+  margin: 0 2px;
+}
+
+/* ── Zone palette items ── */
+.arch-palette__item--zone {
+  border-left: 2px dashed var(--border-active);
+  margin-left: 2px;
+}

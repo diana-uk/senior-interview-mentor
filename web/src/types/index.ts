@@ -190,11 +190,13 @@ export type SystemDesignTopicId =
 
 export type SystemComponentType =
   | 'client' | 'load-balancer' | 'api-gateway' | 'service'
-  | 'cache' | 'database' | 'queue' | 'cdn' | 'worker' | 'storage';
+  | 'cache' | 'database' | 'queue' | 'cdn' | 'worker' | 'storage'
+  | 'dns' | 'firewall' | 'container' | 'stream' | 'third-party' | 'users';
 
 export interface DiagramNodeData {
   label: string;
   componentType: SystemComponentType;
+  zoneStyle?: 'vpc' | 'az' | 'cluster';
 }
 
 export interface SystemDesignTopic {
@@ -247,7 +249,17 @@ export interface SystemDesignState {
   dbChoice: DbChoice;
   dbJustification: string;
   diagramNodes: Array<{ id: string; type: string; position: { x: number; y: number }; data: DiagramNodeData }>;
-  diagramEdges: Array<{ id: string; source: string; target: string; label?: string; animated?: boolean }>;
+  diagramEdges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    sourceHandle?: string;
+    targetHandle?: string;
+    label?: string;
+    animated?: boolean;
+    type?: string;
+    data?: { edgeStyle?: 'solid' | 'dashed' | 'dotted' };
+  }>;
 }
 
 export type SystemDesignAction =

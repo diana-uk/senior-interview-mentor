@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Architecture Workspace — Edge & Connection UX Design</title>
+<style>
+  :root {
+    --bg-void: #030305;
+    --bg-deep: #0a0a0f;
+    --bg-primary: #0f0f17;
+    --bg-elevated: #16161f;
+    --bg-overlay: #1e1e2a;
+    --bg-raised: #262636;
+    --border-default: #2a2a3a;
+    --border-active: #3a3a5a;
+    --text-primary: #e8e8f0;
+    --text-secondary: #8888a0;
+    --text-muted: #5a5a70;
+    --text-bright: #f5f5ff;
+    --neon-cyan: #00f0ff;
+    --neon-cyan-dim: rgba(0, 240, 255, 0.3);
+    --neon-cyan-subtle: rgba(0, 240, 255, 0.08);
+    --neon-lime: #b5ff4d;
+    --neon-purple: #a855f7;
+    --neon-red: #ff3366;
+    --neon-amber: #ffb800;
+    --font-body: 'Outfit', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-void);
+    color: var(--text-primary);
+    padding: 40px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  h1 span { color: var(--neon-cyan); }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin: 48px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2 .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: var(--neon-cyan-subtle);
+    color: var(--neon-cyan);
+    letter-spacing: 0.06em;
+  }
+  h2 .badge--fix {
+    background: rgba(255, 51, 102, 0.1);
+    color: var(--neon-red);
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 24px 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    max-width: 720px;
+  }
+
+  .section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 24px 0;
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 20px 0;
+  }
+
+  .col {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .col h4 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .col--bad h4 { color: var(--neon-red); }
+  .col--good h4 { color: var(--neon-lime); }
+
+  /* ─── Node Handle Diagrams ─── */
+  .node-demo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 40px 20px;
+  }
+
+  .node-box {
+    position: relative;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-left: 3px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 12px 20px;
+    min-width: 120px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-active);
+    border: 2px solid var(--bg-elevated);
+  }
+  .handle--top    { top: -5px; left: 50%; transform: translateX(-50%); }
+  .handle--bottom { bottom: -5px; left: 50%; transform: translateX(-50%); }
+  .handle--left   { left: -5px; top: 50%; transform: translateY(-50%); }
+  .handle--right  { right: -5px; top: 50%; transform: translateY(-50%); }
+
+  .handle--source { background: var(--neon-cyan); }
+  .handle--target { background: var(--neon-lime); }
+  .handle--both   { background: var(--neon-cyan); box-shadow: 0 0 0 2px var(--neon-lime), 0 0 8px var(--neon-cyan-dim); }
+
+  .handle-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .handle-label--top    { top: -22px; left: 50%; transform: translateX(-50%); color: var(--text-muted); }
+  .handle-label--bottom { bottom: -22px; left: 50%; transform: translateX(-50%); color: var(--text-muted); }
+  .handle-label--left   { left: -50px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+  .handle-label--right  { right: -50px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+  /* ─── Edge Toolbar Mockups ─── */
+  .edge-demo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 20px;
+    position: relative;
+  }
+
+  .edge-line {
+    width: 300px;
+    height: 2px;
+    position: relative;
+  }
+  .edge-line--solid { background: var(--neon-cyan); }
+  .edge-line--dashed {
+    background: repeating-linear-gradient(90deg, var(--neon-cyan) 0px, var(--neon-cyan) 10px, transparent 10px, transparent 16px);
+  }
+  .edge-line--dotted {
+    background: repeating-linear-gradient(90deg, var(--neon-cyan) 0px, var(--neon-cyan) 3px, transparent 3px, transparent 8px);
+  }
+
+  .edge-line::after {
+    content: '▶';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--neon-cyan);
+    font-size: 10px;
+  }
+
+  /* Inline edge toolbar */
+  .edge-toolbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .edge-toolbar__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.12s ease;
+  }
+  .edge-toolbar__btn:hover {
+    background: var(--bg-overlay);
+    color: var(--text-primary);
+  }
+  .edge-toolbar__btn--active {
+    background: var(--neon-cyan-subtle);
+    color: var(--neon-cyan);
+  }
+  .edge-toolbar__btn--danger:hover {
+    background: rgba(255, 51, 102, 0.1);
+    color: var(--neon-red);
+  }
+
+  .edge-toolbar__divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border-default);
+    margin: 0 2px;
+  }
+
+  .edge-toolbar__label-input {
+    padding: 3px 8px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 11px;
+    font-family: var(--font-body);
+    width: 80px;
+    outline: none;
+  }
+  .edge-toolbar__label-input:focus {
+    border-color: var(--neon-cyan);
+  }
+  .edge-toolbar__label-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  /* Style preview lines in buttons */
+  .style-line {
+    display: block;
+    width: 16px;
+    height: 2px;
+  }
+  .style-line--solid { background: currentColor; }
+  .style-line--dashed {
+    background: repeating-linear-gradient(90deg, currentColor 0px, currentColor 4px, transparent 4px, transparent 7px);
+  }
+  .style-line--dotted {
+    background: repeating-linear-gradient(90deg, currentColor 0px, currentColor 2px, transparent 2px, transparent 5px);
+  }
+
+  /* ─── Canvas Toolbar Mockup ─── */
+  .toolbar-demo {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .toolbar-full {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .toolbar-full__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.12s ease;
+  }
+  .toolbar-full__btn:hover {
+    background: var(--bg-overlay);
+    color: var(--text-primary);
+  }
+  .toolbar-full__btn--active {
+    background: var(--neon-cyan-subtle);
+    color: var(--neon-cyan);
+  }
+
+  .toolbar-full__divider {
+    width: 1px;
+    height: 22px;
+    background: var(--border-default);
+    margin: 0 3px;
+  }
+
+  .toolbar-full__group-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 6px;
+  }
+
+  /* ─── Flow Diagram ─── */
+  .flow-demo {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flow-demo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--bg-overlay) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+  }
+
+  .flow-nodes {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .flow-node {
+    position: relative;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-left: 3px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow-node__icon {
+    font-size: 18px;
+    color: var(--neon-cyan);
+  }
+  .flow-node .handle {
+    width: 8px;
+    height: 8px;
+    background: var(--neon-cyan);
+    border: 2px solid var(--bg-elevated);
+  }
+
+  /* Connection lines between nodes */
+  .flow-connection {
+    position: absolute;
+    z-index: 0;
+  }
+
+  /* Annotation arrows */
+  .annotation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--neon-purple);
+    margin: 8px 0;
+  }
+  .annotation::before {
+    content: '→';
+    font-weight: 700;
+  }
+
+  /* Spec table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-default);
+  }
+  th {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--bg-primary);
+  }
+  td { color: var(--text-secondary); }
+  td code {
+    padding: 2px 6px;
+    background: var(--bg-overlay);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--neon-cyan);
+  }
+
+  /* Keyboard shortcut badges */
+  kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--bg-overlay);
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-default);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .shortcut-row:last-child { border-bottom: none; }
+
+  .interaction-flow {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin: 16px 0;
+  }
+  .interaction-step {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .interaction-step__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    color: var(--bg-void);
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .interaction-step__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+  .interaction-step__desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .interaction-step__arrow {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Edge & Connection <span>UX Design</span></h1>
+<p class="subtitle">
+  Architecture workspace upgrade — fixing node connections, adding discoverable edge type selection,
+  and creating a professional inline edge toolbar. Replaces hidden right-click context menu with
+  always-visible interaction patterns.
+</p>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2>
+  <span class="badge badge--fix">BUG FIX</span>
+  1. Node Handle Fix — Bidirectional Connections
+</h2>
+
+<p>
+  The current implementation sets all 4 handles to <code>type="source"</code>, meaning there are
+  no target handles for connections to land on. Nodes can initiate connections but cannot receive them.
+</p>
+
+<div class="section">
+  <div class="cols">
+    <div class="col col--bad">
+      <h4>Before — Broken</h4>
+      <div class="node-demo">
+        <div class="node-box">
+          API Gateway
+          <div class="handle handle--source handle--top"></div>
+          <div class="handle handle--source handle--bottom"></div>
+          <div class="handle handle--source handle--left"></div>
+          <div class="handle handle--source handle--right"></div>
+          <span class="handle-label handle-label--top" style="color: var(--neon-cyan);">SRC</span>
+          <span class="handle-label handle-label--bottom" style="color: var(--neon-cyan);">SRC</span>
+          <span class="handle-label handle-label--left" style="color: var(--neon-cyan);">SRC</span>
+          <span class="handle-label handle-label--right" style="color: var(--neon-cyan);">SRC</span>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--neon-red); text-align: center;">
+        All 4 handles are <code>type="source"</code><br/>
+        No target → Can't drop connections onto node
+      </p>
+    </div>
+
+    <div class="col col--good">
+      <h4>After — Fixed</h4>
+      <div class="node-demo">
+        <div class="node-box">
+          API Gateway
+          <div class="handle handle--both handle--top"></div>
+          <div class="handle handle--both handle--bottom"></div>
+          <div class="handle handle--both handle--left"></div>
+          <div class="handle handle--both handle--right"></div>
+          <span class="handle-label handle-label--top" style="color: var(--neon-cyan);">SRC+TGT</span>
+          <span class="handle-label handle-label--bottom" style="color: var(--neon-cyan);">SRC+TGT</span>
+          <span class="handle-label handle-label--left" style="color: var(--neon-cyan);">SRC+TGT</span>
+          <span class="handle-label handle-label--right" style="color: var(--neon-cyan);">SRC+TGT</span>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--neon-lime); text-align: center;">
+        Paired handles at each position: <code>source</code> + <code>target</code><br/>
+        Overlapping visually — one dot, two connections
+      </p>
+    </div>
+  </div>
+
+  <h3>Implementation</h3>
+  <p>Each position renders TWO overlapping <code>&lt;Handle&gt;</code> elements:</p>
+  <table>
+    <tr>
+      <th>Position</th>
+      <th>Source Handle ID</th>
+      <th>Target Handle ID</th>
+      <th>Visual</th>
+    </tr>
+    <tr>
+      <td>Top</td>
+      <td><code>top-src</code></td>
+      <td><code>top-tgt</code></td>
+      <td>Single 8px dot, glow on hover</td>
+    </tr>
+    <tr>
+      <td>Bottom</td>
+      <td><code>bottom-src</code></td>
+      <td><code>bottom-tgt</code></td>
+      <td>Single 8px dot, glow on hover</td>
+    </tr>
+    <tr>
+      <td>Left</td>
+      <td><code>left-src</code></td>
+      <td><code>left-tgt</code></td>
+      <td>Single 8px dot, glow on hover</td>
+    </tr>
+    <tr>
+      <td>Right</td>
+      <td><code>right-src</code></td>
+      <td><code>right-tgt</code></td>
+      <td>Single 8px dot, glow on hover</td>
+    </tr>
+  </table>
+  <p>
+    The target handle sits directly behind the source handle (same position, same size).
+    Target handles get <code>z-index: 0</code>, source handles get <code>z-index: 1</code>.
+    React Flow's hit testing detects both.
+  </p>
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2>
+  <span class="badge">UX UPGRADE</span>
+  2. Edge Type Selection — Three-Tier Approach
+</h2>
+
+<p>
+  The current edge style selection relies entirely on a right-click context menu, which is
+  undiscoverable. The new design provides three complementary ways to set edge types,
+  following progressive disclosure principles.
+</p>
+
+<div class="interaction-flow">
+  <div class="interaction-step">
+    <div class="interaction-step__number">1</div>
+    <div class="interaction-step__title">Pre-Draw Default</div>
+    <div class="interaction-step__desc">
+      Pick edge type in toolbar BEFORE drawing.<br/>
+      All new connections use selected type.
+    </div>
+  </div>
+  <div class="interaction-step__arrow">→</div>
+  <div class="interaction-step">
+    <div class="interaction-step__number">2</div>
+    <div class="interaction-step__title">Inline Edge Toolbar</div>
+    <div class="interaction-step__desc">
+      Click any edge → floating toolbar appears at midpoint.<br/>
+      Change style, add label, or delete.
+    </div>
+  </div>
+  <div class="interaction-step__arrow">→</div>
+  <div class="interaction-step">
+    <div class="interaction-step__number">3</div>
+    <div class="interaction-step__title">Keyboard Shortcuts</div>
+    <div class="interaction-step__desc">
+      With edge selected: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> for style.<br/>
+      <kbd>L</kbd> to edit label. Power user flow.
+    </div>
+  </div>
+</div>
+
+<!-- ─── Tier 1: Canvas Toolbar ─── -->
+<div class="section">
+  <h3>Tier 1 — Canvas Toolbar with Edge Type Selector</h3>
+  <p>
+    The existing canvas toolbar gets a new "Connection Type" section. Users pick the style
+    before drawing connections. The selected type persists until changed.
+  </p>
+
+  <div class="toolbar-demo">
+    <div class="toolbar-full">
+      <!-- Existing buttons -->
+      <button class="toolbar-full__btn" title="Undo">↩</button>
+      <button class="toolbar-full__btn" title="Redo">↪</button>
+      <div class="toolbar-full__divider"></div>
+      <button class="toolbar-full__btn" title="Snap">⊞</button>
+      <button class="toolbar-full__btn" title="Fit">⛶</button>
+      <div class="toolbar-full__divider"></div>
+      <button class="toolbar-full__btn" title="Layout">⊟</button>
+      <button class="toolbar-full__btn" title="Clear">🗑</button>
+
+      <!-- NEW: Edge type section -->
+      <div class="toolbar-full__divider"></div>
+      <span class="toolbar-full__group-label">Edge</span>
+      <button class="toolbar-full__btn toolbar-full__btn--active" title="Solid (sync)">
+        <span class="style-line style-line--solid"></span>
+      </button>
+      <button class="toolbar-full__btn" title="Dashed (async)">
+        <span class="style-line style-line--dashed"></span>
+      </button>
+      <button class="toolbar-full__btn" title="Dotted (optional)">
+        <span class="style-line style-line--dotted"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="annotation">The "Edge" label + 3 line style buttons are appended to the existing toolbar</div>
+
+  <table>
+    <tr><th>Button</th><th>Style</th><th>Meaning</th><th>Visual</th></tr>
+    <tr>
+      <td>━━━</td>
+      <td><code>solid</code></td>
+      <td>Synchronous request (default)</td>
+      <td><span class="style-line style-line--solid" style="background: var(--neon-cyan);"></span></td>
+    </tr>
+    <tr>
+      <td>╍ ╍ ╍</td>
+      <td><code>dashed</code></td>
+      <td>Async / event-driven</td>
+      <td><span class="style-line style-line--dashed" style="background: repeating-linear-gradient(90deg, var(--neon-cyan) 0px, var(--neon-cyan) 4px, transparent 4px, transparent 7px);"></span></td>
+    </tr>
+    <tr>
+      <td>· · ·</td>
+      <td><code>dotted</code></td>
+      <td>Optional / fallback path</td>
+      <td><span class="style-line style-line--dotted" style="background: repeating-linear-gradient(90deg, var(--neon-cyan) 0px, var(--neon-cyan) 2px, transparent 2px, transparent 5px);"></span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ─── Tier 2: Inline Edge Toolbar ─── -->
+<div class="section">
+  <h3>Tier 2 — Inline Edge Toolbar (on select)</h3>
+  <p>
+    When a user clicks/selects an edge, a compact floating toolbar appears at the edge midpoint.
+    This replaces the need for right-click entirely. The toolbar provides all edge actions
+    in one visible, intuitive interface.
+  </p>
+
+  <div class="edge-demo">
+    <div style="position: relative; width: 340px;">
+      <!-- The edge line -->
+      <div class="edge-line edge-line--solid" style="margin: 20px auto;"></div>
+      <!-- The toolbar floating above -->
+      <div style="position: absolute; top: -24px; left: 50%; transform: translateX(-50%);">
+        <div class="edge-toolbar">
+          <button class="edge-toolbar__btn edge-toolbar__btn--active" title="Solid">
+            <span class="style-line style-line--solid"></span>
+          </button>
+          <button class="edge-toolbar__btn" title="Dashed">
+            <span class="style-line style-line--dashed"></span>
+          </button>
+          <button class="edge-toolbar__btn" title="Dotted">
+            <span class="style-line style-line--dotted"></span>
+          </button>
+          <div class="edge-toolbar__divider"></div>
+          <input class="edge-toolbar__label-input" placeholder="Label..." value="HTTP" />
+          <div class="edge-toolbar__divider"></div>
+          <button class="edge-toolbar__btn edge-toolbar__btn--danger" title="Delete">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size: 12px; text-align: center; margin-top: 12px;">
+      Appears on edge click. Positioned at edge midpoint using <code>EdgeLabelRenderer</code>.
+    </p>
+  </div>
+
+  <h3>Toolbar Anatomy</h3>
+  <table>
+    <tr><th>Element</th><th>Action</th><th>Behavior</th></tr>
+    <tr>
+      <td>Style buttons (3)</td>
+      <td>Change edge style</td>
+      <td>Active button highlighted with cyan background. Click to switch.</td>
+    </tr>
+    <tr>
+      <td>Label input</td>
+      <td>Add/edit edge label</td>
+      <td>Always visible. Type to set label, shows as pill on edge when not selected.</td>
+    </tr>
+    <tr>
+      <td>Delete button</td>
+      <td>Remove edge</td>
+      <td>Red hover state. Removes edge with undo snapshot.</td>
+    </tr>
+  </table>
+
+  <div class="annotation">
+    This toolbar lives INSIDE the LabeledEdge component, rendered via EdgeLabelRenderer.
+    Only visible when the edge's <code>selected</code> prop is true.
+  </div>
+</div>
+
+<!-- ─── Tier 3: Keyboard Shortcuts ─── -->
+<div class="section">
+  <h3>Tier 3 — Keyboard Shortcuts</h3>
+  <p>Power users can change edge styles without clicking, using number keys when an edge is selected.</p>
+
+  <div class="shortcut-row">
+    <kbd>1</kbd>
+    <span>Set selected edge(s) to <strong>Solid</strong></span>
+  </div>
+  <div class="shortcut-row">
+    <kbd>2</kbd>
+    <span>Set selected edge(s) to <strong>Dashed</strong></span>
+  </div>
+  <div class="shortcut-row">
+    <kbd>3</kbd>
+    <span>Set selected edge(s) to <strong>Dotted</strong></span>
+  </div>
+  <div class="shortcut-row">
+    <kbd>L</kbd>
+    <span>Focus label input on selected edge</span>
+  </div>
+  <div class="shortcut-row">
+    <kbd>Delete</kbd> / <kbd>Backspace</kbd>
+    <span>Delete selected edge(s) — already works</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2>
+  <span class="badge">VISUAL</span>
+  3. Edge Styles Reference
+</h2>
+
+<div class="section">
+  <p>Three distinct visual edge styles with arrow markers at the target end:</p>
+
+  <div class="edge-demo" style="gap: 30px;">
+    <div style="text-align: center;">
+      <div class="edge-line edge-line--solid" style="width: 200px; margin: 0 auto;"></div>
+      <div style="margin-top: 10px;">
+        <span style="font-size: 12px; color: var(--text-bright); font-weight: 600;">Solid</span><br/>
+        <span style="font-size: 11px; color: var(--text-muted);">Synchronous request</span><br/>
+        <code style="font-size: 10px; color: var(--neon-cyan);">strokeDasharray: none</code>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="edge-line edge-line--dashed" style="width: 200px; margin: 0 auto;"></div>
+      <div style="margin-top: 10px;">
+        <span style="font-size: 12px; color: var(--text-bright); font-weight: 600;">Dashed</span><br/>
+        <span style="font-size: 11px; color: var(--text-muted);">Async / event-driven</span><br/>
+        <code style="font-size: 10px; color: var(--neon-cyan);">strokeDasharray: 8 4</code>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="edge-line edge-line--dotted" style="width: 200px; margin: 0 auto;"></div>
+      <div style="margin-top: 10px;">
+        <span style="font-size: 12px; color: var(--text-bright); font-weight: 600;">Dotted</span><br/>
+        <span style="font-size: 11px; color: var(--text-muted);">Optional / fallback</span><br/>
+        <code style="font-size: 10px; color: var(--neon-cyan);">strokeDasharray: 2 3</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2>
+  <span class="badge">INTERACTION</span>
+  4. Complete Edge Workflow
+</h2>
+
+<div class="section">
+  <h3>Drawing a New Connection</h3>
+  <div class="interaction-flow">
+    <div class="interaction-step">
+      <div class="interaction-step__number">1</div>
+      <div class="interaction-step__title">Pick Type</div>
+      <div class="interaction-step__desc">
+        (Optional) Select edge style in canvas toolbar.<br/>
+        Default: solid.
+      </div>
+    </div>
+    <div class="interaction-step__arrow">→</div>
+    <div class="interaction-step">
+      <div class="interaction-step__number">2</div>
+      <div class="interaction-step__title">Drag Handle</div>
+      <div class="interaction-step__desc">
+        Drag from any handle on source node.<br/>
+        All 4 sides available.
+      </div>
+    </div>
+    <div class="interaction-step__arrow">→</div>
+    <div class="interaction-step">
+      <div class="interaction-step__number">3</div>
+      <div class="interaction-step__title">Drop on Target</div>
+      <div class="interaction-step__desc">
+        Drop on any handle of target node.<br/>
+        Arrow + style auto-applied.
+      </div>
+    </div>
+    <div class="interaction-step__arrow">→</div>
+    <div class="interaction-step">
+      <div class="interaction-step__number">4</div>
+      <div class="interaction-step__title">Add Label</div>
+      <div class="interaction-step__desc">
+        (Optional) Click edge → type label.<br/>
+        Or click "+" pill on hover.
+      </div>
+    </div>
+  </div>
+
+  <h3>Editing an Existing Edge</h3>
+  <div class="interaction-flow">
+    <div class="interaction-step">
+      <div class="interaction-step__number">1</div>
+      <div class="interaction-step__title">Select Edge</div>
+      <div class="interaction-step__desc">
+        Click the edge line.<br/>
+        Inline toolbar appears.
+      </div>
+    </div>
+    <div class="interaction-step__arrow">→</div>
+    <div class="interaction-step">
+      <div class="interaction-step__number">2</div>
+      <div class="interaction-step__title">Modify</div>
+      <div class="interaction-step__desc">
+        Change style, edit label, or delete.<br/>
+        All in one toolbar.
+      </div>
+    </div>
+    <div class="interaction-step__arrow">→</div>
+    <div class="interaction-step">
+      <div class="interaction-step__number">3</div>
+      <div class="interaction-step__title">Deselect</div>
+      <div class="interaction-step__desc">
+        Click canvas to deselect.<br/>
+        Toolbar disappears, label persists as pill.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════ -->
+<h2>
+  <span class="badge">SPEC</span>
+  5. Files to Modify
+</h2>
+
+<div class="section">
+  <table>
+    <tr><th>File</th><th>Changes</th></tr>
+    <tr>
+      <td><code>SystemNode.tsx</code></td>
+      <td>Add paired source+target handles at all 4 positions (8 Handle elements total)</td>
+    </tr>
+    <tr>
+      <td><code>LabeledEdge.tsx</code></td>
+      <td>Replace label-only rendering with full inline toolbar when selected (style buttons + label input + delete)</td>
+    </tr>
+    <tr>
+      <td><code>CanvasToolbar.tsx</code></td>
+      <td>Add "Edge" section with 3 edge type buttons; accept + emit <code>edgeType</code> state</td>
+    </tr>
+    <tr>
+      <td><code>ArchitectureWorkspace.tsx</code></td>
+      <td>
+        Manage <code>defaultEdgeType</code> state; pass to toolbar and onConnect;
+        add keyboard shortcuts <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>L</kbd> for edge editing;
+        remove EdgeContextMenu usage
+      </td>
+    </tr>
+    <tr>
+      <td><code>index.css</code></td>
+      <td>Update edge toolbar styles; add edge type button styles to canvas toolbar</td>
+    </tr>
+  </table>
+
+  <h3>File to Delete</h3>
+  <table>
+    <tr><th>File</th><th>Reason</th></tr>
+    <tr>
+      <td><code>EdgeContextMenu.tsx</code></td>
+      <td>Replaced by inline edge toolbar — right-click context menu is no longer needed</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>
