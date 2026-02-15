@@ -29,11 +29,20 @@ function findGitBash(): string | undefined {
 }
 
 function findClaudeCliPath(): string | undefined {
-  // Look for the CLI script installed via npm global
+  // 1. npm global install (Node.js script)
   const npmGlobal = process.env.APPDATA
     ? path.join(process.env.APPDATA, 'npm', 'node_modules', '@anthropic-ai', 'claude-code', 'cli.js')
     : undefined;
   if (npmGlobal && fs.existsSync(npmGlobal)) return npmGlobal;
+
+  // 2. Native binary install (~/.local/bin/claude.exe on Windows)
+  const userHome = process.env.USERPROFILE || process.env.HOME;
+  if (userHome) {
+    const ext = process.platform === 'win32' ? '.exe' : '';
+    const localBin = path.join(userHome, '.local', 'bin', `claude${ext}`);
+    if (fs.existsSync(localBin)) return localBin;
+  }
+
   return undefined;
 }
 

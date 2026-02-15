@@ -16,9 +16,11 @@ export interface UseAuthReturn {
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!supabase);
 
   useEffect(() => {
+    if (!supabase) return;
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
@@ -39,22 +41,26 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string): Promise<{ error?: string }> => {
+    if (!supabase) return { error: 'Auth not configured' };
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) return { error: error.message };
     return {};
   }, []);
 
   const signIn = useCallback(async (email: string, password: string): Promise<{ error?: string }> => {
+    if (!supabase) return { error: 'Auth not configured' };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
     return {};
   }, []);
 
   const signInWithOAuth = useCallback(async (provider: 'google' | 'github') => {
+    if (!supabase) return;
     await supabase.auth.signInWithOAuth({ provider });
   }, []);
 
   const signOut = useCallback(async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
   }, []);
 

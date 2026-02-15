@@ -53,21 +53,63 @@ export function streamChatResponse(
   console.log(`\n[Claude CLI] Prompt length: ${prompt.length} chars, Messages: ${request.messages.length}`);
 
   const env = { ...process.env };
+  // Remove ALL Claude-related env vars to prevent "nested session" detection when
+  // the dev server is launched from within a Claude Code terminal/IDE.
+  // Claude Code sets: CLAUDECODE=1, CLAUDE_CODE_*, CLAUDE_AGENT_*, etc.
+  const removedKeys: string[] = [];
+  for (const key of Object.keys(env)) {
+    if (key === 'CLAUDECODE' || key.startsWith('CLAUDE_')) {
+      removedKeys.push(key);
+      delete env[key];
+    }
+  }
+  if (removedKeys.length > 0) {
+    console.log(`[Claude CLI] Stripped env vars to avoid nesting: ${removedKeys.join(', ')}`);
+  }
+  // Re-add git bash path for Windows (needed by CLI for shell operations)
   if (config.gitBashPath) {
     env.CLAUDE_CODE_GIT_BASH_PATH = config.gitBashPath;
   }
+  // Ensure TERM is set (some shells need it)
+  env.TERM = env.TERM || 'xterm-256color';
 
-  const args = ['-p', '--output-format', 'stream-json', '--verbose'];
+  const args = [
+    '-p',
+    '--output-format', 'stream-json',
+    '--verbose',
+    '--tools', '',              // Disable all tools — we only need text responses
+    '--strict-mcp-config',      // Skip loading MCP servers from user config
+  ];
 
-  // On Windows, call node with the CLI script directly to avoid cmd.exe shell issues
-  const useDirectNode = !!(config.claudeCliPath && process.platform === 'win32');
-  const command = useDirectNode ? process.execPath : 'claude';
-  const spawnArgs = useDirectNode ? [config.claudeCliPath!, ...args] : args;
+  // Resolve command: prefer direct path to avoid cmd.exe shell issues on Windows
+  let command: string;
+  let spawnArgs: string[];
+  let useShell: boolean;
+
+  if (config.claudeCliPath) {
+    if (config.claudeCliPath.endsWith('.js')) {
+      // npm-installed Node.js script — run via node
+      command = process.execPath;
+      spawnArgs = [config.claudeCliPath, ...args];
+    } else {
+      // Native binary — run directly
+      command = config.claudeCliPath;
+      spawnArgs = args;
+    }
+    useShell = false;
+  } else {
+    // Fallback: hope 'claude' is on PATH
+    command = 'claude';
+    spawnArgs = args;
+    useShell = process.platform !== 'win32';
+  }
+
+  console.log(`[Claude CLI] Spawning: ${command} ${spawnArgs.join(' ')} (shell=${useShell})`);
 
   const child = spawn(command, spawnArgs, {
     cwd: config.projectRoot,
     stdio: ['pipe', 'pipe', 'pipe'],
-    shell: !useDirectNode,
+    shell: useShell,
     env,
   });
 
@@ -86,7 +128,7 @@ export function streamChatResponse(
   let errorCallback: ((err: string) => void) | null = null;
 
   let buffer = '';
-  let textSent = false;
+  let resultText = '';
 
   child.stdout.on('data', (chunk: Buffer) => {
     buffer += chunk.toString();
@@ -99,12 +141,14 @@ export function streamChatResponse(
 
       try {
         const event = JSON.parse(trimmed);
-        if (!textSent) {
-          const text = extractText(event);
-          if (text && textCallback) {
-            textCallback(text);
-            textSent = true;
-          }
+
+        // Accumulate text from assistant messages
+        const text = extractText(event);
+        if (text) resultText += (resultText ? '' : '') + text;
+
+        // Also capture the final result text (most reliable)
+        if (event.type === 'result' && typeof event.result === 'string') {
+          resultText = event.result;
         }
       } catch {
         // skip non-JSON lines
@@ -114,25 +158,38 @@ export function streamChatResponse(
 
   let stderrOutput = '';
   child.stderr.on('data', (chunk: Buffer) => {
-    stderrOutput += chunk.toString();
+    const text = chunk.toString();
+    stderrOutput += text;
+    // Log stderr in real time for debugging
+    if (text.trim()) {
+      console.error(`[Claude CLI stderr] ${text.trim()}`);
+    }
   });
 
   child.on('close', (code) => {
+    console.log(`[Claude CLI] Process exited with code ${code}${code !== 0 ? ` (0x${(code! >>> 0).toString(16).toUpperCase()})` : ''}`);
+    if (stderrOutput.trim()) {
+      console.error(`[Claude CLI] Full stderr:\n${stderrOutput.trim()}`);
+    }
     // Process remaining buffer
-    if (buffer.trim() && !textSent) {
+    if (buffer.trim()) {
       try {
         const event = JSON.parse(buffer.trim());
         const text = extractText(event);
-        if (text && textCallback) {
-          textCallback(text);
-          textSent = true;
+        if (text) resultText = text;
+        if (event.type === 'result' && typeof event.result === 'string') {
+          resultText = event.result;
         }
       } catch {
         // ignore
       }
     }
 
-    if (code !== 0 && code !== null && !textSent && errorCallback) {
+    // Send accumulated text, then done
+    if (resultText && textCallback) {
+      textCallback(resultText);
+      if (doneCallback) doneCallback();
+    } else if (code !== 0 && code !== null && errorCallback) {
       const msg = stderrOutput.trim() || `Claude CLI exited with code ${code}`;
       errorCallback(msg);
     } else if (doneCallback) {
