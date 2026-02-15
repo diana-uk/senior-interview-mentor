@@ -45,4 +45,7 @@ export const config = {
   claudeCliPath: findClaudeCliPath(),
   anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
   sentryDsn: process.env.SENTRY_DSN || '',
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  appUrl: process.env.APP_URL || 'http://localhost:5173',
 };

@@ -14,8 +14,10 @@ import healthRouter from './routes/health.js';
 import chatRouter from './routes/chat.js';
 import progressRouter from './routes/progress.js';
 import authRouter from './routes/auth.js';
+import billingRouter from './routes/billing.js';
 import { isSupabaseConfigured } from './db/client.js';
 import { getAIBackend } from './services/ai.js';
+import { isStripeConfigured } from './services/stripe.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -30,12 +32,15 @@ app.use(
         : false,
   }),
 );
+// Stripe webhook needs raw body — mount BEFORE express.json()
+app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '1mb' }));
 
 app.use('/api', healthRouter);
 app.use('/api', chatRouter);
 app.use('/api', progressRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/billing', billingRouter);
 
 // Serve frontend static files in production
 if (config.nodeEnv === 'production') {
@@ -52,4 +57,5 @@ app.listen(config.port, () => {
   console.log(`[server] Running on http://localhost:${config.port}`);
   console.log(`[server] AI backend: ${getAIBackend()}`);
   console.log(`[server] Supabase: ${isSupabaseConfigured() ? 'configured' : 'not configured (using localStorage fallback)'}`);
+  console.log(`[server] Stripe: ${isStripeConfigured() ? 'configured' : 'not configured (billing disabled)'}`);
 });

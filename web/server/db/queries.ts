@@ -9,6 +9,8 @@ import type {
   ReviewInsert,
   StreakRow,
   StreakUpdate,
+  SubscriptionRow,
+  SubscriptionUpdate,
 } from './types.js';
 
 // ═══════════════════════════════════════
@@ -367,4 +369,28 @@ export async function syncFromLocalStorage(userId: string, payload: SyncPayload)
   await recordActivity(userId);
 
   return { synced: true };
+}
+
+// ═══════════════════════════════════════
+// SUBSCRIPTIONS
+// ═══════════════════════════════════════
+
+export async function getSubscription(userId: string): Promise<SubscriptionRow | null> {
+  const { data, error } = await getSupabaseAdmin()
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
+  if (error && error.code !== 'PGRST116') throw error;
+  return data as SubscriptionRow | null;
+}
+
+export async function upsertSubscription(userId: string, updates: SubscriptionUpdate) {
+  const { data, error } = await getSupabaseAdmin()
+    .from('subscriptions')
+    .upsert({ user_id: userId, ...updates }, { onConflict: 'user_id' })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
