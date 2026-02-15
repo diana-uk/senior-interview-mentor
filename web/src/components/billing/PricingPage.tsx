@@ -9,7 +9,7 @@ interface PricingPageProps {
   isAuthenticated: boolean;
 }
 
-export default function PricingPage({ currentPlan, onCheckout, onEnterApp, isAuthenticated }: PricingPageProps) {
+export default function PricingPage({ currentPlan, onCheckout, onEnterApp }: PricingPageProps) {
   const [interval, setInterval] = useState<'month' | 'year'>('month');
   const trialDays = getTrialDays();
 

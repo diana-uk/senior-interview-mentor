@@ -62,7 +62,8 @@ for (const p of allProblems) {
 }
 
 export const problemsById: Record<string, Problem> = {};
-for (const { group: _group, ...problem } of allProblems) {
+for (const { group, ...problem } of allProblems) {
+  void group; // strip group from Problem type
   problemsById[problem.id] = problem;
 }
 

@@ -24,7 +24,7 @@ import { useAchievements } from './hooks/useAchievements';
 import { problemsById } from './data/problems';
 import { getStarterCode, getTestCode } from './utils/problemLanguage';
 import { buildMemorySummary } from './utils/memoryBuilder';
-import { getSettings } from './components/panels/SettingsPanel';
+import { getSettings } from './utils/settings';
 import type {
   ChatMessage,
   ChatContext,
@@ -75,20 +75,6 @@ const defaultHints: HintLevel[] = [
   { level: 1, label: 'Nudge', description: 'A small push in the right direction', content: 'Think about what data structure lets you look up values in O(1) time. What if you stored the complement?', unlocked: false, color: 'var(--neon-lime)' },
   { level: 2, label: 'Structure', description: 'Data structure + algorithm steps', content: 'Use a HashMap to store each number\'s index as you iterate. For each number, check if (target - num) exists in the map.', unlocked: false, color: 'var(--neon-amber)' },
   { level: 3, label: 'Pseudocode', description: 'Detailed pseudocode outline', content: '1. Create empty map\n2. For each num at index i:\n   a. complement = target - num\n   b. If complement in map → return [map[complement], i]\n   c. Else → map[num] = i\n3. Return [] (no solution)', unlocked: false, color: 'var(--neon-purple)' },
-];
-
-const questionCategories: { id: string; label: string }[] = [
-  { id: 'mixed', label: 'Mixed' },
-  { id: 'javascript-typescript', label: 'JS / TS Core' },
-  { id: 'react-frontend', label: 'React / Frontend' },
-  { id: 'web-performance', label: 'Web Performance' },
-  { id: 'apis-backend', label: 'APIs & Backend' },
-  { id: 'databases', label: 'Databases' },
-  { id: 'distributed-systems', label: 'Distributed Systems' },
-  { id: 'security', label: 'Security' },
-  { id: 'testing-quality', label: 'Testing & Quality' },
-  { id: 'behavioral-leadership', label: 'Leadership' },
-  { id: 'product-thinking', label: 'Product Thinking' },
 ];
 
 const SYSTEM_DESIGN_STARTER = `## [requirements]

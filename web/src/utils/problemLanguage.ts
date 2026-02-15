@@ -1,4 +1,4 @@
-import type { Problem, SupportedLanguage, TestCase } from '../types';
+import type { Problem, SupportedLanguage } from '../types';
 import { stripTypeAnnotations } from './stripTypes';
 
 /**

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useMemo, useCallback, useEffect, useRef } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { detectFillers, type FillerReport } from '../../utils/fillerDetector';
@@ -12,15 +12,23 @@ interface VoiceButtonProps {
 export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: VoiceButtonProps) {
   const { isListening, isSupported, transcript, finalTranscript, start, stop, reset } =
     useSpeechRecognition();
-  const fillerCountRef = useRef(0);
+  const resetCounterRef = useRef(0);
 
-  // Run filler detection on each transcript update
+  // Derive filler count from transcript (pure computation)
+  const fillerReport = useMemo(() =>
+    transcript ? detectFillers(transcript) : null,
+    [transcript],
+  );
+  const fillerCount = fillerReport?.totalFillers ?? 0;
+
+  // Notify parent of filler updates
+  const prevTranscriptRef = useRef(transcript);
   useEffect(() => {
-    if (!transcript) return;
-    const report = detectFillers(transcript);
-    fillerCountRef.current = report.totalFillers;
-    onFillerUpdate(report);
-  }, [transcript, onFillerUpdate]);
+    if (transcript && transcript !== prevTranscriptRef.current && fillerReport) {
+      onFillerUpdate(fillerReport);
+    }
+    prevTranscriptRef.current = transcript;
+  }, [transcript, fillerReport, onFillerUpdate]);
 
   const handleClick = useCallback(() => {
     if (isListening) {
@@ -29,10 +37,10 @@ export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: 
         onTranscript(finalTranscript.trim());
       }
       reset();
-      fillerCountRef.current = 0;
+      resetCounterRef.current++;
     } else {
       reset();
-      fillerCountRef.current = 0;
+      resetCounterRef.current++;
       start();
     }
   }, [isListening, finalTranscript, start, stop, reset, onTranscript]);
@@ -53,8 +61,8 @@ export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: 
       title={isListening ? 'Stop recording' : 'Start voice input'}
     >
       <Mic size={16} />
-      {isListening && fillerCountRef.current > 0 && (
-        <span className="voice-btn__badge">{fillerCountRef.current}</span>
+      {isListening && fillerCount > 0 && (
+        <span className="voice-btn__badge">{fillerCount}</span>
       )}
     </button>
   );

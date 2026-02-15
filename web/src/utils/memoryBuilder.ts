@@ -1,5 +1,5 @@
 import type { StatsData, MistakeEntryFull } from '../types';
-import type { HintStyle, DetailLevel } from '../components/panels/SettingsPanel';
+import type { HintStyle, DetailLevel } from './settings';
 import { problemsById } from '../data/problems';
 
 export interface MemoryContext {

@@ -25,10 +25,10 @@ export function stripTypeAnnotations(code: string): string {
   result = result.replace(/^\s*(?:export\s+)?(?:type|interface)\s+.*$/gm, '');
 
   // Strip return types: ): Type { → ) {
-  result = result.replace(/(\))\s*:\s*[\w\[\]<>,.|&\s]+?(?=\s*\{)/g, '$1');
+  result = result.replace(/(\))\s*:\s*[\w[<>,.|&\s\]]+?(?=\s*\{)/g, '$1');
 
   // Strip return types for arrow functions: ): Type => → ) =>
-  result = result.replace(/(\))\s*:\s*[\w\[\]<>,.|&\s]+?(?=\s*=>)/g, '$1');
+  result = result.replace(/(\))\s*:\s*[\w[<>,.|&\s\]]+?(?=\s*=>)/g, '$1');
 
   // Strip parameter type annotations inside parentheses
   result = result.replace(/\(([^)]*)\)/g, (_match, inner: string) => {
