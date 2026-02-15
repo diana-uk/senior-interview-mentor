@@ -4,26 +4,159 @@
 
 ---
 
-## Current State (2026-02-13)
+## Current State (2026-02-15)
 
-**Build:** Passing (TypeScript clean, 67 tests green, Vite build ~1,150 KB main + 9 lazy chunks)
+**Build:** Passing (TypeScript clean, 0 lint errors, 115 tests green, Vite build ~1,266 KB main + lazy chunks)
 **Branch:** `main`
 **Node:** v20.10.0
 
 ### Quick Stats
 | Metric | Value |
 |--------|-------|
-| Problems | 77 across 16 patterns |
+| Problems | 150 across 20 patterns |
 | System Design Topics | 20 + custom |
 | Behavioral Questions | 102 across 8 categories |
-| Test Count | 67 (5 test files) |
-| Bundle Size (main) | ~1,150 KB |
+| Achievements | 17 across 5 categories |
+| Test Count | 115 (8 test files) |
+| Bundle Size (main) | ~1,266 KB |
 | Lazy Chunks | 9 (EditorPanel, SystemDesignRouter, InterviewLauncher, ReviewRubric, Landing, vendor-react, vendor-monaco, vendor-icons, vendor-katex) |
-| Multi-lang Problems | 3 (Two Sum, Search in Rotated Array, Climbing Stairs) |
+| Multi-lang Problems | 150 (all have TypeScript + Python starters) |
+| Auth | Supabase (email/password + Google/GitHub OAuth) |
+| Payments | Stripe (checkout, webhooks, portal, subscription management) |
+| Monitoring | Sentry (frontend + backend) + PostHog analytics |
 
 ---
 
 ## Session Log
+
+### 2026-02-15 — Session 13
+
+**Focus:** Lint cleanup + Achievement tests
+
+| Task | What was done |
+|------|---------------|
+| Lint Cleanup | Fixed all 24 ESLint errors + 1 warning across 15 files. Key fixes: React Compiler compliance (useState over useRef in render, useMemo for derived values, queueMicrotask/setTimeout for effect setState), extracted `getSettings` to `utils/settings.ts` for fast refresh, replaced direct prop mutations with `useReactFlow().setNodes()`. |
+| Achievement Tests | Created `useAchievements.test.ts` with 21 tests covering all 17 achievement conditions, localStorage persistence, reset, and newly-unlocked filtering. Test count: 94 → 115. |
+
+**Files created (2):**
+- `web/src/utils/settings.ts` — Extracted settings types/functions from SettingsPanel
+- `web/src/hooks/__tests__/useAchievements.test.ts` — 21 tests
+
+**Files modified (18):**
+- `web/src/App.tsx` — Updated `getSettings` import path
+- `web/src/components/billing/PricingPage.tsx` — Removed unused `isAuthenticated`
+- `web/src/components/billing/SubscriptionBanner.tsx` — `useMemo` + `useState(Date.now)` for purity
+- `web/src/components/chat/VoiceButton.tsx` — `useMemo`-derived filler count (no setState in effect)
+- `web/src/components/editor/SystemDesignEditor.tsx` — `useState` replaces `useRef` for render-accessed value
+- `web/src/components/panels/BehavioralPanel.tsx` — Removed unused interface
+- `web/src/components/panels/SettingsPanel.tsx` — Imports from `utils/settings`
+- `web/src/components/systemdesign/ArchitectureWorkspace.tsx` — `useMemo` node sync
+- `web/src/components/systemdesign/MentorPanel.tsx` — eslint-disable for callback param
+- `web/src/components/systemdesign/architecture/SystemNode.tsx` — `useReactFlow` for label commit
+- `web/src/data/problems/index.ts` — `void group` pattern for unused destructure
+- `web/src/hooks/useAdaptiveRecommendation.ts` — Removed unused import
+- `web/src/hooks/useCodeAnalysis.ts` — `queueMicrotask` for effect setState
+- `web/src/hooks/useSessionPersistence.ts` — `useState` lazy init replaces `useRef`
+- `web/src/hooks/useSubscription.ts` — `setTimeout` wrapper for effect fetch
+- `web/src/utils/executor.worker.ts` — Removed unused eslint-disable
+- `web/src/utils/memoryBuilder.ts` — Updated settings import path
+- `web/src/utils/problemLanguage.ts` — Removed unused import
+- `web/src/utils/stripTypes.ts` — Fixed useless regex escapes
+
+---
+
+### 2026-02-14 — Session 12
+
+**Focus:** Achievements system, activity heatmap, shareable profile card (Jira SIM-37)
+
+| Task | What was done |
+|------|---------------|
+| Achievement System | Created `useAchievements.ts` hook with 17 achievements across 5 categories (milestones, streaks, patterns, performance, quality). SM-2-style unlock tracking with localStorage persistence. |
+| Achievements Panel | Built `AchievementsPanel.tsx` with badge grid, 365-day activity heatmap (GitHub-style), personal records (fastest solve, highest streak, etc.), and trophy sidebar integration. |
+| Shareable Profile Card | Created `profileCard.ts` with Canvas-rendered PNG export. Shows avatar, username, stats, achievement count. Download or share via Web Share API. |
+
+**Files created (3):**
+- `web/src/hooks/useAchievements.ts`
+- `web/src/components/panels/AchievementsPanel.tsx`
+- `web/src/utils/profileCard.ts`
+
+**Jira:** SIM-37 → **Done**
+
+---
+
+### 2026-02-14 — Session 11
+
+**Focus:** SEO meta tags + Stripe payment integration (Jira SIM-45, SIM-35)
+
+| Task | What was done |
+|------|---------------|
+| SEO (SIM-45) | Added meta tags, Open Graph, Twitter Cards, JSON-LD structured data to `index.html`. Semantic HTML landmarks. |
+| Stripe (SIM-35) | Full payment integration: Stripe Checkout sessions, webhook handler (invoice.paid, subscription events), customer portal, `useSubscription` hook, `PricingPage` with monthly/yearly toggle, `SubscriptionBanner` for upgrade prompts. Tier config in `config/tiers.ts`. |
+
+**Files created (7):**
+- `web/server/services/stripe.ts`
+- `web/server/routes/billing.ts`
+- `web/src/hooks/useSubscription.ts`
+- `web/src/components/billing/PricingPage.tsx`
+- `web/src/components/billing/SubscriptionBanner.tsx`
+- `web/src/config/tiers.ts`
+
+**Jira:** SIM-45, SIM-35 → **Done**
+
+---
+
+### 2026-02-14 — Session 10
+
+**Focus:** Monitoring and observability (Jira SIM-43)
+
+| Task | What was done |
+|------|---------------|
+| Sentry | Frontend + backend error tracking with Sentry. Browser SDK with React error boundary integration. Server SDK with Express request handler. |
+| PostHog | Product analytics with event tracking. Analytics facade for consistent event naming. |
+| Request Logger | Structured JSON request logging middleware with response time tracking. |
+| Health Endpoint | Enhanced `/health` with uptime, memory usage, version info. |
+
+**Files created (5):**
+- `web/src/lib/sentry.ts`
+- `web/src/lib/posthog.ts`
+- `web/src/lib/analytics.ts`
+- `web/server/lib/sentry.ts`
+- `web/server/middleware/requestLogger.ts`
+
+**Jira:** SIM-43 → **Done**
+
+---
+
+### 2026-02-14 — Session 9
+
+**Focus:** Deployment configs (Jira SIM-40)
+
+| Task | What was done |
+|------|---------------|
+| Docker | Dockerfile + docker-compose.yml for containerized deployment. |
+| Vercel | `vercel.json` config for frontend SPA deployment. |
+| Railway | `railway.json` config for backend deployment. |
+| SDK Fallback | Created `claudeSdk.ts` (Anthropic SDK backend) + `ai.ts` facade that auto-selects CLI vs SDK based on `ANTHROPIC_API_KEY` env var. |
+
+**Jira:** SIM-40 → **Done**
+
+---
+
+### 2026-02-13 — Session 8
+
+**Focus:** Supabase Auth + Voice/Audio + Multi-lang + Architecture diagrams (Jira SIM-19, SIM-26, SIM-27, SIM-28, SIM-25)
+
+| Task | What was done |
+|------|---------------|
+| Auth (SIM-19) | Supabase Auth with email/password + Google/GitHub OAuth. JWT verification middleware (requireAuth + optionalAuth). Auto-sync localStorage→DB on first login. Profile dropdown. "Skip" option for anonymous use. |
+| Voice (SIM-26) | Web Speech API speech-to-text via `useSpeechRecognition` hook. Filler word detection (15 patterns). VoiceButton with recording pulse and filler badge. AI communication evaluation. |
+| Multi-lang (SIM-27) | Python via Pyodide CDN (~10MB WASM, lazy). All 150 problems with Python starters. `pyodideExecutor.ts` + `pythonTestAdapter.ts`. Language-aware AI responses. |
+| Architecture (SIM-28) | React Flow drag-and-drop canvas. Component palette (12 system components). AI validation. PNG export via `diagramSerializer.ts`. |
+| Memory (SIM-25) | `memoryBuilder.ts` compiles stats/mistakes/settings into prompt context. Configurable hint style and detail level. |
+
+**Jira:** SIM-19, SIM-26, SIM-27, SIM-28, SIM-25 → **Done**
+
+---
 
 ### 2026-02-13 — Session 7
 
@@ -34,13 +167,7 @@
 | Wire Slash Commands (SIM-15) | Wired `/check`, `/continue`, `/recap` commands in `handleSendMessage`. `/check` auto-includes editor code context for approach validation. `/continue` enriches message with session state (problem, mode, hints, gate, timer). `/recap` sends detailed session state with commitment gate checklist. `/pattern` works via existing passthrough to Claude skill file. |
 | STAR Story Bank (SIM-31) | Added localStorage-backed story bank to BehavioralPanel. `StoryEntry` type with full STAR fields + timestamps. Save/Update button in practice view. Auto-loads saved story when revisiting a question. "My Stories" view with category grouping, edit, and delete. BookOpen icon on browse questions that have saved stories. |
 
-**Files modified (2):**
-- `web/src/App.tsx` — Added `/check`, `/continue`, `/recap` handling in `handleSendMessage` with enriched context
-- `web/src/components/panels/BehavioralPanel.tsx` — Story bank: `StoryEntry` type, localStorage CRUD, stories view, save button, auto-load, saved indicators
-
-**Jira transitions:**
-- SIM-15 (Wire Slash Commands): In Progress → **Done**
-- SIM-31 (STAR Method Coach): In Progress → **Done**
+**Jira:** SIM-15, SIM-31 → **Done**
 
 ---
 
@@ -56,17 +183,7 @@
 | Activity Chart (SIM-13) | Added SVG bar chart to StatsPanel showing problems solved per day for last 30 days. Neon cyan bars with opacity proportional to activity. |
 | Radar Chart (SIM-13) | Added SVG spider/radar chart showing pattern strengths. Neon cyan polygon with data points. Color-coded labels by score. Requires 3+ patterns to render. |
 
-**Files modified (6):**
-- `web/server/services/claude.ts` — Full rewrite: CLI subprocess replaces Anthropic SDK
-- `web/server/routes/chat.ts` — Restored `simulateStream()`, kept `extractEditorBlocks()`
-- `web/src/services/api.ts` — Added 90s client-side timeout
-- `web/server/index.ts` — Removed API key log line
-- `web/src/components/panels/MistakesPanel.tsx` — Added weakness heat map grid
-- `web/src/components/panels/StatsPanel.tsx` — Added ActivityChart + RadarChart (pure SVG)
-
-**Jira transitions:**
-- SIM-12 (Mistake Tracking): In Progress → **Done**
-- SIM-13 (Statistics Dashboard): In Progress → **Done**
+**Jira:** SIM-12, SIM-13 → **Done**
 
 ---
 
@@ -76,60 +193,28 @@
 
 | Task | What was done |
 |------|---------------|
-| PostgreSQL Schema | Created `server/db/schema.sql` with 7 tables: `profiles`, `problem_progress`, `sessions`, `mistakes`, `reviews`, `streaks`, `subscriptions`. RLS policies for per-user isolation. Auto-create profile trigger. Indexes on user_id, problem_id, created_at, next_review. `updated_at` triggers for profiles and subscriptions. |
-| Supabase Client | Created `server/db/client.ts` with singleton admin client using service role key. Graceful fallback: `isSupabaseConfigured()` check so app works without DB. |
-| TypeScript Types | Created `server/db/types.ts` with full `Database` interface. Row/Insert/Update variants for all 7 tables. Strict typing for enums (status, mode, plan). |
-| Query Layer | Created `server/db/queries.ts` with 18 query functions: profile CRUD, progress upsert, session create/list, mistakes CRUD + due filter, reviews create/list, streak management with consecutive-day logic, bulk sync from localStorage. |
-| REST API | Created `server/routes/progress.ts` with 10 endpoints: `GET/POST /progress`, `GET/POST /sessions`, `GET/POST/PATCH/DELETE /mistakes`, `GET/POST /reviews`, `GET /streak`, `POST /sync`. `requireUser` middleware validates Supabase + X-User-Id header. |
-| Server Wiring | Wired `progressRouter` into Express app. Added Supabase status log on startup. Updated `.env.example` with Supabase env vars. |
+| PostgreSQL Schema | Created `server/db/schema.sql` with 7 tables. RLS policies. Auto-create profile trigger. Indexes. `updated_at` triggers. |
+| Supabase Client | Singleton admin client with graceful fallback. |
+| TypeScript Types | Full `Database` interface with Row/Insert/Update variants. |
+| Query Layer | 18 query functions covering all CRUD + bulk sync. |
+| REST API | 10 endpoints for progress, sessions, mistakes, reviews, streak, sync. |
 
-**Files created (6):**
-- `web/server/db/schema.sql` — Complete PostgreSQL schema (7 tables, RLS, triggers, indexes)
-- `web/server/db/client.ts` — Supabase admin client with fallback check
-- `web/server/db/types.ts` — Full TypeScript types for all DB tables
-- `web/server/db/queries.ts` — 18 CRUD query functions + bulk sync
-- `web/server/db/index.ts` — Barrel export
-- `web/server/routes/progress.ts` — REST API with 10 endpoints
-
-**Files modified (2):**
-- `web/server/index.ts` — Wired progressRouter, Supabase status log
-- `.env.example` — Added SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
-
-**Key decisions:**
-- Service role key bypasses RLS for server-side operations
-- X-User-Id header as auth placeholder until SIM-19 (Auth) is wired
-- Bulk sync endpoint enables one-time localStorage → DB migration
-- App degrades gracefully without Supabase (returns 503 on DB endpoints, rest works fine)
+**Jira:** SIM-20 → **Done**
 
 ---
 
 ### 2026-02-13 — Session 4
 
-**Focus:** Problem Data Architecture — Markdown/LaTeX support + Multi-language starter code (Jira SIM-18)
+**Focus:** Problem Data Architecture — Markdown/LaTeX + Multi-language starter code (Jira SIM-18)
 
 | Task | What was done |
 |------|---------------|
-| LaTeX in Chat | Added `remark-math` + `rehype-katex` to ChatMessage.tsx. Inline `$...$` and block `$$...$$` math now renders in chat. KaTeX CSS + fonts auto-loaded. |
-| Vendor Chunking | Moved KaTeX into `vendor-katex` chunk (299 KB). Main bundle actually dropped from 1,156 → 1,134 KB. |
-| Multi-Language Types | Added `SupportedLanguage`, `MultiLangCode` types to `types/index.ts`. `starterCode` now accepts `string \| MultiLangCode` (backward compatible). |
-| Language Utility | Created `utils/problemLanguage.ts` with: `getStarterCode()`, `getTestCode()`, `hasLanguageSupport()`, `getAvailableLanguages()`. Auto-strips types for JS fallback. Python test code converts `null`→`None`, `true`→`True`. |
-| App.tsx Integration | Added `language` state (reads from settings localStorage). `handleSelectProblem` and `/next` command now use `getStarterCode(problem, language)` and `getTestCode(problem, language)`. |
-| Example Problems | Added explicit TypeScript + JavaScript + Python starter code to 3 problems: Two Sum (hm-1), Search in Rotated Array (bs-1), Climbing Stairs (dp-1). |
-| Tests | Created `problemLanguage.test.ts` with **16 tests** covering all utility functions. Total: **67 tests** across 5 files. |
-| Jira Board | Populated full Jira board (SIM-1 through SIM-49): 11 Epics, 38 Stories. Set correct statuses (4 Done, 12 In Progress, 22 To Do). Created `.claude/jira-config.json`. |
+| LaTeX in Chat | `remark-math` + `rehype-katex` for inline/block math. |
+| Multi-Language Types | `SupportedLanguage`, `MultiLangCode` types. `problemLanguage.ts` utility. |
+| Tests | `problemLanguage.test.ts` with 16 tests. Total: 67 tests across 5 files. |
+| Jira Board | Populated full board (SIM-1 through SIM-49): 11 Epics, 38 Stories. |
 
-**Files created (2):**
-- `web/src/utils/problemLanguage.ts`
-- `web/src/utils/__tests__/problemLanguage.test.ts`
-
-**Files modified (7):**
-- `web/src/types/index.ts` — Added `SupportedLanguage`, `MultiLangCode` types, updated `Problem.starterCode` to union
-- `web/src/App.tsx` — Added `language` state, imported `getStarterCode`/`getTestCode`, language-aware problem loading
-- `web/src/components/chat/ChatMessage.tsx` — Added remark-math + rehype-katex plugins, KaTeX CSS import
-- `web/vite.config.ts` — Added `vendor-katex` manual chunk
-- `web/src/data/problems/hashmap.ts` — Two Sum: multi-lang starterCode
-- `web/src/data/problems/binary-search.ts` — Search in Rotated Array: multi-lang starterCode
-- `web/src/data/problems/dynamic-programming.ts` — Climbing Stairs: multi-lang starterCode
+**Jira:** SIM-18 → **Done**
 
 ---
 
@@ -139,27 +224,10 @@
 
 | Task | What was done |
 |------|---------------|
-| System Design Library | Expanded from 6 to **20 problems** (+custom). Added: Video Streaming, Ride Sharing, Search Engine, Payment System, News Feed, Collaborative Editor, Monitoring System, Key-Value Store, Web Crawler, Proximity Service, Ticket Booking, Maps & Navigation, Ad Click Aggregator, Hotel Reservation |
-| Testing Infrastructure | Set up Vitest v4 + jsdom v25 + @testing-library/react. Wrote **51 tests** across 4 files: `stripTypes.test.ts` (13), `codeExecutor.test.ts` (12), `useSystemDesignState.test.ts` (14), `useMistakeTracker.test.ts` (12). Added test step to CI. |
-| Settings Panel | Created `SettingsPanel.tsx` with: language preference, editor font size slider, auto-save toggle, timer toggle + duration, sound effects toggle, data export (JSON), data reset. Wired into sidebar. |
-| Landing Page | Created `Landing.tsx` with: hero section, 6 feature cards, "How it works" 4-step flow, competitor comparison table (vs LeetCode, AlgoExpert, NeetCode, Interviewing.io), 3 pricing tiers (Free/$19/$29). Lazy-loaded, shown on first visit. |
-
-**Files created (7):**
-- `web/vitest.config.ts`
-- `web/src/utils/__tests__/stripTypes.test.ts`
-- `web/src/utils/__tests__/codeExecutor.test.ts`
-- `web/src/hooks/__tests__/useSystemDesignState.test.ts`
-- `web/src/hooks/__tests__/useMistakeTracker.test.ts`
-- `web/src/components/panels/SettingsPanel.tsx`
-- `web/src/components/Landing.tsx`
-
-**Files modified (7):**
-- `web/src/types/index.ts` — 14 new SystemDesignTopicId values, 'settings' in SidebarPanel
-- `web/src/App.tsx` — SD_TOPIC_TITLES expanded, Landing integration, showLanding state
-- `web/src/components/modals/InterviewLauncher.tsx` — 15 new system design entries
-- `web/src/components/layout/Sidebar.tsx` — Settings panel wiring
-- `web/package.json` — test scripts, jsdom v25
-- `.github/workflows/ci.yml` — test step added
+| System Design Library | Expanded from 6 to 20 problems. |
+| Testing Infrastructure | Vitest v4 + jsdom v25. 51 tests across 4 files. |
+| Settings Panel | Language, font size, timer, auto-save, export, reset. |
+| Landing Page | Hero, features, comparison table, pricing tiers. Lazy-loaded. |
 
 ---
 
@@ -169,13 +237,11 @@
 
 | Task | What was done |
 |------|---------------|
-| Web Worker Execution | Replaced `new Function()` with sandboxed Web Worker (`executor.worker.ts` + `codeExecutor.ts`). 10s timeout per test case. |
-| Adaptive Recommendations | Created `useAdaptiveRecommendation.ts` with pattern urgency scoring, readiness score (0-100), `/next` command wired. |
-| Problem Search | Added recommended problems section to ProblemList with reasons, search/filter already existed. |
-| Solution Comparison | `/review` command auto-includes editor code in message to Claude. |
-| Code Splitting | React.lazy for 4 heavy components. Vite manualChunks for vendor bundles. Main bundle reduced ~100KB. |
-| Behavioral Module | Created `behavioral.ts` (102 questions, 8 categories, Amazon LP mapping). Created `BehavioralPanel.tsx` (search, filters, STAR form, AI feedback). |
-| CI/CD | Created `.github/workflows/ci.yml` — lint, typecheck, build, bundle size check. |
+| Web Worker Execution | Sandboxed executor with 10s timeout. |
+| Adaptive Recommendations | Pattern urgency scoring, readiness score. |
+| Code Splitting | React.lazy + Vite manualChunks. |
+| Behavioral Module | 102 questions, 8 categories, STAR form. |
+| CI/CD | GitHub Actions pipeline. |
 
 ---
 
@@ -185,13 +251,12 @@
 
 | Task | What was done |
 |------|---------------|
-| Mistake Tracker | Created `useMistakeTracker.ts` with SM-2 spaced repetition, localStorage persistence, `MistakesPanel.tsx` UI |
-| Statistics | Created `useStats.ts` with pattern strength tracking, `StatsPanel.tsx` with session history and pattern breakdown |
-| Review Rubric | Created `ReviewRubric.tsx` with 6-dimension scoring (0-4 scale), improvement plan generation |
-| Session Persistence | Created `useSessionPersistence.ts` with auto-save to localStorage (debounced) |
-| Problem Library | Expanded from ~20 to **77 problems** across 16 pattern categories. Split into per-pattern files. |
-| Anthropic SDK | Replaced Claude CLI subprocess with `@anthropic-ai/sdk`. True SSE streaming. Model selection (Haiku/Sonnet). |
-| App Integration | Wired all hooks into App.tsx: mistake tracker, stats, adaptive recommendations, session persistence |
+| Mistake Tracker | SM-2 spaced repetition, localStorage persistence. |
+| Statistics | Pattern strength tracking, session history. |
+| Review Rubric | 6-dimension scoring (0-4 scale). |
+| Session Persistence | Auto-save to localStorage (debounced). |
+| Problem Library | Expanded to 77 problems across 16 patterns. |
+| Anthropic SDK | Replaced CLI with SDK (later reverted in Session 6). |
 
 ---
 
@@ -201,39 +266,58 @@
 web/
 ├── src/
 │   ├── components/
-│   │   ├── chat/          # ChatPanel, ChatMessage
-│   │   ├── editor/        # EditorPanel (Monaco)
-│   │   ├── layout/        # TopNav, Sidebar
-│   │   ├── modals/        # InterviewLauncher
-│   │   ├── panels/        # ProblemList, MistakesPanel, StatsPanel, BehavioralPanel, SettingsPanel, CommitmentGate, HintLadder
-│   │   ├── systemdesign/  # SystemDesignRouter, PhaseNav, phase components
-│   │   ├── Landing.tsx    # Marketing landing page
+│   │   ├── auth/           # AuthPage, ProfileDropdown
+│   │   ├── billing/        # PricingPage, SubscriptionBanner
+│   │   ├── chat/           # ChatPanel, ChatMessage, VoiceButton
+│   │   ├── editor/         # EditorPanel (Monaco), SystemDesignEditor
+│   │   ├── layout/         # TopNav, Sidebar
+│   │   ├── modals/         # InterviewLauncher
+│   │   ├── panels/         # ProblemList, MistakesPanel, StatsPanel, BehavioralPanel, SettingsPanel, AchievementsPanel, CommitmentGate, HintLadder
+│   │   ├── systemdesign/   # SystemDesignRouter, PhaseNav, ArchitectureWorkspace, architecture/
+│   │   ├── Landing.tsx     # Marketing landing page
 │   │   └── ReviewRubric.tsx
+│   ├── config/             # tiers.ts (pricing tiers)
 │   ├── data/
-│   │   ├── problems/      # 16 pattern files + index.ts (77 problems)
-│   │   └── behavioral.ts  # 102 behavioral questions
+│   │   ├── problems/       # 20 pattern files + helpers.ts + index.ts (150 problems)
+│   │   └── behavioral.ts   # 102 behavioral questions
 │   ├── hooks/
-│   │   ├── useChat.ts
-│   │   ├── useSystemDesignState.ts
-│   │   ├── useMistakeTracker.ts
-│   │   ├── useStats.ts
+│   │   ├── useAchievements.ts
 │   │   ├── useAdaptiveRecommendation.ts
+│   │   ├── useAuth.ts
+│   │   ├── useChat.ts
+│   │   ├── useCodeAnalysis.ts
+│   │   ├── useMistakeTracker.ts
 │   │   ├── useSessionPersistence.ts
-│   │   └── useSessionStorage.ts
+│   │   ├── useSessionStorage.ts
+│   │   ├── useSpeechRecognition.ts
+│   │   ├── useStats.ts
+│   │   ├── useSubscription.ts
+│   │   └── useSystemDesignState.ts
+│   ├── lib/
+│   │   ├── analytics.ts    # Event tracking facade
+│   │   ├── posthog.ts      # PostHog analytics
+│   │   ├── sentry.ts       # Frontend Sentry
+│   │   └── supabase.ts     # Browser Supabase client
 │   ├── utils/
-│   │   ├── stripTypes.ts
-│   │   ├── codeExecutor.ts
-│   │   ├── problemLanguage.ts  # Multi-language starter code utilities
-│   │   └── executor.worker.ts
-│   ├── design-system/     # tokens.css, layout.css, components.css
-│   ├── services/          # api.ts
-│   ├── types/             # index.ts
+│   │   ├── codeExecutor.ts + executor.worker.ts
+│   │   ├── fillerDetector.ts
+│   │   ├── memoryBuilder.ts
+│   │   ├── problemLanguage.ts
+│   │   ├── profileCard.ts
+│   │   ├── pyodideExecutor.ts
+│   │   ├── pythonTestAdapter.ts
+│   │   ├── settings.ts
+│   │   └── stripTypes.ts
+│   ├── design-system/      # tokens.css, layout.css, components.css
+│   ├── services/           # api.ts
+│   ├── types/              # index.ts
 │   └── App.tsx
 ├── server/
-│   ├── db/                # schema.sql, client.ts, types.ts, queries.ts, index.ts
-│   ├── services/          # claude.ts (CLI subprocess)
-│   ├── routes/            # chat.ts (SSE streaming), progress.ts (REST API)
-│   └── middleware/        # validate.ts
+│   ├── db/                 # schema.sql, client.ts, types.ts, queries.ts, index.ts
+│   ├── lib/                # sentry.ts
+│   ├── middleware/          # auth.ts, requestLogger.ts, validate.ts
+│   ├── routes/             # chat.ts, auth.ts, billing.ts, progress.ts
+│   └── services/           # claude.ts, claudeSdk.ts, ai.ts, stripe.ts
 ├── vitest.config.ts
 └── package.json
 ```
@@ -242,12 +326,12 @@ web/
 
 ## Remaining Priority Order
 
-1. **Auth** — Supabase auth (email/password, OAuth), JWT middleware, protected routes
+1. **Tier enforcement** — Wire Stripe plans to actual usage limits (free: 5/day, premium: unlimited)
 2. **Wire frontend to DB** — Switch from localStorage to API when Supabase configured
-3. **More tests** — Component tests, API integration tests, increase coverage
-4. **More problems** — Complete NeetCode 150 (~73 more problems)
-5. **Payment system** — Stripe integration, tier enforcement
-6. **Deployment** — Docker, Vercel + Railway, custom domain
-7. **AI enhancements** — Real-time code analysis, conversation memory, voice mode
-8. **Community** — Leaderboards, achievements, profiles
+3. **More tests** — Component tests, API integration tests, E2E tests
+4. **Learning paths** — Guided problem sequences (Blind 75 Sprint, Pattern Mastery)
+5. **Daily Challenge** — AI-selected problem per day
+6. **Communication scoring** — STAR compliance, conciseness, impact metrics
+7. **Real-time code analysis** — Debounced editor analysis, anti-pattern detection
+8. **Community** — Leaderboards, study groups, solution sharing
 9. **B2B** — Team accounts, admin dashboard
