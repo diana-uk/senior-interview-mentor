@@ -255,7 +255,7 @@
 
 ### 9.6 Testing
 - [x] Vitest setup with jsdom v25 + @testing-library/react
-- [x] Unit tests: stripTypes (13), codeExecutor (12), useSystemDesignState (14), useMistakeTracker (12), problemLanguage (16), memoryBuilder (12), pythonTestAdapter (15), useAchievements (21), fillerDetector (35) — **150 tests, 9 files**
+- [x] Unit tests: stripTypes (13), codeExecutor (12), useSystemDesignState (14), useMistakeTracker (12), problemLanguage (16), memoryBuilder (12), pythonTestAdapter (15), useAchievements (21), fillerDetector (35), useStats (30) — **180 tests, 10 files**
 - [ ] Component tests for critical UI flows
 - [ ] API integration tests
 - [ ] E2E tests (Playwright): signup → solve → review, interview flow, system design flow
