@@ -175,8 +175,10 @@ export function useStats(): UseStatsReturn {
       // Update avg score if we have a score
       if (params.score !== null) {
         const scored = updated.sessions.filter((s) => s.score !== null);
-        updated.avgScore =
-          scored.reduce((sum, s) => sum + (s.score ?? 0), 0) / scored.length;
+        const newAvg = scored.length > 0
+          ? scored.reduce((sum, s) => sum + (s.score ?? 0), 0) / scored.length
+          : 0;
+        updated.avgScore = Number.isFinite(newAvg) ? Math.round(newAvg * 10) / 10 : 0;
       }
 
       updated = updateStreak(updated);
@@ -246,13 +248,14 @@ export function useStats(): UseStatsReturn {
         if (ps.pattern !== pattern) return ps;
         const newAttempted = ps.attempted + 1;
         const newSolved = ps.solved + (solved ? 1 : 0);
-        const newAvg =
-          (ps.avgScore * ps.attempted + score) / newAttempted;
+        const rawAvg = newAttempted > 0
+          ? ((ps.avgScore ?? 0) * (ps.attempted ?? 0) + score) / newAttempted
+          : 0;
         return {
           ...ps,
           attempted: newAttempted,
           solved: newSolved,
-          avgScore: Math.round(newAvg * 10) / 10,
+          avgScore: Number.isFinite(rawAvg) ? Math.round(rawAvg * 10) / 10 : 0,
           lastPracticed: today(),
         };
       });
