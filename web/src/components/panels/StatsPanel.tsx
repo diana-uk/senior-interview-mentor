@@ -233,7 +233,7 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
         </div>
         <div className="card stagger-enter stagger-3" style={{ textAlign: 'center', padding: '12px 8px' }}>
           <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-bright)' }}>
-            {stats.avgScore ? stats.avgScore.toFixed(1) : '—'}
+            {stats.totalAttempts > 0 ? stats.avgScore.toFixed(1) : '—'}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Score</div>
         </div>
