@@ -5,6 +5,7 @@ import ChatPanel from './components/chat/ChatPanel';
 import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
 import AuthPage from './components/auth/AuthPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
 
@@ -744,6 +745,7 @@ export default function App() {
 
   if (showLanding) {
     return (
+      <ErrorBoundary name="Landing">
       <Suspense fallback={null}>
         <Landing
           onEnterApp={() => {
@@ -754,6 +756,7 @@ export default function App() {
           isAuthenticated={isAuthenticated}
         />
       </Suspense>
+      </ErrorBoundary>
     );
   }
 
@@ -821,6 +824,7 @@ export default function App() {
         />
 
         <div className="workspace">
+          <ErrorBoundary name="Workspace">
           <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: 'var(--text-muted)' }}>Loading...</div>}>
           {isSystemDesignActive ? (
             <SystemDesignRouter
@@ -907,6 +911,7 @@ export default function App() {
             </>
           )}
           </Suspense>
+          </ErrorBoundary>
         </div>
 
         <CommitmentGate
@@ -932,6 +937,7 @@ export default function App() {
         </button>
       </div>
 
+      <ErrorBoundary name="Modals">
       <Suspense fallback={null}>
         {interviewModalOpen && (
           <InterviewLauncher
@@ -959,6 +965,7 @@ export default function App() {
         />
       )}
       </Suspense>
+      </ErrorBoundary>
 
       {hintsUsed > 0 && hintLadderOpen && (
         <div
