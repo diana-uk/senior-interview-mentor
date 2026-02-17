@@ -10,17 +10,23 @@ function findGitBash(): string | undefined {
     return process.env.CLAUDE_CODE_GIT_BASH_PATH;
   }
 
-  // Common Windows locations — check all drive letters where git might be
+  // Common Windows locations
   const candidates: string[] = [];
 
-  // Derive drive letter from current working directory or __dirname
-  const driveLetter = __dirname.match(/^([A-Z]):/i)?.[1];
-  if (driveLetter) {
-    candidates.push(path.join(driveLetter + ':', path.sep, 'Program Files', 'Git', 'bin', 'bash.exe'));
-    candidates.push(path.join(driveLetter + ':', path.sep, 'Program Files (x86)', 'Git', 'bin', 'bash.exe'));
+  // Use %ProgramFiles% env vars (most reliable)
+  for (const envKey of ['ProgramFiles', 'ProgramFiles(x86)', 'ProgramW6432']) {
+    const dir = process.env[envKey];
+    if (dir) candidates.push(path.join(dir, 'Git', 'bin', 'bash.exe'));
   }
+
+  // Also check the drive letter of the project (in case Git is on the same non-C: drive)
+  const driveLetter = __dirname.match(/^([A-Z]):/i)?.[1];
+  if (driveLetter && driveLetter.toUpperCase() !== 'C') {
+    candidates.push(path.join(driveLetter + ':', path.sep, 'Program Files', 'Git', 'bin', 'bash.exe'));
+  }
+
+  // Hardcoded fallbacks
   candidates.push(path.join('C:', path.sep, 'Program Files', 'Git', 'bin', 'bash.exe'));
-  candidates.push(path.join('C:', path.sep, 'Program Files (x86)', 'Git', 'bin', 'bash.exe'));
 
   for (const p of candidates) {
     if (fs.existsSync(p)) return p;

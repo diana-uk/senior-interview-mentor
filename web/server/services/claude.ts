@@ -98,10 +98,11 @@ export function streamChatResponse(
     }
     useShell = false;
   } else {
-    // Fallback: hope 'claude' is on PATH
+    // Fallback: hope 'claude' is on PATH — need shell on all platforms
+    // (Windows needs it for .cmd wrappers, Unix for PATH resolution)
     command = 'claude';
     spawnArgs = args;
-    useShell = process.platform !== 'win32';
+    useShell = true;
   }
 
   console.log(`[Claude CLI] Spawning: ${command} ${spawnArgs.join(' ')} (shell=${useShell})`);
@@ -111,6 +112,7 @@ export function streamChatResponse(
     stdio: ['pipe', 'pipe', 'pipe'],
     shell: useShell,
     env,
+    windowsHide: true,   // Prevent console allocation issues (0xC0000142) on Windows
   });
 
   // Send prompt via stdin
@@ -190,7 +192,15 @@ export function streamChatResponse(
       textCallback(resultText);
       if (doneCallback) doneCallback();
     } else if (code !== 0 && code !== null && errorCallback) {
-      const msg = stderrOutput.trim() || `Claude CLI exited with code ${code}`;
+      let msg = stderrOutput.trim();
+      if (!msg) {
+        const hex = (code >>> 0).toString(16).toUpperCase();
+        msg = `Claude CLI exited with code ${code} (0x${hex})`;
+        // Windows STATUS_DLL_INIT_FAILED — common when console/env is misconfigured
+        if (hex === 'C0000142') {
+          msg += '. This is a Windows DLL initialization error. Try restarting the server outside of VS Code, or run: claude --version';
+        }
+      }
       errorCallback(msg);
     } else if (doneCallback) {
       doneCallback();

@@ -1,0 +1,52 @@
+appId: com.seniormentor.app
+productName: Senior Interview Mentor
+
+directories:
+  output: release
+
+# tsx needs .ts file access at runtime for the Express server
+asar: false
+
+files:
+  - dist-electron/**/*
+  - web/dist/**/*
+  - web/server/**/*
+  - web/package.json
+  - web/node_modules/**/*
+  - "!web/node_modules/.cache"
+  - "!web/node_modules/.vite"
+
+extraResources:
+  - from: electron/icons
+    to: icons
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - nsis
+    - portable
+  icon: electron/icons/icon.ico
+
+mac:
+  target:
+    - dmg
+    - zip
+  icon: electron/icons/icon.icns
+  category: public.app-category.developer-tools
+
+linux:
+  target:
+    - AppImage
+    - deb
+  icon: electron/icons/icon.png
+  category: Development
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+publish:
+  provider: github

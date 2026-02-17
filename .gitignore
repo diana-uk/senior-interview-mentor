@@ -28,3 +28,11 @@ html/
 
 # Claude plans (temporary)
 .claude/plans/
+
+# Electron
+dist-electron/
+release/
+
+# Electron
+desktop/dist-electron/
+release/
