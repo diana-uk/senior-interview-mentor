@@ -5,6 +5,7 @@ import type {
   AchievementsData,
   StatsData,
 } from '../types';
+import { safeGetItem, safeSetItem } from '../utils/storage.js';
 
 const STORAGE_KEY = 'sim-achievements';
 
@@ -35,7 +36,7 @@ const ACHIEVEMENT_DEFS: Omit<Achievement, 'unlockedAt'>[] = [
 
 function loadAchievements(): AchievementsData {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     if (!raw) return { unlocked: {} as Record<AchievementId, string> };
     return JSON.parse(raw);
   } catch {
@@ -44,9 +45,7 @@ function loadAchievements(): AchievementsData {
 }
 
 function saveAchievements(data: AchievementsData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch { /* quota exceeded */ }
+  safeSetItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 function checkCondition(id: AchievementId, stats: StatsData): boolean {

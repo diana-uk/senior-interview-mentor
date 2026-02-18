@@ -9,6 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
 import { logger } from './utils/logger.js';
+import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -191,14 +192,14 @@ function generateId(): string {
 export default function App() {
   const { user, session, loading: authLoading, signIn, signUp, signInWithOAuth, signOut, isAuthenticated } = useAuth();
   const subscription = useSubscription(session);
-  const [authSkipped, setAuthSkipped] = useState(() => localStorage.getItem('sim-auth-skipped') === '1');
+  const [authSkipped, setAuthSkipped] = useState(() => safeGetItem('sim-auth-skipped') === '1');
   const [syncing, setSyncing] = useState(false);
   const [syncToast, setSyncToast] = useState('');
   const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; limit: number; plan: string } | null>(null);
   const syncAttempted = useRef(false);
 
   const handleAuthSkip = useCallback(() => {
-    localStorage.setItem('sim-auth-skipped', '1');
+    safeSetItem('sim-auth-skipped', '1');
     setAuthSkipped(true);
   }, []);
 
@@ -206,9 +207,9 @@ export default function App() {
     if (!session?.access_token) return;
     setSyncing(true);
     try {
-      const statsRaw = localStorage.getItem('sim-stats');
-      const mistakesRaw = localStorage.getItem('sim-mistakes');
-      const sessionsRaw = localStorage.getItem('sim-sessions');
+      const statsRaw = safeGetItem('sim-stats');
+      const mistakesRaw = safeGetItem('sim-mistakes');
+      const sessionsRaw = safeGetItem('sim-sessions');
 
       const stats = statsRaw ? JSON.parse(statsRaw) : {};
       const mistakesData = mistakesRaw ? JSON.parse(mistakesRaw) : [];
@@ -229,7 +230,7 @@ export default function App() {
       if (!hasData) {
         setSyncToast('No local data to sync');
         setTimeout(() => setSyncToast(''), 3000);
-        localStorage.setItem('sim-synced', '1');
+        safeSetItem('sim-synced', '1');
         setSyncing(false);
         return;
       }
@@ -244,7 +245,7 @@ export default function App() {
       });
 
       if (res.ok) {
-        localStorage.setItem('sim-synced', '1');
+        safeSetItem('sim-synced', '1');
         setSyncToast('Data synced to cloud!');
       } else {
         setSyncToast('Sync failed - try again later');
@@ -258,7 +259,7 @@ export default function App() {
 
   // Auto-sync on first login
   useEffect(() => {
-    if (isAuthenticated && !localStorage.getItem('sim-synced') && !syncAttempted.current) {
+    if (isAuthenticated && !safeGetItem('sim-synced') && !syncAttempted.current) {
       syncAttempted.current = true;
       void handleSync();
     }
@@ -267,7 +268,7 @@ export default function App() {
   // Clear skip flag when user authenticates
   useEffect(() => {
     if (isAuthenticated && authSkipped) {
-      localStorage.removeItem('sim-auth-skipped');
+      safeRemoveItem('sim-auth-skipped');
       setAuthSkipped(false);
     }
   }, [isAuthenticated, authSkipped]);
@@ -291,7 +292,7 @@ export default function App() {
     messages: restoreMessages(restored.messages),
   } : null;
 
-  const [showLanding, setShowLanding] = useState(!initial && !localStorage.getItem('sim-skip-landing'));
+  const [showLanding, setShowLanding] = useState(!initial && !safeGetItem('sim-skip-landing'));
   const [mode, setMode] = useState<Mode>(initial?.mode ?? 'TEACHER');
   const [currentProblem, setCurrentProblem] = useState<Problem | null>(initial?.currentProblem ?? defaultProblem);
   const [sidebarPanel, setSidebarPanel] = useState<SidebarPanel>(null);
@@ -313,7 +314,7 @@ export default function App() {
   const [hints, setHints] = useState<HintLevel[]>(initial?.hints ?? defaultHints);
   const [mobileView, setMobileView] = useState<'chat' | 'editor'>('chat');
   const [language, setLanguage] = useState<SupportedLanguage>(() => {
-    const saved = localStorage.getItem('sim-settings');
+    const saved = safeGetItem('sim-settings');
     if (saved) {
       try {
         const lang = JSON.parse(saved).language;
@@ -750,7 +751,7 @@ export default function App() {
       <Suspense fallback={null}>
         <Landing
           onEnterApp={() => {
-            localStorage.setItem('sim-skip-landing', '1');
+            safeSetItem('sim-skip-landing', '1');
             setShowLanding(false);
           }}
           onCheckout={subscription.checkout}

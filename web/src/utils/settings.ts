@@ -1,3 +1,5 @@
+import { safeGetItem, safeSetItem } from './storage.js';
+
 export type HintStyle = 'analogies' | 'pseudocode' | 'visual' | 'direct';
 export type DetailLevel = 'brief' | 'balanced' | 'detailed';
 
@@ -33,7 +35,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 
 export function loadSettings(): UserSettings {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
   } catch {
@@ -42,11 +44,7 @@ export function loadSettings(): UserSettings {
 }
 
 export function saveSettings(settings: UserSettings): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // silently ignore
-  }
+  safeSetItem(STORAGE_KEY, JSON.stringify(settings));
 }
 
 export function getSettings(): UserSettings {

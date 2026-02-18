@@ -1,3 +1,5 @@
+import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/storage.js';
+
 const STORAGE_KEY = 'sim-session';
 const STORAGE_VERSION = 1;
 
@@ -8,40 +10,36 @@ interface StorageEnvelope<T> {
 }
 
 export function writeSession<T>(data: T): void {
-  try {
-    const envelope: StorageEnvelope<T> = {
-      version: STORAGE_VERSION,
-      savedAt: Date.now(),
-      data,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
-  } catch {
-    // QuotaExceededError or other — silently ignore
-  }
+  const envelope: StorageEnvelope<T> = {
+    version: STORAGE_VERSION,
+    savedAt: Date.now(),
+    data,
+  };
+  safeSetItem(STORAGE_KEY, JSON.stringify(envelope));
 }
 
 export function readSession<T>(maxAgeMs: number): T | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     if (!raw) return null;
     const envelope: StorageEnvelope<T> = JSON.parse(raw);
     if (envelope.version !== STORAGE_VERSION) {
-      localStorage.removeItem(STORAGE_KEY);
+      safeRemoveItem(STORAGE_KEY);
       return null;
     }
     if (Date.now() - envelope.savedAt > maxAgeMs) {
-      localStorage.removeItem(STORAGE_KEY);
+      safeRemoveItem(STORAGE_KEY);
       return null;
     }
     return envelope.data;
   } catch {
-    localStorage.removeItem(STORAGE_KEY);
+    safeRemoveItem(STORAGE_KEY);
     return null;
   }
 }
 
 export function clearSession(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  safeRemoveItem(STORAGE_KEY);
 }
 
 export function createDebouncedSave<T>(delayMs: number): (data: T) => void {
