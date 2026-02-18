@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight, Undo2 } from 'lucide-react';
 import type { MistakeEntryFull, PatternName } from '../../types';
 
 interface MistakesPanelProps {
@@ -15,6 +15,13 @@ interface MistakesPanelProps {
   }) => void;
 }
 
+interface PendingDelete {
+  id: string;
+  description: string;
+}
+
+const UNDO_TIMEOUT_MS = 5000;
+
 export default function MistakesPanel({
   mistakes,
   dueForReview,
@@ -26,6 +33,37 @@ export default function MistakesPanel({
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['due']));
   const [newPattern, setNewPattern] = useState<PatternName>('HashMap');
   const [newDescription, setNewDescription] = useState('');
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    };
+  }, []);
+
+  const handleSoftDelete = useCallback((id: string, description: string) => {
+    // If there's already a pending delete, finalize it first
+    if (pendingDelete && undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      onRemove(pendingDelete.id);
+    }
+    setPendingDelete({ id, description });
+    undoTimerRef.current = setTimeout(() => {
+      onRemove(id);
+      setPendingDelete(null);
+      undoTimerRef.current = null;
+    }, UNDO_TIMEOUT_MS);
+  }, [pendingDelete, onRemove]);
+
+  const handleUndo = useCallback(() => {
+    if (undoTimerRef.current) {
+      clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
+    setPendingDelete(null);
+  }, []);
 
   const patterns: PatternName[] = [
     'Sliding Window', 'Two Pointers', 'HashMap', 'Prefix Sum',
@@ -55,9 +93,16 @@ export default function MistakesPanel({
     setShowAddForm(false);
   }
 
-  // Group mistakes by pattern
+  // Filter out pending-delete item, then group by pattern
+  const visibleMistakes = pendingDelete
+    ? mistakes.filter((m) => m.id !== pendingDelete.id)
+    : mistakes;
+  const visibleDue = pendingDelete
+    ? dueForReview.filter((m) => m.id !== pendingDelete.id)
+    : dueForReview;
+
   const byPattern: Record<string, MistakeEntryFull[]> = {};
-  for (const m of mistakes) {
+  for (const m of visibleMistakes) {
     if (!byPattern[m.pattern]) byPattern[m.pattern] = [];
     byPattern[m.pattern].push(m);
   }
@@ -65,7 +110,7 @@ export default function MistakesPanel({
   return (
     <div>
       {/* Due for review section */}
-      {dueForReview.length > 0 && (
+      {visibleDue.length > 0 && (
         <div className="card stagger-enter stagger-1" style={{ marginBottom: 12, borderColor: 'rgba(255, 51, 102, 0.3)' }}>
           <button
             onClick={() => toggleGroup('due')}
@@ -76,13 +121,13 @@ export default function MistakesPanel({
           >
             {expandedGroups.has('due') ? <ChevronDown size={14} color="var(--neon-red)" /> : <ChevronRight size={14} color="var(--neon-red)" />}
             <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--neon-red)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Due for Review ({dueForReview.length})
+              Due for Review ({visibleDue.length})
             </span>
           </button>
           {expandedGroups.has('due') && (
             <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {dueForReview.map((m) => (
-                <MistakeCard key={m.id} mistake={m} onReview={onReview} onRemove={onRemove} isDue />
+              {visibleDue.map((m) => (
+                <MistakeCard key={m.id} mistake={m} onReview={onReview} onRemove={handleSoftDelete} isDue />
               ))}
             </div>
           )}
@@ -187,10 +232,10 @@ export default function MistakesPanel({
 
       {/* Stats summary */}
       <div className="section-label" style={{ marginBottom: 8 }}>
-        All Mistakes ({mistakes.length})
+        All Mistakes ({visibleMistakes.length})
       </div>
 
-      {mistakes.length === 0 ? (
+      {visibleMistakes.length === 0 && !pendingDelete ? (
         <div className="empty-state" style={{ padding: '24px 16px' }}>
           <div className="empty-state-title" style={{ fontSize: 14 }}>No mistakes logged</div>
           <div className="empty-state-description" style={{ fontSize: 12 }}>
@@ -216,12 +261,44 @@ export default function MistakesPanel({
             {expandedGroups.has(pattern) && (
               <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {entries.map((m) => (
-                  <MistakeCard key={m.id} mistake={m} onReview={onReview} onRemove={onRemove} />
+                  <MistakeCard key={m.id} mistake={m} onReview={onReview} onRemove={handleSoftDelete} />
                 ))}
               </div>
             )}
           </div>
         ))
+      )}
+
+      {/* Undo toast */}
+      {pendingDelete && (
+        <div
+          role="alert"
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            margin: '12px -12px -12px',
+            padding: '10px 14px',
+            background: 'var(--bg-surface)',
+            borderTop: '1px solid var(--border-default)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            animation: 'slideUp 0.2s ease-out',
+          }}
+        >
+          <span style={{ fontSize: 12, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            Mistake deleted
+          </span>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={handleUndo}
+            style={{ padding: '3px 10px', fontSize: 11, color: 'var(--neon-cyan)', gap: 4, flexShrink: 0 }}
+          >
+            <Undo2 size={12} />
+            Undo
+          </button>
+        </div>
       )}
     </div>
   );
@@ -235,7 +312,7 @@ function MistakeCard({
 }: {
   mistake: MistakeEntryFull;
   onReview: (id: string, quality: number) => void;
-  onRemove: (id: string) => void;
+  onRemove: (id: string, description: string) => void;
   isDue?: boolean;
 }) {
   const isOverdue = m.nextReview <= new Date().toISOString().split('T')[0];
@@ -303,7 +380,7 @@ function MistakeCard({
           )}
           <button
             className="btn btn-ghost btn-sm"
-            onClick={() => onRemove(m.id)}
+            onClick={() => onRemove(m.id, m.description)}
             title="Remove"
             style={{ padding: '2px 6px', color: 'var(--text-muted)' }}
           >
