@@ -1,4 +1,5 @@
 import type { ChatContext } from '../types/index.js';
+import { logger } from '../utils/logger.js';
 
 interface ChatPayload {
   messages: { role: 'mentor' | 'user'; content: string }[];
@@ -25,7 +26,7 @@ export async function streamChat(
   signal?: AbortSignal,
   options?: StreamOptions,
 ): Promise<void> {
-  console.log('[API] Sending chat payload:', JSON.stringify(payload, null, 2));
+  logger.log('[API] Sending chat payload:', JSON.stringify(payload, null, 2));
 
   // Combine user abort signal with a 90s timeout so the UI never hangs forever
   const timeoutController = new AbortController();
@@ -64,11 +65,11 @@ export async function streamChat(
     let message = 'Server error. Please try again.';
     try {
       const body = await response.json();
-      console.error('[API] Error response:', response.status, body);
+      logger.error('[API] Error response:', response.status, body);
       if (body.error) message = body.error;
       if (body.details) message += ': ' + JSON.stringify(body.details);
     } catch {
-      console.error('[API] Error status:', response.status, response.statusText);
+      logger.error('[API] Error status:', response.status, response.statusText);
     }
     callbacks.onError(message);
     return;

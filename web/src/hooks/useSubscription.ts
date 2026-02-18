@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import type { PlanId } from '../config/tiers';
+import { logger } from '../utils/logger.js';
 
 export interface SubscriptionState {
   plan: PlanId;
@@ -66,7 +67,7 @@ export function useSubscription(session: Session | null) {
         if (url) window.location.href = url;
       }
     } catch (err) {
-      console.error('[billing] Checkout error:', err);
+      logger.error('[billing] Checkout error:', err);
     }
   }, [session]);
 
@@ -85,7 +86,7 @@ export function useSubscription(session: Session | null) {
         if (url) window.location.href = url;
       }
     } catch (err) {
-      console.error('[billing] Portal error:', err);
+      logger.error('[billing] Portal error:', err);
     }
   }, [session]);
 

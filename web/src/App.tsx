@@ -8,6 +8,7 @@ import AuthPage from './components/auth/AuthPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
+import { logger } from './utils/logger.js';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -682,10 +683,10 @@ export default function App() {
 
     // Send silently - only Claude's response appears in chat
     if (command) {
-      console.log('[App] Sending silent command:', command);
+      logger.log('[App] Sending silent command:', command);
       sendSilentMessage(command);
     } else {
-      console.warn('[App] No command built for config:', config);
+      logger.warn('[App] No command built for config:', config);
     }
   }
 

@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { streamChat } from '../services/api.js';
 import type { ChatMessage, ChatContext } from '../types/index.js';
+import { logger } from '../utils/logger.js';
 
 function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -142,9 +143,9 @@ export function useChat({ initialMessages, getContext, onEditorUpdate, accessTok
    */
   const sendSilentMessage = useCallback(
     (content: string) => {
-      console.log('[useChat] sendSilentMessage called with:', content);
+      logger.log('[useChat] sendSilentMessage called with:', content);
       if (isStreaming) {
-        console.log('[useChat] Already streaming, skipping');
+        logger.log('[useChat] Already streaming, skipping');
         return;
       }
 
