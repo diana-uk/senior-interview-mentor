@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loadSettings, saveSettings, type UserSettings } from '../../utils/settings';
+import { safeGetItem, safeRemoveItem } from '../../utils/storage.js';
 
 interface SettingsPanelProps {
   onSettingsChange?: (settings: UserSettings) => void;
@@ -274,9 +275,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
             onClick={() => {
               const data = {
                 settings: loadSettings(),
-                mistakes: localStorage.getItem('sim-mistakes'),
-                stats: localStorage.getItem('sim-stats'),
-                session: localStorage.getItem('sim-session'),
+                mistakes: safeGetItem('sim-mistakes'),
+                stats: safeGetItem('sim-stats'),
+                session: safeGetItem('sim-session'),
               };
               const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
               const url = URL.createObjectURL(blob);
@@ -294,10 +295,10 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
             className="btn btn-secondary btn-sm"
             onClick={() => {
               if (confirm('This will clear all progress, mistakes, and session data. This cannot be undone.')) {
-                localStorage.removeItem('sim-mistakes');
-                localStorage.removeItem('sim-stats');
-                localStorage.removeItem('sim-session');
-                localStorage.removeItem(STORAGE_KEY);
+                safeRemoveItem('sim-mistakes');
+                safeRemoveItem('sim-stats');
+                safeRemoveItem('sim-session');
+                safeRemoveItem(STORAGE_KEY);
                 window.location.reload();
               }
             }}

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { PlanId } from '../../config/tiers';
+import { safeGetItem, safeSetItem } from '../../utils/storage.js';
 
 interface SubscriptionBannerProps {
   plan: PlanId;
@@ -10,7 +11,7 @@ interface SubscriptionBannerProps {
 
 export default function SubscriptionBanner({ plan, status, currentPeriodEnd, onUpgrade }: SubscriptionBannerProps) {
   const [dismissed, setDismissed] = useState(() =>
-    localStorage.getItem('sim-upgrade-dismissed') === '1'
+    safeGetItem('sim-upgrade-dismissed') === '1'
   );
 
   const [mountTime] = useState(() => Date.now());
@@ -52,7 +53,7 @@ export default function SubscriptionBanner({ plan, status, currentPeriodEnd, onU
         <button
           className="subscription-banner__dismiss"
           onClick={() => {
-            localStorage.setItem('sim-upgrade-dismissed', '1');
+            safeSetItem('sim-upgrade-dismissed', '1');
             setDismissed(true);
           }}
           aria-label="Dismiss"

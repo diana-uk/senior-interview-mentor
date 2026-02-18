@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { MistakeEntryFull, PatternName } from '../types';
+import { safeGetItem, safeSetItem } from '../utils/storage.js';
 
 const STORAGE_KEY = 'sim-mistakes';
 
@@ -46,7 +47,7 @@ function sm2(
 
 function loadMistakes(): MistakeEntryFull[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -54,11 +55,7 @@ function loadMistakes(): MistakeEntryFull[] {
 }
 
 function saveMistakes(mistakes: MistakeEntryFull[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(mistakes));
-  } catch {
-    // quota exceeded — silently ignore
-  }
+  safeSetItem(STORAGE_KEY, JSON.stringify(mistakes));
 }
 
 export interface UseMistakeTrackerReturn {

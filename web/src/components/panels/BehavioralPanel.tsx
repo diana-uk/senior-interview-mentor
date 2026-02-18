@@ -10,6 +10,7 @@ import {
   type SeniorityLevel,
   type BehavioralQuestion,
 } from '../../data/behavioral';
+import { safeGetItem, safeSetItem } from '../../utils/storage.js';
 
 interface BehavioralPanelProps {
   onStartQuestion: (question: BehavioralQuestion) => void;
@@ -36,7 +37,7 @@ const STORIES_KEY = 'sim-behavioral-stories';
 
 function loadStories(): StoryEntry[] {
   try {
-    const raw = localStorage.getItem(STORIES_KEY);
+    const raw = safeGetItem(STORIES_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -44,7 +45,7 @@ function loadStories(): StoryEntry[] {
 }
 
 function saveStories(stories: StoryEntry[]): void {
-  localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+  safeSetItem(STORIES_KEY, JSON.stringify(stories));
 }
 
 type CommDimensionId = 'conciseness' | 'impact' | 'technical-depth' | 'self-awareness';

@@ -9,6 +9,7 @@ import type {
   SessionRecord,
   StatsData,
 } from '../types';
+import { safeGetItem, safeSetItem } from '../utils/storage.js';
 
 const STORAGE_KEY = 'sim-stats';
 
@@ -52,7 +53,7 @@ function emptyStats(): StatsData {
 
 function loadStats(): StatsData {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeGetItem(STORAGE_KEY);
     if (!raw) return emptyStats();
     const parsed = JSON.parse(raw);
     // Ensure all patterns exist (handles upgrades)
@@ -72,11 +73,7 @@ function loadStats(): StatsData {
 }
 
 function saveStats(data: StatsData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  safeSetItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 function updateStreak(data: StatsData): StatsData {
