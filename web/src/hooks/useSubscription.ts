@@ -26,6 +26,7 @@ export function useSubscription(session: Session | null) {
     try {
       const res = await fetch('/api/billing/subscription', {
         headers: { Authorization: `Bearer ${session.access_token}` },
+        signal: AbortSignal.timeout(10_000),
       });
       if (res.ok) {
         const data = await res.json();
@@ -61,6 +62,7 @@ export function useSubscription(session: Session | null) {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ priceId, interval }),
+        signal: AbortSignal.timeout(10_000),
       });
       if (res.ok) {
         const { url } = await res.json();
@@ -80,6 +82,7 @@ export function useSubscription(session: Session | null) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`,
         },
+        signal: AbortSignal.timeout(10_000),
       });
       if (res.ok) {
         const { url } = await res.json();
