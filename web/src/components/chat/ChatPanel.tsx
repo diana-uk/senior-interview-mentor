@@ -97,7 +97,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
         )}
       </div>
 
-      <div className="chat-messages">
+      <div className="chat-messages" role="log" aria-live="polite" aria-label="Mentor chat conversation" aria-relevant="additions text">
         {messages.map((msg, i) => (
           <ChatMessageItem key={msg.id} message={msg} isNew={i === messages.length - 1} />
         ))}
