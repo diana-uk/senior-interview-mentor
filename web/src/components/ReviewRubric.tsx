@@ -109,7 +109,7 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
         <div className="modal" style={{ maxWidth: 500 }} onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <span className="modal-title">Review Complete</span>
-            <button className="modal-close" onClick={onClose}><X size={18} /></button>
+            <button type="button" className="modal-close" aria-label="Close review" onClick={onClose}><X size={18} aria-hidden="true" /></button>
           </div>
           <div className="modal-body">
             {/* Overall score */}
@@ -159,7 +159,7 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
             </div>
           </div>
           <div className="modal-footer">
-            <button className="btn btn-primary" onClick={onClose}>Done</button>
+            <button type="button" className="btn btn-primary" onClick={onClose}>Done</button>
           </div>
         </div>
       </div>
@@ -171,7 +171,7 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
       <div className="modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <span className="modal-title">Code Review Rubric</span>
-          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+          <button type="button" className="modal-close" aria-label="Close rubric" onClick={onClose}><X size={18} aria-hidden="true" /></button>
         </div>
         <div className="modal-body">
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
@@ -192,7 +192,10 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
               <div style={{ display: 'flex', gap: 4 }}>
                 {[0, 1, 2, 3, 4].map((score) => (
                   <button
+                    type="button"
                     key={score}
+                    aria-label={`${SCORE_LABELS[score]} (${score})`}
+                    aria-pressed={scores[dim.id] === score}
                     onClick={() => handleScoreChange(dim.id, score)}
                     style={{
                       flex: 1,
@@ -248,8 +251,8 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
           )}
         </div>
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={!allScored}>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={!allScored}>
             Submit Review
           </button>
         </div>

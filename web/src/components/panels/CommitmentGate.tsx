@@ -20,8 +20,8 @@ export default function CommitmentGate({ open, onClose, items, onToggle }: Commi
       <div className="commitment-gate-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="commitment-gate-title">Commitment Gate</div>
-          <button className="sidebar-panel-close" onClick={onClose}>
-            <X size={16} />
+          <button type="button" className="sidebar-panel-close" aria-label="Close commitment gate" onClick={onClose}>
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
         <div className="commitment-gate-subtitle">
@@ -62,7 +62,7 @@ export default function CommitmentGate({ open, onClose, items, onToggle }: Commi
 
       {allComplete && (
         <div style={{ padding: '16px 20px' }}>
-          <button className="btn btn-primary btn-glow-pulse" style={{ width: '100%', justifyContent: 'center' }}>
+          <button type="button" className="btn btn-primary btn-glow-pulse" style={{ width: '100%', justifyContent: 'center' }}>
             Solution Unlocked — View Full Code
           </button>
         </div>

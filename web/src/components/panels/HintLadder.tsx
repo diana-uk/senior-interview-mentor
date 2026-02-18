@@ -25,6 +25,7 @@ export default function HintLadder({ hints, onRequestHint }: HintLadderProps) {
                   <div className="hint-ladder-text">{hint.content}</div>
                 ) : (
                   <button
+                    type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => onRequestHint(hint.level)}
                     style={{ marginTop: 8 }}

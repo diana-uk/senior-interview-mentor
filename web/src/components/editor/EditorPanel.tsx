@@ -128,6 +128,7 @@ export default function EditorPanel({
         <div className="editor-tabs">
           {currentTabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               className={`editor-tab ${activeTab === tab.id ? 'editor-tab-active' : ''}`}
               onClick={() => onTabChange(tab.id)}
@@ -149,8 +150,8 @@ export default function EditorPanel({
             </select>
           )}
           {!isSystemDesign && (
-            <button className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>
-              <Play size={14} />
+            <button type="button" className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>
+              <Play size={14} aria-hidden="true" />
               {runningTests ? 'Running...' : 'Run Tests'}
             </button>
           )}
@@ -219,12 +220,14 @@ export default function EditorPanel({
             {consoleOpen && (
               <div className="output-tabs">
                 <button
+                  type="button"
                   className={`output-tab ${outputTab === 'tests' ? 'output-tab-active' : ''}`}
                   onClick={() => setOutputTab('tests')}
                 >
                   Tests
                 </button>
                 <button
+                  type="button"
                   className={`output-tab ${outputTab === 'console' ? 'output-tab-active' : ''}`}
                   onClick={() => setOutputTab('console')}
                 >

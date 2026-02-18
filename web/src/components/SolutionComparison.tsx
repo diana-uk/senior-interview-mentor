@@ -229,7 +229,7 @@ export default function SolutionComparison({ comparison, onClose }: SolutionComp
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{comparison.problemTitle}</span>
             </div>
           </div>
-          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+          <button type="button" className="modal-close" aria-label="Close solution comparison" onClick={onClose}><X size={18} aria-hidden="true" /></button>
         </div>
 
         <div className="modal-body" style={{ padding: 0 }}>
@@ -513,7 +513,7 @@ export default function SolutionComparison({ comparison, onClose }: SolutionComp
               {grade.label}
             </span>
           </div>
-          <button className="btn btn-secondary" onClick={onClose}>Close</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>

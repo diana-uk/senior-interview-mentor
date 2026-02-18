@@ -90,12 +90,15 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
           className="input input-icon-left"
           type="text"
           placeholder="Search problems..."
+          aria-label="Search problems"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ padding: '8px 10px 8px 32px', fontSize: 12 }}
         />
         {search && (
           <button
+            type="button"
+            aria-label="Clear search"
             onClick={() => setSearch('')}
             style={{
               position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
@@ -103,7 +106,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
               display: 'flex', alignItems: 'center',
             }}
           >
-            <X size={14} />
+            <X size={14} aria-hidden="true" />
           </button>
         )}
       </div>
@@ -112,7 +115,9 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
         {(['All', 'Easy', 'Medium', 'Hard'] as DifficultyFilter[]).map((d) => (
           <button
+            type="button"
             key={d}
+            aria-pressed={diffFilter === d}
             className={`badge ${
               diffFilter === d
                 ? d === 'Easy' ? 'badge-easy'

@@ -62,6 +62,7 @@ export default function PhaseProgressSidebar({
 
           return (
             <button
+              type="button"
               key={phase}
               className={`phase-sidebar__step ${isActive ? 'phase-sidebar__step--active' : ''} ${isCompleted ? 'phase-sidebar__step--completed' : ''} ${isLocked ? 'phase-sidebar__step--locked' : ''}`}
               onClick={() => !isLocked && onPhaseClick(phase)}

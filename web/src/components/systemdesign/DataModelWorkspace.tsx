@@ -115,7 +115,7 @@ export default function DataModelWorkspace({
           </div>
 
           <div className="sd-data__actions">
-            <button className="btn btn--primary" onClick={onAdvancePhase}>
+            <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
               Next Step: Architecture <ArrowRight size={16} />
             </button>
           </div>

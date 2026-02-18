@@ -72,6 +72,7 @@ export default function CanvasToolbar({
   return (
     <div className="canvas-toolbar">
       <button
+        type="button"
         className="canvas-toolbar__btn"
         onClick={onUndo}
         disabled={!canUndo}
@@ -80,6 +81,7 @@ export default function CanvasToolbar({
         <Undo2 size={16} />
       </button>
       <button
+        type="button"
         className="canvas-toolbar__btn"
         onClick={onRedo}
         disabled={!canRedo}
@@ -91,6 +93,7 @@ export default function CanvasToolbar({
       <div className="canvas-toolbar__divider" />
 
       <button
+        type="button"
         className={`canvas-toolbar__btn ${snapToGrid ? 'canvas-toolbar__btn--active' : ''}`}
         onClick={onToggleSnap}
         title="Snap to grid"
@@ -98,6 +101,7 @@ export default function CanvasToolbar({
         <Grid3X3 size={16} />
       </button>
       <button
+        type="button"
         className="canvas-toolbar__btn"
         onClick={() => fitView({ padding: 0.2 })}
         title="Fit view"
@@ -108,6 +112,7 @@ export default function CanvasToolbar({
       <div className="canvas-toolbar__divider" />
 
       <button
+        type="button"
         className="canvas-toolbar__btn"
         title="Auto-layout"
         onClick={() => {
@@ -117,6 +122,7 @@ export default function CanvasToolbar({
         <LayoutGrid size={16} />
       </button>
       <button
+        type="button"
         className="canvas-toolbar__btn canvas-toolbar__btn--danger"
         onClick={onClear}
         title="Clear canvas"
@@ -129,6 +135,7 @@ export default function CanvasToolbar({
       <span className="canvas-toolbar__edge-label">Edge</span>
       {EDGE_STYLES.map(s => (
         <button
+          type="button"
           key={s.value}
           className={`canvas-toolbar__btn ${edgeType === s.value ? 'canvas-toolbar__btn--active' : ''}`}
           onClick={() => onEdgeTypeChange(s.value)}

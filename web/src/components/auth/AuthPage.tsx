@@ -41,13 +41,15 @@ export default function AuthPage({ onSignIn, onSignUp, onOAuth, onSkip }: AuthPa
 
         <div className="auth-tabs">
           <button
+            type="button"
             className={`auth-tab ${tab === 'login' ? 'auth-tab--active' : ''}`}
             onClick={() => { setTab('login'); setError(''); }}
           >
-            <LogIn size={14} />
+            <LogIn size={14} aria-hidden="true" />
             Log In
           </button>
           <button
+            type="button"
             className={`auth-tab ${tab === 'signup' ? 'auth-tab--active' : ''}`}
             onClick={() => { setTab('signup'); setError(''); }}
           >

@@ -232,8 +232,8 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
               </span>
             </div>
           </div>
-          <button className="modal-close" onClick={handleClose}>
-            <X size={18} />
+          <button type="button" className="modal-close" aria-label="Close interview launcher" onClick={handleClose}>
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 
@@ -336,7 +336,9 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {questionCategories.map((c) => (
                         <button
+                          type="button"
                           key={c.id}
+                          aria-pressed={category === c.id}
                           className={`btn ${category === c.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                           onClick={() => {
                             setCategory(c.id);
@@ -438,7 +440,9 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       {topics.map((t) => (
                         <button
+                          type="button"
                           key={t.id}
+                          aria-pressed={topic === t.id}
                           className={`btn ${topic === t.id ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                           onClick={() => setTopic(t.id)}
                         >
@@ -453,7 +457,9 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {difficulties.map((d) => (
                         <button
+                          type="button"
                           key={d.id}
+                          aria-pressed={difficulty === d.id}
                           className={`btn ${difficulty === d.id ? 'btn-primary' : 'btn-secondary'}`}
                           onClick={() => setDifficulty(d.id)}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}
@@ -474,8 +480,8 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
         <div className="modal-footer">
           <div>
             {stage && (
-              <button className="btn btn-ghost" onClick={() => { reset(); }}>
-                <ArrowLeft size={14} />
+              <button type="button" className="btn btn-ghost" onClick={() => { reset(); }}>
+                <ArrowLeft size={14} aria-hidden="true" />
                 Back
               </button>
             )}
@@ -488,6 +494,7 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
               </div>
             )}
             <button
+              type="button"
               className="btn btn-primary btn-glow-pulse"
               disabled={!canStart()}
               onClick={handleStart}

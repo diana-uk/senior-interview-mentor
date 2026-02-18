@@ -29,7 +29,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           <div style={{ display: 'flex', gap: 8 }}>
             {(['typescript', 'javascript', 'python'] as const).map((lang) => (
               <button
+                type="button"
                 key={lang}
+                aria-pressed={settings.language === lang}
                 className={`btn ${settings.language === lang ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                 onClick={() => update('language', lang)}
                 style={{ flex: 1, textTransform: 'capitalize' }}
@@ -51,14 +53,16 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
         </div>
         <div className="card-body">
           <div style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
+            <label htmlFor="font-size-slider" style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
               Font Size: {settings.editorFontSize}px
             </label>
             <input
+              id="font-size-slider"
               type="range"
               min={10}
               max={24}
               value={settings.editorFontSize}
+              aria-valuetext={`${settings.editorFontSize} pixels`}
               onChange={(e) => update('editorFontSize', Number(e.target.value))}
               style={{ width: '100%', accentColor: 'var(--neon-cyan)' }}
             />
@@ -71,6 +75,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Auto-save session</span>
             <button
+              type="button"
+              role="switch"
+              aria-checked={settings.autoSave}
               className={`btn btn-sm ${settings.autoSave ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => update('autoSave', !settings.autoSave)}
               style={{ minWidth: 48, fontSize: 10 }}
@@ -90,6 +97,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Show timer</span>
             <button
+              type="button"
+              role="switch"
+              aria-checked={settings.timerEnabled}
               className={`btn btn-sm ${settings.timerEnabled ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => update('timerEnabled', !settings.timerEnabled)}
               style={{ minWidth: 48, fontSize: 10 }}
@@ -99,15 +109,17 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           </div>
 
           <div>
-            <label style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
+            <label htmlFor="timer-duration-slider" style={{ fontSize: 11, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
               Default duration: {settings.timerDefaultMinutes} min
             </label>
             <input
+              id="timer-duration-slider"
               type="range"
               min={15}
               max={90}
               step={5}
               value={settings.timerDefaultMinutes}
+              aria-valuetext={`${settings.timerDefaultMinutes} minutes`}
               onChange={(e) => update('timerDefaultMinutes', Number(e.target.value))}
               style={{ width: '100%', accentColor: 'var(--neon-cyan)' }}
             />
@@ -128,6 +140,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Sound effects</span>
             <button
+              type="button"
+              role="switch"
+              aria-checked={settings.soundEnabled}
               className={`btn btn-sm ${settings.soundEnabled ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => update('soundEnabled', !settings.soundEnabled)}
               style={{ minWidth: 48, fontSize: 10 }}
@@ -153,6 +168,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
               <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>Remind you to practice each day</span>
             </div>
             <button
+              type="button"
+              role="switch"
+              aria-checked={settings.notifyDailyReminder}
               className={`btn btn-sm ${settings.notifyDailyReminder ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => update('notifyDailyReminder', !settings.notifyDailyReminder)}
               style={{ minWidth: 48, fontSize: 10 }}
@@ -182,6 +200,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
               <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>Warn when streak is about to break</span>
             </div>
             <button
+              type="button"
+              role="switch"
+              aria-checked={settings.notifyStreakAlert}
               className={`btn btn-sm ${settings.notifyStreakAlert ? 'btn-primary' : 'btn-secondary'}`}
               onClick={() => update('notifyStreakAlert', !settings.notifyStreakAlert)}
               style={{ minWidth: 48, fontSize: 10 }}
@@ -214,7 +235,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
                 { value: 'direct', label: 'Direct' },
               ] as const).map(({ value, label }) => (
                 <button
+                  type="button"
                   key={value}
+                  aria-pressed={settings.hintStyle === value}
                   className={`btn ${settings.hintStyle === value ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                   onClick={() => update('hintStyle', value)}
                   style={{ flex: 1, minWidth: 70, fontSize: 10 }}
@@ -242,7 +265,9 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
                 { value: 'detailed', label: 'Detailed' },
               ] as const).map(({ value, label }) => (
                 <button
+                  type="button"
                   key={value}
+                  aria-pressed={settings.detailLevel === value}
                   className={`btn ${settings.detailLevel === value ? 'btn-primary' : 'btn-secondary'} btn-sm`}
                   onClick={() => update('detailLevel', value)}
                   style={{ flex: 1, fontSize: 10 }}
@@ -271,6 +296,7 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
         </div>
         <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
               const data = {
@@ -292,6 +318,7 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
             Export All Data
           </button>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
               if (confirm('This will clear all progress, mistakes, and session data. This cannot be undone.')) {

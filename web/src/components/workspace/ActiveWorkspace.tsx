@@ -71,8 +71,8 @@ export default function ActiveWorkspace({
           <span className="aw__timer-value">{timerDisplay}</span>
         </div>
         <div className="aw__header-right">
-          <button className="btn btn--ghost" onClick={onSaveDraft}>Save Draft</button>
-          <button className="btn btn--primary aw__finish-btn" onClick={onFinishSession}>
+          <button type="button" className="btn btn--ghost" onClick={onSaveDraft}>Save Draft</button>
+          <button type="button" className="btn btn--primary aw__finish-btn" onClick={onFinishSession}>
             Finish Session
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function ActiveWorkspace({
               value={mentorInput}
               onChange={(e) => setMentorInput(e.target.value)}
             />
-            <button className="aw__mentor-send">
+            <button type="button" className="aw__mentor-send">
               <span className="material-symbols-outlined">send</span>
             </button>
           </div>
@@ -234,7 +234,7 @@ export default function ActiveWorkspace({
             <span className="material-symbols-outlined aw__locked-icon">lock</span>
             <div className="aw__locked-title">LOCKED CONTENT</div>
             <div className="aw__locked-desc">Complete all items to unlock the solution</div>
-            <button className="aw__locked-btn" disabled={!allGateCompleted}>
+            <button type="button" className="aw__locked-btn" disabled={!allGateCompleted}>
               View Solution
             </button>
           </div>

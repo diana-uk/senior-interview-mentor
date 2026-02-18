@@ -131,6 +131,7 @@ export default function MistakesDashboard({
         <div className="md__sidebar-nav">
           {navItems.map((item) => (
             <button
+              type="button"
               key={item.id}
               className={`md__sidebar-btn ${activeNav === item.id ? 'md__sidebar-btn--active' : ''}`}
               onClick={() => onNavigate?.(item.id)}
@@ -141,7 +142,7 @@ export default function MistakesDashboard({
           ))}
         </div>
         <div className="md__sidebar-bottom">
-          <button className="md__sidebar-btn" title="Settings" onClick={() => onNavigate?.('settings')}>
+          <button type="button" className="md__sidebar-btn" title="Settings" onClick={() => onNavigate?.('settings')}>
             <span className="material-symbols-outlined">settings</span>
           </button>
         </div>
@@ -185,7 +186,7 @@ export default function MistakesDashboard({
           <div className="md__section">
             <div className="md__section-header">
               <span className="md__section-title">PRIORITY REVIEW AREAS</span>
-              <button className="md__section-link">View All Patterns</button>
+              <button type="button" className="md__section-link">View All Patterns</button>
             </div>
             <div className="md__priority-grid">
               {priorityAreas.map((area) => (
@@ -358,6 +359,7 @@ export default function MistakesDashboard({
                         <td className="md__table-time">{row.lastAttempt}</td>
                         <td>
                           <button
+                            type="button"
                             className="md__retry-btn"
                             onClick={() => onRetry?.(row.id)}
                           >
