@@ -131,7 +131,7 @@ export default function SystemDesignRubric({ topicTitle, onSubmit, onClose }: Sy
         <div className="modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <span className="modal-title">System Design Review Complete</span>
-            <button className="modal-close" onClick={onClose}><X size={18} /></button>
+            <button type="button" className="modal-close" aria-label="Close review" onClick={onClose}><X size={18} aria-hidden="true" /></button>
           </div>
           <div className="modal-body">
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -178,7 +178,7 @@ export default function SystemDesignRubric({ topicTitle, onSubmit, onClose }: Sy
             </div>
           </div>
           <div className="modal-footer">
-            <button className="btn btn-primary" onClick={onClose}>Done</button>
+            <button type="button" className="btn btn-primary" onClick={onClose}>Done</button>
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@ export default function SystemDesignRubric({ topicTitle, onSubmit, onClose }: Sy
       <div className="modal" style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <span className="modal-title">System Design Rubric</span>
-          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+          <button type="button" className="modal-close" aria-label="Close rubric" onClick={onClose}><X size={18} aria-hidden="true" /></button>
         </div>
         <div className="modal-body">
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
@@ -265,8 +265,8 @@ export default function SystemDesignRubric({ topicTitle, onSubmit, onClose }: Sy
           )}
         </div>
         <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={!allScored}>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={!allScored}>
             Submit Evaluation
           </button>
         </div>

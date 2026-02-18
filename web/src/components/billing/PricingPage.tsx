@@ -34,12 +34,16 @@ export default function PricingPage({ currentPlan, onCheckout, onEnterApp }: Pri
 
       <div className="pricing-toggle">
         <button
+          type="button"
+          aria-pressed={interval === 'month'}
           className={`pricing-toggle__btn ${interval === 'month' ? 'pricing-toggle__btn--active' : ''}`}
           onClick={() => setInterval('month')}
         >
           Monthly
         </button>
         <button
+          type="button"
+          aria-pressed={interval === 'year'}
           className={`pricing-toggle__btn ${interval === 'year' ? 'pricing-toggle__btn--active' : ''}`}
           onClick={() => setInterval('year')}
         >
@@ -79,6 +83,7 @@ export default function PricingPage({ currentPlan, onCheckout, onEnterApp }: Pri
                 ))}
               </ul>
               <button
+                type="button"
                 className={`btn ${tier.recommended ? 'btn-primary' : 'btn-secondary'} pricing-card__cta`}
                 onClick={() => handleCta(planId)}
                 disabled={isCurrent && planId !== 'free'}

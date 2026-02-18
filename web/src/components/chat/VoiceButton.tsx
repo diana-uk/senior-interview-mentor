@@ -47,20 +47,22 @@ export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: 
 
   if (!isSupported) {
     return (
-      <button className="voice-btn voice-btn--unsupported" disabled title="Speech not supported in this browser">
-        <MicOff size={16} />
+      <button type="button" className="voice-btn voice-btn--unsupported" disabled aria-label="Speech not supported" title="Speech not supported in this browser">
+        <MicOff size={16} aria-hidden="true" />
       </button>
     );
   }
 
   return (
     <button
+      type="button"
       className={`voice-btn ${isListening ? 'voice-btn--listening' : ''}`}
       onClick={handleClick}
       disabled={disabled}
+      aria-label={isListening ? 'Stop recording' : 'Start voice input'}
       title={isListening ? 'Stop recording' : 'Start voice input'}
     >
-      <Mic size={16} />
+      <Mic size={16} aria-hidden="true" />
       {isListening && fillerCount > 0 && (
         <span className="voice-btn__badge">{fillerCount}</span>
       )}

@@ -140,7 +140,9 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
         <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
           {(['features', 'compare', 'pricing'] as const).map((tab) => (
             <button
+              type="button"
               key={tab}
+              aria-pressed={activeTab === tab}
               onClick={() => setActiveTab(tab)}
               style={{
                 background: 'none',
@@ -157,7 +159,7 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
               {tab}
             </button>
           ))}
-          <button className="btn btn-primary btn-sm" onClick={onEnterApp}>
+          <button type="button" className="btn btn-primary btn-sm" onClick={onEnterApp}>
             Open App
           </button>
         </div>
@@ -216,6 +218,7 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           <button
+            type="button"
             className="btn btn-primary btn-glow-pulse"
             onClick={onEnterApp}
             style={{ padding: '12px 32px', fontSize: 16 }}
@@ -374,6 +377,8 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
             {/* Billing interval toggle */}
             <div className="pricing-toggle" style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 32, background: 'var(--bg-elevated)', borderRadius: 8, padding: 4, width: 'fit-content', margin: '0 auto 32px' }}>
               <button
+                type="button"
+                aria-pressed={billingInterval === 'month'}
                 style={{
                   padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6, border: 'none', cursor: 'pointer',
                   background: billingInterval === 'month' ? 'var(--neon-cyan)' : 'transparent',
@@ -384,6 +389,8 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
                 Monthly
               </button>
               <button
+                type="button"
+                aria-pressed={billingInterval === 'year'}
                 style={{
                   padding: '6px 16px', fontSize: 13, fontWeight: 600, borderRadius: 6, border: 'none', cursor: 'pointer',
                   background: billingInterval === 'year' ? 'var(--neon-cyan)' : 'transparent',
@@ -461,6 +468,7 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
                       ))}
                     </ul>
                     <button
+                      type="button"
                       className={`btn ${tier.popular ? 'btn-primary' : 'btn-secondary'}`}
                       onClick={() => {
                         if (tier.name === 'Free') {

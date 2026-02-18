@@ -188,7 +188,7 @@ export default function SystemDesignPlanOverview({
         </div>
 
         {/* CTA */}
-        <button className="sd-overview__cta-btn" onClick={onStartDesigning}>
+        <button type="button" className="sd-overview__cta-btn" onClick={onStartDesigning}>
           <span>Begin Requirements Phase</span>
           <ArrowRight size={18} />
         </button>

@@ -248,6 +248,7 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     return (
       <div>
         <button
+          type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setView('browse')}
           style={{ marginBottom: 12, fontSize: 11 }}
@@ -307,10 +308,11 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
         ))}
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <button className="btn btn-primary btn-sm" onClick={handleSendToMentor} style={{ flex: 1 }}>
+          <button type="button" className="btn btn-primary btn-sm" onClick={handleSendToMentor} style={{ flex: 1 }}>
             Get AI Feedback
           </button>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => setView('scored')}
             disabled={!situation && !task && !action && !result}
@@ -318,18 +320,19 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
           >
             Self-Score
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={handleRandomPractice}>
-            <Shuffle size={14} />
+          <button type="button" className="btn btn-secondary btn-sm" onClick={handleRandomPractice} aria-label="Random practice question">
+            <Shuffle size={14} aria-hidden="true" />
           </button>
         </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={saveStory}
             disabled={!situation.trim() && !task.trim() && !action.trim() && !result.trim()}
             style={{ flex: 1, gap: 6 }}
           >
-            <Save size={14} />
+            <Save size={14} aria-hidden="true" />
             {editingStoryId ? 'Update Story' : 'Save to Story Bank'}
           </button>
         </div>
@@ -389,6 +392,7 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     return (
       <div>
         <button
+          type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setView('practice')}
           style={{ marginBottom: 12, fontSize: 11 }}
@@ -419,7 +423,10 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
                 <div style={{ display: 'flex', gap: 3 }}>
                   {[0, 1, 2, 3, 4].map((score) => (
                     <button
+                      type="button"
                       key={score}
+                      aria-label={`${COMM_SCORE_LABELS[score]} (${score})`}
+                      aria-pressed={commScores[dim.id] === score}
                       onClick={() => setCommScores((prev) => ({ ...prev, [dim.id]: score }))}
                       style={{
                         flex: 1,
@@ -523,11 +530,11 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     return (
       <div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <button className="btn btn-secondary btn-sm" onClick={() => setView('browse')} style={{ flex: 1 }}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setView('browse')} style={{ flex: 1 }}>
             Questions
           </button>
-          <button className="btn btn-primary btn-sm" style={{ flex: 1, gap: 6 }}>
-            <BookOpen size={14} />
+          <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1, gap: 6 }}>
+            <BookOpen size={14} aria-hidden="true" />
             My Stories ({stories.length})
           </button>
         </div>
@@ -573,20 +580,24 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
                         </span>
                         <div style={{ display: 'flex', gap: 4 }}>
                           <button
+                            type="button"
                             className="btn btn-ghost btn-sm"
                             onClick={() => loadStoryIntoForm(story)}
+                            aria-label="Edit story"
                             title="Edit story"
                             style={{ padding: '2px 6px' }}
                           >
-                            <Edit3 size={12} />
+                            <Edit3 size={12} aria-hidden="true" />
                           </button>
                           <button
+                            type="button"
                             className="btn btn-ghost btn-sm"
                             onClick={() => deleteStory(story.id)}
+                            aria-label="Delete story"
                             title="Delete story"
                             style={{ padding: '2px 6px', color: 'var(--text-muted)' }}
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={12} aria-hidden="true" />
                           </button>
                         </div>
                       </div>
@@ -606,26 +617,28 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     <div>
       {/* View toggle: Questions vs My Stories */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <button className="btn btn-primary btn-sm" style={{ flex: 1 }}>
+        <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1 }}>
           Questions
         </button>
         <button
+          type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setView('stories')}
           style={{ flex: 1, gap: 6 }}
         >
-          <BookOpen size={14} />
+          <BookOpen size={14} aria-hidden="true" />
           My Stories ({stories.length})
         </button>
       </div>
 
       {/* Random practice button */}
       <button
+        type="button"
         className="btn btn-primary"
         onClick={handleRandomPractice}
         style={{ width: '100%', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
       >
-        <Shuffle size={14} />
+        <Shuffle size={14} aria-hidden="true" />
         Random Practice Question
       </button>
 
@@ -642,6 +655,8 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
         />
         {search && (
           <button
+            type="button"
+            aria-label="Clear search"
             onClick={() => setSearch('')}
             style={{
               position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
@@ -649,7 +664,7 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
               display: 'flex', alignItems: 'center',
             }}
           >
-            <X size={14} />
+            <X size={14} aria-hidden="true" />
           </button>
         )}
       </div>

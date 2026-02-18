@@ -930,12 +930,14 @@ export default function App() {
 
       <div className="mobile-tabs">
         <button
+          type="button"
           className={`mobile-tab ${mobileView === 'chat' ? 'mobile-tab-active' : ''}`}
           onClick={() => setMobileView('chat')}
         >
           Mentor Chat
         </button>
         <button
+          type="button"
           className={`mobile-tab ${mobileView === 'editor' ? 'mobile-tab-active' : ''}`}
           onClick={() => setMobileView('editor')}
         >
@@ -991,8 +993,10 @@ export default function App() {
           <div style={{ padding: '0 12px 8px', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             Hint Ladder
             <button
+              type="button"
               onClick={() => setHintLadderOpen(false)}
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
+              aria-label="Close hint ladder"
             >
               ×
             </button>

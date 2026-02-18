@@ -128,6 +128,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
             </span>
             {onUpgrade && (
               <button
+                type="button"
                 onClick={onUpgrade}
                 style={{
                   background: 'none',
@@ -147,6 +148,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
         <div className="chat-quick-actions">
           {slashCommands.map((cmd) => (
             <button
+              type="button"
               key={cmd}
               className="chat-quick-action"
               onClick={() => {
@@ -160,6 +162,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
           ))}
           {fillerReport && fillerReport.totalFillers > 0 && (
             <button
+              type="button"
               className="chat-quick-action chat-evaluate-btn"
               onClick={handleEvaluateCommunication}
               disabled={isStreaming}
@@ -186,19 +189,23 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
           />
           {isStreaming ? (
             <button
+              type="button"
               className="btn btn-ghost btn-icon"
               onClick={onStopStreaming}
+              aria-label="Stop generating"
               title="Stop generating"
             >
-              <Square size={14} />
+              <Square size={14} aria-hidden="true" />
             </button>
           ) : (
             <button
+              type="button"
               className="chat-send-btn"
               onClick={handleSubmit}
               disabled={!input.trim()}
+              aria-label="Send message"
             >
-              <Send size={16} />
+              <Send size={16} aria-hidden="true" />
             </button>
           )}
         </div>

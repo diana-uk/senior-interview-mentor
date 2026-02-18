@@ -325,6 +325,7 @@ export default function AchievementsPanel({ achievements, unlockedCount, totalCo
 
       {/* Share Profile button */}
       <button
+        type="button"
         className="btn btn-secondary"
         style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
         onClick={() => exportProfileCard({

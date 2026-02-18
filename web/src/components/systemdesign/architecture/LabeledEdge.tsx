@@ -122,6 +122,7 @@ export default function LabeledEdge({
             <div className="edge-inline-toolbar" onClick={e => e.stopPropagation()}>
               {EDGE_STYLES.map(s => (
                 <button
+                  type="button"
                   key={s}
                   className={`edge-inline-toolbar__btn ${edgeStyle === s ? 'edge-inline-toolbar__btn--active' : ''}`}
                   onClick={() => changeStyle(s)}
@@ -140,6 +141,7 @@ export default function LabeledEdge({
                 placeholder="Label..."
               />
               <button
+                type="button"
                 className="edge-inline-toolbar__btn edge-inline-toolbar__btn--delete"
                 onClick={deleteEdge}
                 title="Delete edge"
@@ -149,6 +151,7 @@ export default function LabeledEdge({
             </div>
           ) : labelValue ? (
             <button
+              type="button"
               className="edge-label__pill"
               title="Click edge to edit"
             >
@@ -156,6 +159,7 @@ export default function LabeledEdge({
             </button>
           ) : (
             <button
+              type="button"
               className="edge-label__add"
               title="Click edge to edit"
             >

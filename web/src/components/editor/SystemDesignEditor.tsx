@@ -307,6 +307,7 @@ export default function SystemDesignEditor({ value, onChange, topicId, onSubmitS
                   {onSubmitSection && (
                     <div className="sd-section-actions">
                       <button
+                        type="button"
                         className="btn btn-primary btn-sm"
                         onClick={() => handleSubmitSection(section)}
                         disabled={!content.trim()}

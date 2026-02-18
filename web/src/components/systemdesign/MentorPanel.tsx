@@ -90,11 +90,11 @@ export default function MentorPanel({ messages, onSendMessage, isStreaming, onSt
           disabled={isStreaming}
         />
         {isStreaming ? (
-          <button className="mentor-panel__btn mentor-panel__btn--stop" onClick={onStopStreaming}>
+          <button type="button" className="mentor-panel__btn mentor-panel__btn--stop" onClick={onStopStreaming}>
             <Square size={14} />
           </button>
         ) : (
-          <button className="mentor-panel__btn mentor-panel__btn--send" onClick={handleSubmit} disabled={!input.trim()}>
+          <button type="button" className="mentor-panel__btn mentor-panel__btn--send" onClick={handleSubmit} disabled={!input.trim()}>
             <Send size={14} />
           </button>
         )}

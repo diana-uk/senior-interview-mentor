@@ -38,8 +38,10 @@ export default function ProfileDropdown({ user, onSignOut, onSync, syncing, plan
   return (
     <div className="profile-dropdown" ref={ref}>
       <button
+        type="button"
         className="profile-avatar"
         onClick={() => setOpen((prev) => !prev)}
+        aria-label={`Profile menu for ${user.email ?? 'user'}`}
         title={user.email ?? 'Profile'}
       >
         {getInitials(user)}
@@ -52,20 +54,22 @@ export default function ProfileDropdown({ user, onSignOut, onSync, syncing, plan
           </div>
 
           <button
+            type="button"
             className="profile-menu__item"
             onClick={() => { onSync(); setOpen(false); }}
             disabled={syncing}
           >
-            <RefreshCw size={14} className={syncing ? 'spin' : ''} />
+            <RefreshCw size={14} className={syncing ? 'spin' : ''} aria-hidden="true" />
             {syncing ? 'Syncing...' : 'Sync Data'}
           </button>
 
           {onManageSubscription && plan && plan !== 'free' && (
             <button
+              type="button"
               className="profile-menu__item"
               onClick={() => { onManageSubscription(); setOpen(false); }}
             >
-              <CreditCard size={14} />
+              <CreditCard size={14} aria-hidden="true" />
               Manage Subscription
             </button>
           )}
@@ -73,10 +77,11 @@ export default function ProfileDropdown({ user, onSignOut, onSync, syncing, plan
           <div className="profile-menu__divider" />
 
           <button
+            type="button"
             className="profile-menu__item profile-menu__item--danger"
             onClick={() => { void onSignOut(); setOpen(false); }}
           >
-            <LogOut size={14} />
+            <LogOut size={14} aria-hidden="true" />
             Sign Out
           </button>
         </div>

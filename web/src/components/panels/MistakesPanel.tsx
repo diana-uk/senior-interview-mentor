@@ -113,6 +113,7 @@ export default function MistakesPanel({
       {visibleDue.length > 0 && (
         <div className="card stagger-enter stagger-1" style={{ marginBottom: 12, borderColor: 'rgba(255, 51, 102, 0.3)' }}>
           <button
+            type="button"
             onClick={() => toggleGroup('due')}
             style={{
               display: 'flex', alignItems: 'center', gap: 8, width: '100%',
@@ -137,6 +138,7 @@ export default function MistakesPanel({
       {/* Add button */}
       <div style={{ marginBottom: 12 }}>
         <button
+          type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setShowAddForm(!showAddForm)}
           style={{ width: '100%', gap: 6 }}
@@ -167,8 +169,8 @@ export default function MistakesPanel({
             />
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowAddForm(false)}>Cancel</button>
-            <button className="btn btn-primary btn-sm" onClick={handleAdd}>Add</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAddForm(false)}>Cancel</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={handleAdd}>Add</button>
           </div>
         </div>
       )}
@@ -246,6 +248,7 @@ export default function MistakesPanel({
         Object.entries(byPattern).map(([pattern, entries], groupIndex) => (
           <div key={pattern} className={`card stagger-enter stagger-${groupIndex + 2}`} style={{ marginBottom: 8 }}>
             <button
+              type="button"
               onClick={() => toggleGroup(pattern)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
@@ -291,6 +294,7 @@ export default function MistakesPanel({
             Mistake deleted
           </span>
           <button
+            type="button"
             className="btn btn-ghost btn-sm"
             onClick={handleUndo}
             style={{ padding: '3px 10px', fontSize: 11, color: 'var(--neon-cyan)', gap: 4, flexShrink: 0 }}
@@ -343,6 +347,7 @@ function MistakeCard({
           {isDue && (
             <>
               <button
+                type="button"
                 className="btn btn-ghost btn-sm"
                 onClick={() => onReview(m.id, 2)}
                 title="Still struggling"
@@ -351,6 +356,7 @@ function MistakeCard({
                 Hard
               </button>
               <button
+                type="button"
                 className="btn btn-ghost btn-sm"
                 onClick={() => onReview(m.id, 4)}
                 title="Got it with effort"
@@ -359,6 +365,7 @@ function MistakeCard({
                 OK
               </button>
               <button
+                type="button"
                 className="btn btn-ghost btn-sm"
                 onClick={() => onReview(m.id, 5)}
                 title="Easy recall"
@@ -370,6 +377,7 @@ function MistakeCard({
           )}
           {!isDue && (
             <button
+              type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => onReview(m.id, 4)}
               title="Review now"
@@ -379,6 +387,7 @@ function MistakeCard({
             </button>
           )}
           <button
+            type="button"
             className="btn btn-ghost btn-sm"
             onClick={() => onRemove(m.id, m.description)}
             title="Remove"

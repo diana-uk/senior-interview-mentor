@@ -473,7 +473,7 @@ function ArchitectureWorkspaceInner({
         </div>
 
         <div className={`arch-notes ${notesOpen ? 'arch-notes--open' : ''}`}>
-          <button className="arch-notes__toggle" onClick={() => setNotesOpen(!notesOpen)}>
+          <button type="button" className="arch-notes__toggle" onClick={() => setNotesOpen(!notesOpen)}>
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit_note</span>
             Architecture Notes
             {notesOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
@@ -490,13 +490,13 @@ function ArchitectureWorkspaceInner({
         </div>
 
         <div className="arch-actions">
-          <button className="btn btn--outline" onClick={handleValidate} disabled={nodes.length === 0}>
-            <CheckCircle size={16} /> Validate Architecture
+          <button type="button" className="btn btn--outline" onClick={handleValidate} disabled={nodes.length === 0}>
+            <CheckCircle size={16} aria-hidden="true" /> Validate Architecture
           </button>
-          <button className="btn btn--ghost" onClick={handleExport} disabled={nodes.length === 0}>
-            <Download size={16} /> Export PNG
+          <button type="button" className="btn btn--ghost" onClick={handleExport} disabled={nodes.length === 0}>
+            <Download size={16} aria-hidden="true" /> Export PNG
           </button>
-          <button className="btn btn--primary" onClick={onAdvancePhase}>
+          <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
             Next: Deep Dive <ArrowRight size={16} />
           </button>
         </div>

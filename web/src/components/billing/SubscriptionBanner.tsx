@@ -38,7 +38,7 @@ export default function SubscriptionBanner({ plan, status, currentPeriodEnd, onU
       <div className="subscription-banner subscription-banner--warning">
         <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>warning</span>
         <span>Payment failed. Update your billing info to keep your plan.</span>
-        <button className="btn btn-sm btn-primary" onClick={onUpgrade}>Update Billing</button>
+        <button type="button" className="btn btn-sm btn-primary" onClick={onUpgrade}>Update Billing</button>
       </div>
     );
   }
@@ -49,8 +49,9 @@ export default function SubscriptionBanner({ plan, status, currentPeriodEnd, onU
       <div className="subscription-banner subscription-banner--upgrade">
         <span className="material-symbols-outlined" aria-hidden="true" style={{ fontSize: 16 }}>rocket_launch</span>
         <span>Upgrade for unlimited AI coaching, system design, and mock interviews</span>
-        <button className="btn btn-sm btn-primary" onClick={onUpgrade}>Upgrade</button>
+        <button type="button" className="btn btn-sm btn-primary" onClick={onUpgrade}>Upgrade</button>
         <button
+          type="button"
           className="subscription-banner__dismiss"
           onClick={() => {
             safeSetItem('sim-upgrade-dismissed', '1');

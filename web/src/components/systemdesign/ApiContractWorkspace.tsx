@@ -91,13 +91,14 @@ export default function ApiContractWorkspace({
           <div className="sd-api__list-header">
             <span className="sd-api__list-title">Endpoints</span>
             <span className="sd-api__list-count">{endpoints.length}</span>
-            <button className="sd-api__add-btn" onClick={() => addEndpoint()}>
+            <button type="button" className="sd-api__add-btn" onClick={() => addEndpoint()}>
               <Plus size={14} /> Add
             </button>
           </div>
           <div className="sd-api__list-items">
             {endpoints.map((ep) => (
               <button
+                type="button"
                 key={ep.id}
                 className={`sd-api__list-item ${ep.id === selectedId ? 'sd-api__list-item--active' : ''}`}
                 onClick={() => setSelectedId(ep.id)}
@@ -107,6 +108,7 @@ export default function ApiContractWorkspace({
                 </span>
                 <span className="sd-api__path">{ep.path || '/...'}</span>
                 <button
+                  type="button"
                   className="sd-api__delete-btn"
                   onClick={(e) => { e.stopPropagation(); handleRemoveEndpoint(ep.id); }}
                 >
@@ -173,7 +175,7 @@ export default function ApiContractWorkspace({
               </div>
 
               <div className="sd-api__actions">
-                <button className="btn btn--primary" onClick={onAdvancePhase}>
+                <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
                   Next Step: Data Model <ArrowRight size={16} />
                 </button>
               </div>

@@ -102,13 +102,15 @@ export default function Sidebar({
         <div className="sidebar-nav">
           {icons.map(({ id, icon: Icon }) => (
             <button
+              type="button"
               key={id}
               className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}`}
               onClick={() => handleIconClick(id)}
+              aria-label={icons.find(i => i.id === id)?.label ?? id}
               title={id}
               style={{ position: 'relative' }}
             >
-              <Icon size={18} />
+              <Icon size={18} aria-hidden="true" />
               {id === 'mistakes' && dueCount > 0 && (
                 <span style={{
                   position: 'absolute', top: 4, right: 4,
@@ -122,11 +124,13 @@ export default function Sidebar({
         </div>
         <div className="sidebar-footer">
           <button
+            type="button"
             className={`sidebar-nav-item ${activePanel === 'settings' ? 'sidebar-nav-item-active' : ''}`}
+            aria-label="Settings"
             title="Settings"
             onClick={() => handleIconClick('settings')}
           >
-            <Settings size={18} />
+            <Settings size={18} aria-hidden="true" />
           </button>
         </div>
       </aside>
@@ -135,8 +139,8 @@ export default function Sidebar({
         <div className="sidebar-panel">
           <div className="sidebar-panel-header">
             <span className="sidebar-panel-title">{panelTitles[activePanel]}</span>
-            <button className="sidebar-panel-close" onClick={() => onPanelChange(null)}>
-              <X size={16} />
+            <button type="button" className="sidebar-panel-close" aria-label="Close panel" onClick={() => onPanelChange(null)}>
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
           <div className="sidebar-panel-content">
