@@ -284,11 +284,26 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
       ))}
 
       {totalCount === 0 && (
-        <div className="empty-state" style={{ padding: '24px 16px' }}>
-          <div className="empty-state-title" style={{ fontSize: 14 }}>No problems found</div>
-          <div className="empty-state-description" style={{ fontSize: 12 }}>
-            Try adjusting your filters or search query.
+        <div className="empty-state" role="status" style={{ padding: '24px 16px', textAlign: 'center' }}>
+          <div className="empty-state-title" style={{ fontSize: 14, marginBottom: 6 }}>No problems match your filters</div>
+          <div className="empty-state-description" style={{ fontSize: 12, marginBottom: 12, color: 'var(--text-muted)' }}>
+            Try adjusting your search, difficulty, or pattern filters.
           </div>
+          {hasFilters && (
+            <button
+              type="button"
+              className="badge badge-secondary"
+              onClick={() => {
+                setSearch('');
+                setDiffFilter('All');
+                setPatternFilter(null);
+                setSortBy('default');
+              }}
+              style={{ cursor: 'pointer', fontSize: 11, padding: '4px 12px' }}
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       )}
     </div>
