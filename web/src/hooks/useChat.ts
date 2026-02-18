@@ -49,6 +49,66 @@ export function useChat({ initialMessages, getContext, onEditorUpdate, accessTok
     );
   }, [wrappedSetMessages]);
 
+  /** Shared streaming logic — sets up abort controller, calls streamChat, handles callbacks. */
+  const doStream = useCallback(
+    (opts: {
+      mentorMsgId: string;
+      payload: { role: string; content: string }[];
+      includeEditorUpdate?: boolean;
+    }) => {
+      setIsStreaming(true);
+      const abortController = new AbortController();
+      abortRef.current = abortController;
+
+      const context = getContext();
+
+      streamChat(
+        { messages: opts.payload, context },
+        {
+          onDelta: (text) => {
+            wrappedSetMessages((msgs) =>
+              msgs.map((m) =>
+                m.id === opts.mentorMsgId
+                  ? { ...m, content: m.content + text }
+                  : m,
+              ),
+            );
+          },
+          onDone: () => {
+            wrappedSetMessages((msgs) =>
+              msgs.map((m) =>
+                m.id === opts.mentorMsgId ? { ...m, isStreaming: false } : m,
+              ),
+            );
+            setIsStreaming(false);
+            abortRef.current = null;
+          },
+          onError: (message) => {
+            wrappedSetMessages((msgs) =>
+              msgs.map((m) =>
+                m.id === opts.mentorMsgId
+                  ? {
+                      ...m,
+                      content: m.content || `**Error:** ${message}`,
+                      isStreaming: false,
+                      isError: !m.content,
+                    }
+                  : m,
+              ),
+            );
+            setIsStreaming(false);
+            abortRef.current = null;
+          },
+          ...(opts.includeEditorUpdate ? { onEditorUpdate } : {}),
+          onRateLimit,
+        },
+        abortController.signal,
+        { accessToken },
+      );
+    },
+    [getContext, wrappedSetMessages, onEditorUpdate, accessToken, onRateLimit],
+  );
+
   const sendMessage = useCallback(
     (content: string) => {
       if (isStreaming) return;
@@ -71,14 +131,7 @@ export function useChat({ initialMessages, getContext, onEditorUpdate, accessTok
 
       // Snapshot current messages BEFORE the queued state update
       const currentMessages = messagesRef.current;
-
       wrappedSetMessages((prev) => [...prev, userMsg, mentorMsg]);
-
-      setIsStreaming(true);
-      const abortController = new AbortController();
-      abortRef.current = abortController;
-
-      const context = getContext();
 
       // Build payload from snapshot + new user message
       // (messagesRef is stale here because React batches the setState updater)
@@ -89,51 +142,9 @@ export function useChat({ initialMessages, getContext, onEditorUpdate, accessTok
         { role: userMsg.role, content: userMsg.content },
       ];
 
-      streamChat(
-        { messages: payload, context },
-        {
-          onDelta: (text) => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId
-                  ? { ...m, content: m.content + text }
-                  : m,
-              ),
-            );
-          },
-          onDone: () => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId ? { ...m, isStreaming: false } : m,
-              ),
-            );
-            setIsStreaming(false);
-            abortRef.current = null;
-          },
-          onError: (message) => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId
-                  ? {
-                      ...m,
-                      content: m.content || `**Error:** ${message}`,
-                      isStreaming: false,
-                      isError: !m.content,
-                    }
-                  : m,
-              ),
-            );
-            setIsStreaming(false);
-            abortRef.current = null;
-          },
-          onEditorUpdate,
-          onRateLimit,
-        },
-        abortController.signal,
-        { accessToken },
-      );
+      doStream({ mentorMsgId, payload, includeEditorUpdate: true });
     },
-    [isStreaming, getContext, wrappedSetMessages, onEditorUpdate, accessToken, onRateLimit],
+    [isStreaming, wrappedSetMessages, doStream],
   );
 
   /**
@@ -158,65 +169,14 @@ export function useChat({ initialMessages, getContext, onEditorUpdate, accessTok
         isStreaming: true,
       };
 
-      // Only add the mentor message placeholder (no user message)
       wrappedSetMessages((prev) => [...prev, mentorMsg]);
 
-      setIsStreaming(true);
-      const abortController = new AbortController();
-      abortRef.current = abortController;
-
-      const context = getContext();
-
-      // Build payload - just the silent command (fresh start, no history)
-      // The user message won't appear in UI since we didn't add it to state
-      const payload: { role: 'mentor' | 'user'; content: string }[] = [
-        { role: 'user' as const, content },
-      ];
-
-      streamChat(
-        { messages: payload, context },
-        {
-          onDelta: (text) => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId
-                  ? { ...m, content: m.content + text }
-                  : m,
-              ),
-            );
-          },
-          onDone: () => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId ? { ...m, isStreaming: false } : m,
-              ),
-            );
-            setIsStreaming(false);
-            abortRef.current = null;
-          },
-          onError: (message) => {
-            wrappedSetMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === mentorMsgId
-                  ? {
-                      ...m,
-                      content: m.content || `**Error:** ${message}`,
-                      isStreaming: false,
-                      isError: !m.content,
-                    }
-                  : m,
-              ),
-            );
-            setIsStreaming(false);
-            abortRef.current = null;
-          },
-          onRateLimit,
-        },
-        abortController.signal,
-        { accessToken },
-      );
+      doStream({
+        mentorMsgId,
+        payload: [{ role: 'user' as const, content }],
+      });
     },
-    [isStreaming, getContext, wrappedSetMessages, accessToken, onRateLimit],
+    [isStreaming, wrappedSetMessages, doStream],
   );
 
   return { messages, setMessages: wrappedSetMessages, isStreaming, sendMessage, sendSilentMessage, stopStreaming };
