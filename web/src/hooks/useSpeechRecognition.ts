@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { logger } from '../utils/logger.js';
 
 interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
@@ -89,7 +90,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event.error === 'aborted') return;
-      console.warn('Speech recognition error:', event.error);
+      logger.warn('Speech recognition error:', event.error);
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         isListeningRef.current = false;
         setIsListening(false);
@@ -114,7 +115,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       isListeningRef.current = true;
       setIsListening(true);
     } catch {
-      console.warn('Failed to start speech recognition');
+      logger.warn('Failed to start speech recognition');
     }
   }, []);
 
