@@ -57,6 +57,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     return () => {
       if (recognitionRef.current) {
         isListeningRef.current = false;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
         recognitionRef.current.abort();
         recognitionRef.current = null;
       }
@@ -89,9 +92,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      if (event.error === 'aborted') return;
+      if (event.error === 'aborted' || event.error === 'no-speech') return;
       logger.warn('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      if (
+        event.error === 'not-allowed' ||
+        event.error === 'service-not-allowed' ||
+        event.error === 'not-found' ||
+        event.error === 'audio-capture'
+      ) {
         isListeningRef.current = false;
         setIsListening(false);
       }
@@ -123,6 +131,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     isListeningRef.current = false;
     setIsListening(false);
     if (recognitionRef.current) {
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
