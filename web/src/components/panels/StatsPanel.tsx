@@ -213,8 +213,13 @@ function RadarChart({ patterns }: { patterns: PatternStrength[] }) {
 // ── Main StatsPanel ──
 
 export default function StatsPanel({ stats }: StatsPanelProps) {
-  const recentSessions = stats.sessions.slice(0, 8);
-  const practiedPatterns = stats.patternStrengths.filter((p) => p.attempted > 0);
+  const recentSessions = useMemo(() => stats.sessions.slice(0, 8), [stats.sessions]);
+  const sortedPatterns = useMemo(
+    () => stats.patternStrengths
+      .filter((p) => p.attempted > 0)
+      .sort((a, b) => b.avgScore - a.avgScore),
+    [stats.patternStrengths],
+  );
 
   // Latest reviews for rubric display
   const latestReview = stats.reviews[0];
@@ -264,18 +269,16 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
       )}
 
       {/* Pattern Strength — Radar Chart + Bar List */}
-      {practiedPatterns.length > 0 && (
+      {sortedPatterns.length > 0 && (
         <>
           <div className="section-label" style={{ marginBottom: 8 }}>Pattern Strength</div>
-          {practiedPatterns.length >= 3 && (
+          {sortedPatterns.length >= 3 && (
             <div className="card stagger-enter stagger-5" style={{ marginBottom: 8, padding: '4px 0' }}>
-              <RadarChart patterns={practiedPatterns.sort((a, b) => b.avgScore - a.avgScore)} />
+              <RadarChart patterns={sortedPatterns} />
             </div>
           )}
           <div className="card stagger-enter stagger-6" style={{ marginBottom: 16 }}>
-            {practiedPatterns
-              .sort((a, b) => b.avgScore - a.avgScore)
-              .map((ps) => (
+            {sortedPatterns.map((ps) => (
                 <div key={ps.pattern} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   <span style={{ flex: '0 0 110px', fontSize: 11, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {ps.pattern}
