@@ -426,28 +426,32 @@ export default function App() {
     return () => clearInterval(interval);
   }, [timerRunning]);
 
-  // Auto-save session to localStorage (debounced, skips while streaming)
+  // ── Auto-save session to localStorage ──
+  // Snapshot ref: always holds latest session data (cheap render-time assignment)
+  const sessionSnapshotRef = useRef<Parameters<typeof saveSession>[0]>();
+  sessionSnapshotRef.current = {
+    mode, currentProblem, editorTab, hintsUsed, timerSeconds,
+    timerRunning, editorCode, testCode, notes, commitmentGate,
+    hints, interviewStage, interviewCategory, sdTopicId, sdState, messages,
+  };
+  const isStreamingRef = useRef(isStreaming);
+  isStreamingRef.current = isStreaming;
+
+  // Save immediately on important state transitions (infrequent)
   useEffect(() => {
     if (isStreaming) return;
-    saveSession({
-      mode,
-      currentProblem,
-      editorTab,
-      hintsUsed,
-      timerSeconds,
-      timerRunning,
-      editorCode,
-      testCode,
-      notes,
-      commitmentGate,
-      hints,
-      interviewStage,
-      interviewCategory,
-      sdTopicId,
-      sdState,
-      messages,
-    });
-  }, [isStreaming, mode, currentProblem, editorTab, hintsUsed, timerSeconds, timerRunning, editorCode, testCode, notes, commitmentGate, hints, interviewStage, interviewCategory, sdTopicId, sdState, messages, saveSession]);
+    saveSession(sessionSnapshotRef.current!);
+  }, [isStreaming, mode, currentProblem, editorTab, hintsUsed, interviewStage, interviewCategory, sdTopicId, sdState, commitmentGate, hints, saveSession]);
+
+  // Periodic save for content changes (editorCode, timerSeconds, notes, messages)
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!isStreamingRef.current && sessionSnapshotRef.current) {
+        saveSession(sessionSnapshotRef.current);
+      }
+    }, 2000);
+    return () => clearInterval(id);
+  }, [saveSession]);
 
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
