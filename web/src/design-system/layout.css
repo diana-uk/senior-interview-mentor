@@ -329,14 +329,15 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 .chat-panel {
-  width: 40%;
-  min-width: var(--chat-min-width);
-  max-width: 50%;
+  width: var(--chat-width, 40%);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-abyss);
   border-right: 1px solid var(--border-default);
   color: var(--text-primary);
+  flex-shrink: 0;
+  transition: width var(--duration-normal, 0.15s) var(--ease-out, ease-out);
 }
 
 .chat-header {
@@ -573,7 +574,7 @@
 
 .editor-panel {
   flex: 1;
-  min-width: var(--editor-min-width);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-deep);
@@ -1162,14 +1163,191 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   WORKSPACE SPLITTER
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.splitter-h {
+  position: relative;
+  width: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  z-index: var(--z-raised, 2);
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.splitter-h:focus-visible {
+  outline: none;
+}
+
+.splitter-h:focus-visible .splitter-h-line {
+  width: 3px;
+  background: var(--neon-cyan-dim, #00b8cc);
+  box-shadow: 0 0 8px var(--neon-cyan-glow, rgba(0, 240, 255, 0.3));
+}
+
+.splitter-h:focus-visible .splitter-h-grip {
+  opacity: 1;
+}
+
+.splitter-h-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-default);
+  transition: width var(--duration-fast, 0.1s) var(--ease-out, ease-out),
+              background var(--duration-fast, 0.1s) var(--ease-out, ease-out),
+              box-shadow var(--duration-fast, 0.1s) var(--ease-out, ease-out);
+  pointer-events: none;
+}
+
+.splitter-h:hover .splitter-h-line,
+.splitter-h.splitter-active .splitter-h-line {
+  width: 3px;
+}
+
+.splitter-h:hover .splitter-h-line {
+  background: var(--neon-cyan-dim, #00b8cc);
+  box-shadow: 0 0 8px var(--neon-cyan-glow, rgba(0, 240, 255, 0.3));
+}
+
+.splitter-h.splitter-active .splitter-h-line {
+  background: var(--neon-cyan, #00f0ff);
+  box-shadow: 0 0 16px var(--neon-cyan-glow, rgba(0, 240, 255, 0.3)),
+              0 0 32px var(--neon-cyan-glow, rgba(0, 240, 255, 0.3));
+}
+
+.splitter-h-grip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--duration-fast, 0.1s) var(--ease-out, ease-out);
+  pointer-events: none;
+}
+
+.splitter-h:hover .splitter-h-grip,
+.splitter-h.splitter-active .splitter-h-grip {
+  opacity: 1;
+}
+
+.splitter-h-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background var(--duration-fast, 0.1s) var(--ease-out, ease-out);
+}
+
+.splitter-h:hover .splitter-h-dot {
+  background: var(--neon-cyan-dim, #00b8cc);
+}
+
+.splitter-h.splitter-active .splitter-h-dot {
+  background: var(--neon-cyan, #00f0ff);
+}
+
+/* Disable transitions during drag for snappy response */
+.workspace-resizing .chat-panel,
+.workspace-resizing .editor-panel {
+  transition: none !important;
+  user-select: none !important;
+}
+
+.workspace-resizing {
+  cursor: col-resize !important;
+}
+
+/* Collapsed panel states */
+.workspace-chat-collapsed .chat-panel {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+  border-right: none;
+}
+
+.workspace-editor-collapsed .editor-panel {
+  flex: 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.workspace-editor-collapsed .chat-panel {
+  border-right: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PANEL EXPAND BAR (visible when a panel is collapsed via splitter)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.panel-expand-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border: none;
+  border-right: 1px solid var(--border-default);
+  cursor: pointer;
+  padding: var(--space-2, 8px);
+  transition: background var(--duration-fast, 0.1s) var(--ease-out, ease-out);
+}
+
+.panel-expand-bar:hover {
+  background: var(--bg-elevated);
+}
+
+.panel-expand-bar:focus-visible {
+  outline: 2px solid var(--neon-cyan, #00f0ff);
+  outline-offset: -2px;
+}
+
+.panel-expand-bar-icon {
+  color: var(--text-muted);
+  margin-bottom: var(--space-2, 8px);
+  transition: color var(--duration-fast, 0.1s) var(--ease-out, ease-out);
+}
+
+.panel-expand-bar:hover .panel-expand-bar-icon {
+  color: var(--neon-cyan, #00f0ff);
+}
+
+.panel-expand-bar-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: var(--text-xs, 12px);
+  font-weight: var(--font-semibold, 600);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest, 0.1em);
+  white-space: nowrap;
+}
+
+.panel-expand-bar:hover .panel-expand-bar-label {
+  color: var(--neon-cyan, #00f0ff);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 1024px) {
   .chat-panel {
-    width: 100%;
+    width: 100% !important;
     max-width: none;
     min-width: 0;
+    flex-shrink: 1;
+    transition: none;
   }
 
   .editor-panel {
@@ -1179,6 +1357,11 @@
 
   .workspace {
     flex-direction: column;
+  }
+
+  .splitter-h,
+  .panel-expand-bar {
+    display: none !important;
   }
 
   .topnav-center {
@@ -1230,5 +1413,14 @@
 
   .topnav-title {
     font-size: var(--text-sm);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel,
+  .splitter-h-line,
+  .splitter-h-dot,
+  .splitter-h-grip {
+    transition: none !important;
   }
 }

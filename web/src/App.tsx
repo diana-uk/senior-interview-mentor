@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import TopNav from './components/layout/TopNav';
 import Sidebar from './components/layout/Sidebar';
 import ChatPanel from './components/chat/ChatPanel';
+import WorkspaceSplitter from './components/layout/WorkspaceSplitter';
 import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
 import AuthPage from './components/auth/AuthPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
+import { useWorkspaceLayout } from './hooks/useWorkspaceLayout';
 import { logger } from './utils/logger.js';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
 
@@ -346,6 +349,7 @@ export default function App() {
     weakPatterns: getWeakPatterns(),
   });
   const { achievements, unlockedCount, totalCount, checkAchievements } = useAchievements();
+  const layout = useWorkspaceLayout();
   const [achievementToast, setAchievementToast] = useState<string | null>(null);
 
   // Check achievements when stats change
@@ -452,6 +456,26 @@ export default function App() {
     }, 2000);
     return () => clearInterval(id);
   }, [saveSession]);
+
+  // Keyboard shortcuts for panel collapse/expand
+  const {
+    isChatCollapsed, isEditorCollapsed,
+    collapseChat, expandChat, collapseEditor, expandEditor,
+  } = layout;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '[') {
+        e.preventDefault();
+        isChatCollapsed ? expandChat() : collapseChat();
+      }
+      if (e.ctrlKey && e.key === ']') {
+        e.preventDefault();
+        isEditorCollapsed ? expandEditor() : collapseEditor();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isChatCollapsed, isEditorCollapsed, collapseChat, expandChat, collapseEditor, expandEditor]);
 
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
@@ -829,7 +853,10 @@ export default function App() {
           totalCount={totalCount}
         />
 
-        <div className="workspace">
+        <div
+          className={`workspace${layout.isChatCollapsed ? ' workspace-chat-collapsed' : ''}${layout.isEditorCollapsed ? ' workspace-editor-collapsed' : ''}`}
+          style={{ '--chat-width': layout.isChatCollapsed ? '0%' : layout.isEditorCollapsed ? '100%' : `${layout.chatWidthPercent}%` } as React.CSSProperties}
+        >
           <ErrorBoundary name="Workspace">
           <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: 'var(--text-muted)' }}>Loading...</div>}>
           {isSystemDesignActive ? (
@@ -882,6 +909,17 @@ export default function App() {
             />
           ) : (
             <>
+              {layout.isChatCollapsed && (
+                <button
+                  type="button"
+                  className="panel-expand-bar"
+                  onClick={layout.expandChat}
+                  aria-label="Expand chat panel"
+                >
+                  <ChevronRight size={14} className="panel-expand-bar-icon" aria-hidden="true" />
+                  <span className="panel-expand-bar-label">Chat</span>
+                </button>
+              )}
               <ChatPanel
                 mode={mode}
                 messages={messages}
@@ -892,6 +930,18 @@ export default function App() {
                 rateLimitInfo={rateLimitInfo}
                 onUpgrade={() => setSidebarPanel('settings')}
               />
+              {!layout.isChatCollapsed && !layout.isEditorCollapsed && (
+                <WorkspaceSplitter
+                  chatWidthPercent={layout.chatWidthPercent}
+                  isSwapped={layout.isSwapped}
+                  onResize={layout.setChatWidth}
+                  onCollapseChat={layout.collapseChat}
+                  onCollapseEditor={layout.collapseEditor}
+                  onReset={layout.resetLayout}
+                  minPercent={layout.MIN_PERCENT}
+                  maxPercent={layout.MAX_PERCENT}
+                />
+              )}
               <EditorPanel
                 problemId={currentProblem?.id}
                 activeTab={editorTab}
@@ -914,6 +964,17 @@ export default function App() {
                 onSendMessage={handleSendMessage}
                 onLanguageChange={handleLanguageChange}
               />
+              {layout.isEditorCollapsed && (
+                <button
+                  type="button"
+                  className="panel-expand-bar"
+                  onClick={layout.expandEditor}
+                  aria-label="Expand editor panel"
+                >
+                  <ChevronLeft size={14} className="panel-expand-bar-icon" aria-hidden="true" />
+                  <span className="panel-expand-bar-label">Editor</span>
+                </button>
+              )}
             </>
           )}
           </Suspense>
