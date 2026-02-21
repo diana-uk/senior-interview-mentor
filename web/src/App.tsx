@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import TopNav from './components/layout/TopNav';
 import Sidebar from './components/layout/Sidebar';
@@ -193,6 +194,8 @@ function generateId(): string {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, session, loading: authLoading, signIn, signUp, signInWithOAuth, signOut, isAuthenticated } = useAuth();
   const subscription = useSubscription(session);
   const [authSkipped, setAuthSkipped] = useState(() => safeGetItem('sim-auth-skipped') === '1');
@@ -477,6 +480,48 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isChatCollapsed, isEditorCollapsed, collapseChat, expandChat, collapseEditor, expandEditor]);
 
+  // ── Route sync: URL → state on initial load and popstate ──
+  const routeSyncedRef = useRef(false);
+  useEffect(() => {
+    if (routeSyncedRef.current) return;
+    routeSyncedRef.current = true;
+
+    const path = location.pathname;
+    const panelMap: Record<string, SidebarPanel> = {
+      '/behavioral': 'behavioral',
+      '/settings': 'settings',
+      '/achievements': 'achievements',
+      '/stats': 'stats',
+      '/mistakes': 'mistakes',
+      '/problems': 'problems',
+    };
+
+    if (path.startsWith('/problems/')) {
+      const id = path.slice('/problems/'.length);
+      if (id && problemsById[id]) {
+        // Defer to avoid state-during-render issues
+        setTimeout(() => handleSelectProblem(id), 0);
+      }
+    } else if (panelMap[path]) {
+      setSidebarPanel(panelMap[path]);
+    }
+    // '/' and unknown paths — just show default state
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Route-aware panel change: update URL when sidebar panel changes
+  const handlePanelChange = useCallback((panel: SidebarPanel) => {
+    setSidebarPanel(panel);
+    if (panel === 'interview') return; // Modal, no URL change
+    if (panel === null) {
+      // Navigate to current problem or home
+      const pid = currentProblem?.id;
+      navigate(pid ? `/problems/${pid}` : '/', { replace: true });
+    } else {
+      navigate(`/${panel}`, { replace: true });
+    }
+  }, [navigate, currentProblem]);
+
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
     // Local side effects for slash commands
@@ -743,8 +788,9 @@ export default function App() {
     setNotes('');
     sdDispatch({ type: 'RESET' });
 
-    // Close sidebar
+    // Close sidebar and update URL
     setSidebarPanel(null);
+    navigate(`/problems/${id}`);
 
     // Build mentor message from hardcoded problem data (no API call needed)
     const examplesBlock = problem.examples.map((ex) => `\`\`\`\n${ex}\n\`\`\``).join('\n\n');
@@ -836,7 +882,7 @@ export default function App() {
       <div className="app-body">
         <Sidebar
           activePanel={sidebarPanel}
-          onPanelChange={setSidebarPanel}
+          onPanelChange={handlePanelChange}
           onLaunchInterview={() => setInterviewModalOpen(true)}
           onSelectProblem={handleSelectProblem}
           currentProblemId={currentProblem?.id || null}
@@ -879,7 +925,7 @@ export default function App() {
                   isStreaming={isStreaming}
                   onStopStreaming={stopStreaming}
                   rateLimitInfo={rateLimitInfo}
-                  onUpgrade={() => setSidebarPanel('settings')}
+                  onUpgrade={() => handlePanelChange('settings')}
                 />
               }
               editorPanel={
@@ -928,7 +974,7 @@ export default function App() {
                 isStreaming={isStreaming}
                 onStopStreaming={stopStreaming}
                 rateLimitInfo={rateLimitInfo}
-                onUpgrade={() => setSidebarPanel('settings')}
+                onUpgrade={() => handlePanelChange('settings')}
               />
               {!layout.isChatCollapsed && !layout.isEditorCollapsed && (
                 <WorkspaceSplitter
