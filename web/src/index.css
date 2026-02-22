@@ -967,6 +967,15 @@ body {
   background: var(--bg-elevated);
 }
 
+.arch-actions .btn-secondary {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.arch-actions .btn-secondary:hover {
+  background: var(--neon-cyan-subtle);
+}
+
 .arch-actions .btn:last-child {
   margin-left: auto;
 }
@@ -1784,9 +1793,23 @@ body {
 
 .sd-data__actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
   padding-top: 16px;
   border-top: 1px solid var(--border-subtle);
+}
+
+.sd-data__actions .btn-secondary {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.sd-data__actions .btn-secondary:hover {
+  background: var(--neon-cyan-subtle);
+}
+
+.sd-data__actions .btn:last-child {
+  margin-left: auto;
 }
 
 /* ════════════════════════════════════════

@@ -490,13 +490,13 @@ function ArchitectureWorkspaceInner({
         </div>
 
         <div className="arch-actions">
-          <button type="button" className="btn btn--outline" onClick={handleValidate} disabled={nodes.length === 0}>
+          <button type="button" className="btn btn-secondary" onClick={handleValidate} disabled={nodes.length === 0}>
             <CheckCircle size={16} aria-hidden="true" /> Validate Architecture
           </button>
-          <button type="button" className="btn btn--ghost" onClick={handleExport} disabled={nodes.length === 0}>
+          <button type="button" className="btn btn-ghost" onClick={handleExport} disabled={nodes.length === 0}>
             <Download size={16} aria-hidden="true" /> Export PNG
           </button>
-          <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
+          <button type="button" className="btn btn-primary" onClick={onAdvancePhase}>
             Next: Deep Dive <ArrowRight size={16} />
           </button>
         </div>

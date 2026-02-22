@@ -1,7 +1,8 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import type { DbChoice, ChatMessage, SystemDesignPhase, PhaseStatus } from '../../types';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
+import { serializeDataModelToText } from './data/dataModelSerializer';
 
 interface DataModelWorkspaceProps {
   schema: string;
@@ -115,7 +116,13 @@ export default function DataModelWorkspace({
           </div>
 
           <div className="sd-data__actions">
-            <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
+            <button type="button" className="btn btn-secondary" onClick={() => {
+              const text = serializeDataModelToText(schema, dbChoice, dbJustification);
+              onSendMessage(`Please review my data model:\n\n${text}`);
+            }} disabled={!schema.trim()}>
+              <CheckCircle size={16} aria-hidden="true" /> Review Data Model
+            </button>
+            <button type="button" className="btn btn-primary" onClick={onAdvancePhase}>
               Next Step: Architecture <ArrowRight size={16} />
             </button>
           </div>

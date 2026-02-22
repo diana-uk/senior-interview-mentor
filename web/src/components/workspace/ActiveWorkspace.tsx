@@ -71,8 +71,8 @@ export default function ActiveWorkspace({
           <span className="aw__timer-value">{timerDisplay}</span>
         </div>
         <div className="aw__header-right">
-          <button type="button" className="btn btn--ghost" onClick={onSaveDraft}>Save Draft</button>
-          <button type="button" className="btn btn--primary aw__finish-btn" onClick={onFinishSession}>
+          <button type="button" className="btn btn-ghost" onClick={onSaveDraft}>Save Draft</button>
+          <button type="button" className="btn btn-primary aw__finish-btn" onClick={onFinishSession}>
             Finish Session
           </button>
         </div>
