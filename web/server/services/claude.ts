@@ -9,6 +9,15 @@ function buildPrompt(messages: ChatMessagePayload[], context?: ChatRequest['cont
   const trimmed = messages.slice(-MAX_MESSAGES);
   const parts: string[] = [];
 
+  // Core identity — prevent tool use and file reading
+  parts.push(
+    'You are Senior Mentor, an AI coding interview coach. ' +
+    'Respond ONLY with text. You have NO tools available — do NOT output <tool_call>, ' +
+    'do NOT attempt to read files, and do NOT reference tool names like Read, Grep, or Bash. ' +
+    'Answer directly based on what the user provides.',
+  );
+  parts.push('---');
+
   // Session context
   const sessionContext = buildSessionContext(context);
   if (sessionContext) {
@@ -187,6 +196,9 @@ export function streamChatResponse(
       }
     }
 
+    // Strip any tool call syntax the model may have emitted as text
+    resultText = stripToolCalls(resultText);
+
     // Send accumulated text, then done
     if (resultText && textCallback) {
       textCallback(resultText);
@@ -227,6 +239,24 @@ export function streamChatResponse(
  * Real format from `claude -p --output-format stream-json --verbose`:
  *   {"type":"assistant","message":{"content":[{"type":"text","text":"..."}]}}
  */
+/**
+ * Strip <tool_call>...</tool_call> blocks and their preamble from the response.
+ * The CLI subprocess sometimes emits tool call syntax as plain text when
+ * it thinks it should read files (especially for system design reviews).
+ */
+function stripToolCalls(text: string): string {
+  if (!text) return text;
+
+  // Remove <tool_call> ... </tool_call> blocks (with or without whitespace)
+  let cleaned = text.replace(/<tool_call>\s*[\s\S]*?<\/tool_call>/g, '');
+
+  // Remove common preamble lines like "Let me read the relevant backend files..."
+  // that precede tool calls and have no value on their own
+  cleaned = cleaned.replace(/^Let me (?:read|check|look at|examine|search|find|grep|open|review) (?:the |some |these |those |relevant )?(?:backend |frontend |server |client )?files?[^\n]*\n*/gmi, '');
+
+  return cleaned.trim();
+}
+
 function extractText(event: Record<string, unknown>): string | null {
   if (event.type === 'assistant' && event.message) {
     const msg = event.message as Record<string, unknown>;

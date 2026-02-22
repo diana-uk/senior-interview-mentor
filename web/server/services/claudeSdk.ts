@@ -10,6 +10,15 @@ function buildMessages(messages: ChatMessagePayload[], context?: ChatRequest['co
   const trimmed = messages.slice(-MAX_MESSAGES);
   const parts: string[] = [];
 
+  // Core identity — prevent tool use and file reading
+  parts.push(
+    'You are Senior Mentor, an AI coding interview coach. ' +
+    'Respond ONLY with text. You have NO tools available — do NOT output <tool_call>, ' +
+    'do NOT attempt to read files, and do NOT reference tool names like Read, Grep, or Bash. ' +
+    'Answer directly based on what the user provides.',
+  );
+  parts.push('---');
+
   const sessionContext = buildSessionContext(context);
   if (sessionContext) {
     parts.push(sessionContext);
