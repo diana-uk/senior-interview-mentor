@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Plus, Trash2, ArrowRight, Zap } from 'lucide-react';
+import { Plus, Trash2, ArrowRight, Zap, CheckCircle } from 'lucide-react';
 import type { Endpoint, ChatMessage, SystemDesignPhase, PhaseStatus } from '../../types';
+import { serializeEndpointsToText } from './api/endpointSerializer';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
 
@@ -73,6 +74,11 @@ export default function ApiContractWorkspace({
     onUpdateEndpoints(
       endpoints.map((e) => (e.id === selectedId ? { ...e, [field]: value } : e)),
     );
+  }
+
+  function handleReviewApi() {
+    const text = serializeEndpointsToText(endpoints);
+    onSendMessage(`Please review my API design:\n\n${text}`);
   }
 
   return (
@@ -175,7 +181,10 @@ export default function ApiContractWorkspace({
               </div>
 
               <div className="sd-api__actions">
-                <button type="button" className="btn btn--primary" onClick={onAdvancePhase}>
+                <button type="button" className="btn btn-secondary" onClick={handleReviewApi} disabled={endpoints.length === 0}>
+                  <CheckCircle size={16} aria-hidden="true" /> Review API Design
+                </button>
+                <button type="button" className="btn btn-primary" onClick={onAdvancePhase}>
                   Next Step: Data Model <ArrowRight size={16} />
                 </button>
               </div>
