@@ -65,6 +65,17 @@ setInterval(() => {
  * Sets X-RateLimit-* headers on the response for the frontend to consume.
  */
 export async function tierLimits(req: Request, res: Response, next: NextFunction) {
+  // Bypass via secret token set in env (for local dev / admin testing).
+  // Set TIER_BYPASS_TOKEN in .env, then send X-Bypass-Token header to skip limits.
+  const bypassToken = process.env.TIER_BYPASS_TOKEN;
+  if (bypassToken && req.headers['x-bypass-token'] === bypassToken) {
+    res.setHeader('X-RateLimit-Plan', 'pro');
+    res.setHeader('X-RateLimit-Limit', 'unlimited');
+    res.setHeader('X-RateLimit-Remaining', 'unlimited');
+    next();
+    return;
+  }
+
   const userId = (req as OptionalAuthRequest).userId;
   let plan: PlanId = 'free';
 

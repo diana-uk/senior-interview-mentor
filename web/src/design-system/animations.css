@@ -92,16 +92,6 @@
   }
 }
 
-.typing-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: var(--space-3) var(--space-4);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-}
-
 .typing-dot {
   width: 6px;
   height: 6px;
@@ -116,6 +106,21 @@
 
 .typing-dot:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+/* Thinking Bubble (inside message-content) */
+.thinking-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.thinking-label {
+  margin-left: 4px;
+  font-size: var(--text-xs);
+  color: var(--text-disabled);
+  letter-spacing: 0.02em;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

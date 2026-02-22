@@ -9,6 +9,9 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
+        // Long timeout for SSE — Claude CLI can take a while to respond
+        timeout: 300_000,
+        proxyTimeout: 300_000,
       },
     },
   },

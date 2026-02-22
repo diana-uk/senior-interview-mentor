@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Square } from 'lucide-react';
 import type { ChatMessage, Mode } from '../../types';
 import ChatMessageItem from './ChatMessage';
+import ThinkingBubble from './ThinkingBubble';
 import VoiceButton from './VoiceButton';
 import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
 
@@ -98,15 +99,13 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
       </div>
 
       <div className="chat-messages" role="log" aria-live="polite" aria-label="Mentor chat conversation" aria-relevant="additions text">
-        {messages.map((msg, i) => (
-          <ChatMessageItem key={msg.id} message={msg} isNew={i === messages.length - 1} />
-        ))}
+        {messages.map((msg, i) => {
+          // Skip empty streaming message — ThinkingBubble handles that state
+          if (msg.isStreaming && msg.content === '') return null;
+          return <ChatMessageItem key={msg.id} message={msg} isNew={i === messages.length - 1} />;
+        })}
         {isStreaming && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.content === '' && (
-          <div className="typing-indicator">
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-          </div>
+          <ThinkingBubble />
         )}
         <div ref={messagesEndRef} />
       </div>

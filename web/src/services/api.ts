@@ -18,7 +18,7 @@ interface StreamOptions {
   accessToken?: string;
 }
 
-const RESPONSE_TIMEOUT_MS = 90_000;
+const IDLE_TIMEOUT_MS = 120_000; // abort if no data received for 120s
 
 export async function streamChat(
   payload: ChatPayload,
@@ -28,9 +28,15 @@ export async function streamChat(
 ): Promise<void> {
   logger.log('[API] Sending chat payload:', JSON.stringify(payload, null, 2));
 
-  // Combine user abort signal with a 90s timeout so the UI never hangs forever
+  // Activity-based timeout: resets every time we receive data from the server.
+  // The server sends keepalive pings every 15s while the CLI is working,
+  // so this only fires if the connection is truly dead.
   const timeoutController = new AbortController();
-  const timeout = setTimeout(() => timeoutController.abort(), RESPONSE_TIMEOUT_MS);
+  let timeout = setTimeout(() => timeoutController.abort(), IDLE_TIMEOUT_MS);
+  const resetTimeout = () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => timeoutController.abort(), IDLE_TIMEOUT_MS);
+  };
   const combinedSignal = signal
     ? AbortSignal.any([signal, timeoutController.signal])
     : timeoutController.signal;
@@ -38,6 +44,10 @@ export async function streamChat(
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (options?.accessToken) {
     headers['Authorization'] = `Bearer ${options.accessToken}`;
+  }
+  const bypassToken = import.meta.env.VITE_TIER_BYPASS_TOKEN;
+  if (bypassToken) {
+    headers['X-Bypass-Token'] = bypassToken;
   }
 
   let response: Response;
@@ -99,6 +109,7 @@ export async function streamChat(
       const { done, value } = await reader.read();
       if (done) break;
 
+      resetTimeout();
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
       buffer = lines.pop() ?? '';

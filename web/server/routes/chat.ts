@@ -62,13 +62,23 @@ router.post('/chat', chatLimiter, optionalAuth, tierLimits, validate(chatRequest
   const abortController = new AbortController();
   let streamingDone: Promise<void> = Promise.resolve();
 
+  // Send keepalive pings every 15s so the frontend knows we're still alive
+  // while waiting for the Claude CLI to finish generating
+  const keepalive = setInterval(() => {
+    if (!abortController.signal.aborted) {
+      res.write(': keepalive\n\n');
+    }
+  }, 15_000);
+
   req.on('close', () => {
+    clearInterval(keepalive);
     abortController.abort();
   });
 
   const stream = streamChat(req.body, abortController.signal);
 
   stream.onText((text) => {
+    clearInterval(keepalive);
     // Extract editor blocks from the full response
     const { blocks, cleaned } = extractEditorBlocks(text);
 
@@ -91,6 +101,7 @@ router.post('/chat', chatLimiter, optionalAuth, tierLimits, validate(chatRequest
   });
 
   stream.onDone(() => {
+    clearInterval(keepalive);
     // Wait for simulated streaming to finish before sending done
     streamingDone.then(() => {
       if (!abortController.signal.aborted) {
@@ -101,6 +112,7 @@ router.post('/chat', chatLimiter, optionalAuth, tierLimits, validate(chatRequest
   });
 
   stream.onError((message) => {
+    clearInterval(keepalive);
     if (abortController.signal.aborted) {
       res.end();
       return;

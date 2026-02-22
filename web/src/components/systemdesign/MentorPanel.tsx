@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Square, PanelRightClose, MessageSquare } from 'lucide-react';
 import type { ChatMessage } from '../../types';
 import ChatMessageItem from '../chat/ChatMessage';
+import ThinkingBubble from '../chat/ThinkingBubble';
 import VoiceButton from '../chat/VoiceButton';
 import type { FillerReport } from '../../utils/fillerDetector';
 
@@ -211,15 +212,13 @@ export default function MentorPanel({ messages, onSendMessage, isStreaming, onSt
         </div>
 
         <div className="mentor-panel__messages">
-          {messages.map((msg) => (
-            <ChatMessageItem key={msg.id} message={msg} />
-          ))}
+          {messages.map((msg) => {
+            // Skip empty streaming message — ThinkingBubble handles that state
+            if (msg.isStreaming && msg.content === '') return null;
+            return <ChatMessageItem key={msg.id} message={msg} />;
+          })}
           {isStreaming && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.content === '' && (
-            <div className="streaming-indicator">
-              <span className="streaming-dot" />
-              <span className="streaming-dot" />
-              <span className="streaming-dot" />
-            </div>
+            <ThinkingBubble />
           )}
           <div ref={messagesEndRef} />
         </div>
