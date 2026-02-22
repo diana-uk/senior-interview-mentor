@@ -15,6 +15,7 @@ import chatRouter from './routes/chat.js';
 import progressRouter from './routes/progress.js';
 import authRouter from './routes/auth.js';
 import billingRouter from './routes/billing.js';
+import sitemapRouter from './routes/sitemap.js';
 import { isSupabaseConfigured } from './db/client.js';
 import { getAIBackend } from './services/ai.js';
 import { isStripeConfigured } from './services/stripe.js';
@@ -41,11 +42,40 @@ app.use('/api', chatRouter);
 app.use('/api', progressRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/billing', billingRouter);
+app.use(sitemapRouter);
 
 // Serve frontend static files in production
 if (config.nodeEnv === 'production') {
   const distPath = path.resolve(__dirname, '..', 'dist');
   app.use(express.static(distPath));
+
+  // Problem-specific meta injection for SEO
+  const PROBLEM_META: Record<string, { title: string; description: string }> = {};
+  // Populated lazily on first request to avoid import issues
+
+  app.get('/problems/:id', (req, res) => {
+    const indexPath = path.join(distPath, 'index.html');
+    const id = req.params.id;
+
+    // Read the HTML template
+    import('node:fs').then(({ readFileSync }) => {
+      let html = readFileSync(indexPath, 'utf-8');
+
+      // If we have problem-specific meta, inject it
+      const meta = PROBLEM_META[id];
+      if (meta) {
+        html = html
+          .replace(/<title>[^<]*<\/title>/, `<title>${meta.title} | Senior Mentor</title>`)
+          .replace(/<meta name="description" content="[^"]*"/, `<meta name="description" content="${meta.description}"`);
+      }
+
+      res.set('Content-Type', 'text/html');
+      res.send(html);
+    }).catch(() => {
+      res.sendFile(indexPath);
+    });
+  });
+
   app.get('*', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });

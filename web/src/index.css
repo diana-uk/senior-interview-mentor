@@ -1007,12 +1007,22 @@ body {
 
 /* Mentor Panel (shared by workspace views) */
 .mentor-panel {
-  width: 320px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-elevated);
+  min-width: 0;
+  transition: width 0.15s ease-out;
+}
+
+.mentor-panel__expand-bar {
   border-left: 1px solid var(--border-default);
+  border-right: none;
+}
+
+.workspace-resizing .mentor-panel {
+  transition: none !important;
+  user-select: none !important;
 }
 
 .mentor-panel__header {
@@ -1027,6 +1037,25 @@ body {
   font-weight: 600;
   font-size: 13px;
   color: var(--text-primary);
+}
+
+.mentor-panel__collapse-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.mentor-panel__collapse-btn:hover {
+  color: var(--neon-cyan);
+  background: var(--bg-raised);
 }
 
 .mentor-panel__badge {
@@ -1466,10 +1495,24 @@ body {
 
 .sd-api__actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
   padding-top: 16px;
   border-top: 1px solid var(--border-subtle);
   margin-top: auto;
+}
+
+.sd-api__actions .btn-secondary {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.sd-api__actions .btn-secondary:hover {
+  background: var(--neon-cyan-subtle);
+}
+
+.sd-api__actions .btn:last-child {
+  margin-left: auto;
 }
 
 /* --- Empty State --- */

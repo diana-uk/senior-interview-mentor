@@ -498,6 +498,46 @@ export default function Landing({ onEnterApp, onCheckout, isAuthenticated }: Lan
         )}
       </main>
 
+      {/* FAQ JSON-LD for SEO */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'How does Senior Mentor help with coding interviews?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Senior Mentor uses AI-powered Socratic teaching to coach you through LeetCode problems, system design, and behavioral interviews in real-time. Instead of showing answers, it guides your thinking with progressive hints and pattern recognition.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'What types of interview practice are available?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Senior Mentor covers 5 interview stages: phone screen, technical coding (150+ problems across 20 patterns), system design (20 problems), behavioral (100+ STAR method questions), and technical Q&A across 11 categories.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'How is Senior Mentor different from LeetCode?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'LeetCode provides problems and solutions. Senior Mentor provides real-time AI coaching that adapts to your level, teaches algorithm patterns, tracks your weaknesses with spaced repetition, and simulates real interview conditions with timed sessions.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Is Senior Mentor free to use?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Yes, Senior Mentor offers a free tier with daily message limits. Premium and Pro plans unlock unlimited AI coaching, all interview types, and advanced analytics.',
+            },
+          },
+        ],
+      }) }} />
+
       {/* Footer */}
       <footer style={{
         borderTop: '1px solid var(--border-subtle)',
