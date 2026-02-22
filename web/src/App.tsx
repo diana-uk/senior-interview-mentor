@@ -27,7 +27,7 @@ const ReviewRubric = lazy(() => import('./components/ReviewRubric'));
 const Landing = lazy(() => import('./components/Landing'));
 import { useChat } from './hooks/useChat';
 import { useSessionPersistence } from './hooks/useSessionPersistence';
-import { executeTests } from './utils/codeExecutor';
+import { executeTests, parseTestCode, executeFreeform } from './utils/codeExecutor';
 import { useSystemDesignState } from './hooks/useSystemDesignState';
 import { useMistakeTracker } from './hooks/useMistakeTracker';
 import { useStats } from './hooks/useStats';
@@ -563,47 +563,60 @@ export default function App() {
   }, [interview, editor, timer, sendMessage, addMistake, getNextProblem]);
 
   async function handleRunTests() {
-    if (!interview.currentProblem || editor.runningTests) return;
+    if (editor.runningTests) return;
     editor.setRunningTests(true);
     editor.setConsoleOpen(true);
 
     try {
-      const { results, logs } = await executeTests(editor.editorCode, interview.currentProblem.testCases, editor.language);
-      editor.setTestResults(results);
-      editor.setConsoleLogs(logs);
+      if (interview.currentProblem) {
+        // Predefined problem — use structured test cases
+        const { results, logs } = await executeTests(editor.editorCode, interview.currentProblem.testCases, editor.language);
+        editor.setTestResults(results);
+        editor.setConsoleLogs(logs);
 
-      const passed = results.filter((r) => r.passed).length;
-      const total = results.length;
-      const allPassed = passed === total;
+        const passed = results.filter((r) => r.passed).length;
+        const total = results.length;
+        const allPassed = passed === total;
 
-      // Record problem attempt in stats
-      recordProblemAttempt({
-        problemId: interview.currentProblem.id,
-        status: allPassed ? 'solved' : 'attempted',
-        score: allPassed ? 4 : null,
-        time: null,
-        hintsUsed: interview.hintsUsed,
-        code: editor.editorCode,
-      });
-
-      // Update pattern strength
-      if (interview.currentProblem.pattern) {
-        updatePatternStrength(
-          interview.currentProblem.pattern as PatternName,
-          allPassed,
-          allPassed ? 4 : (passed / total) * 4,
-        );
-      }
-
-      // Auto-log mistake when tests fail
-      if (!allPassed) {
-        const failedCount = total - passed;
-        addMistake({
-          pattern: interview.currentProblem.pattern as PatternName,
+        recordProblemAttempt({
           problemId: interview.currentProblem.id,
-          problemTitle: interview.currentProblem.title,
-          description: `Failed ${failedCount}/${total} test cases`,
+          status: allPassed ? 'solved' : 'attempted',
+          score: allPassed ? 4 : null,
+          time: null,
+          hintsUsed: interview.hintsUsed,
+          code: editor.editorCode,
         });
+
+        if (interview.currentProblem.pattern) {
+          updatePatternStrength(
+            interview.currentProblem.pattern as PatternName,
+            allPassed,
+            allPassed ? 4 : (passed / total) * 4,
+          );
+        }
+
+        if (!allPassed) {
+          const failedCount = total - passed;
+          addMistake({
+            pattern: interview.currentProblem.pattern as PatternName,
+            problemId: interview.currentProblem.id,
+            problemTitle: interview.currentProblem.title,
+            description: `Failed ${failedCount}/${total} test cases`,
+          });
+        }
+      } else {
+        // Custom/AI-generated problem — parse test code from Tests tab
+        const parsedTests = parseTestCode(editor.testCode);
+        if (parsedTests.length > 0) {
+          const { results, logs } = await executeTests(editor.editorCode, parsedTests, editor.language);
+          editor.setTestResults(results);
+          editor.setConsoleLogs(logs);
+        } else {
+          // No parseable tests — run freeform (solution + test code concatenated)
+          const { logs } = await executeFreeform(editor.editorCode, editor.testCode, editor.language);
+          editor.setTestResults([]);
+          editor.setConsoleLogs(logs);
+        }
       }
     } finally {
       editor.setRunningTests(false);

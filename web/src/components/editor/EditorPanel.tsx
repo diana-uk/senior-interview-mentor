@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
@@ -98,6 +98,15 @@ export default function EditorPanel({
 }: EditorPanelProps) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
+
+  // Auto-switch output tab: console for freeform runs, tests for structured results
+  useEffect(() => {
+    if (consoleLogs.length > 0 && testResults.length === 0) {
+      setOutputTab('console');
+    } else if (testResults.length > 0) {
+      setOutputTab('tests');
+    }
+  }, [consoleLogs.length, testResults.length]);
 
   const handleLanguageChange = (newLang: CodeLanguage) => {
     if (newLang === codeLanguage) return;

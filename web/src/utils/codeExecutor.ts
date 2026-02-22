@@ -149,3 +149,39 @@ export async function executeTests(
   }
   return executeJsTests(code, testCases);
 }
+
+/**
+ * Parse test tab content into structured TestCase[].
+ * Matches lines like: console.log(fn(args)); // expected: value
+ */
+export function parseTestCode(testCode: string): TestCase[] {
+  const results: TestCase[] = [];
+  const pattern = /^\s*console\.log\(\s*(.+?)\s*\)\s*;?\s*\/\/\s*expected:\s*(.+?)\s*$/;
+
+  for (const line of testCode.split('\n')) {
+    const match = line.match(pattern);
+    if (match) {
+      results.push({ input: match[1], expected: match[2] });
+    }
+  }
+  return results;
+}
+
+/**
+ * Run solution + test code concatenated (freeform execution).
+ * Used when no structured test cases can be parsed from the Tests tab.
+ */
+export async function executeFreeform(
+  code: string,
+  testCode: string,
+  language: SupportedLanguage = 'typescript',
+): Promise<{ logs: ConsoleMessage[] }> {
+  if (language === 'python') {
+    const combined = code + '\n' + testCode;
+    const output = await runPythonInWorker(combined, '');
+    return { logs: output.logs };
+  }
+  const combined = stripTypeAnnotations(code + '\n' + testCode);
+  const output = await runInWorker(combined, '');
+  return { logs: output.logs };
+}
