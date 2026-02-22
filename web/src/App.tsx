@@ -12,6 +12,11 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
 import { useWorkspaceLayout } from './hooks/useWorkspaceLayout';
+import { useTimerState } from './hooks/useTimerState';
+import { useEditorState } from './hooks/useEditorState';
+import { useInterviewSession, DEFAULT_PROBLEM, DEFAULT_GATE, DEFAULT_HINTS } from './hooks/useInterviewSession';
+import { useDocumentTitle } from './hooks/useDocumentTitle';
+import { useMetaTags } from './hooks/useMetaTags';
 import { logger } from './utils/logger.js';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
 
@@ -35,54 +40,17 @@ import { getSettings } from './utils/settings';
 import type {
   ChatMessage,
   ChatContext,
-  CommitmentGateItem,
-  ConsoleMessage,
-  EditorTab,
-  HintLevel,
+  Difficulty,
   InterviewStage,
-  Mode,
   PatternName,
-  Problem,
   ReviewResult,
   SidebarPanel,
   SupportedLanguage,
   SystemDesignTopicId,
   TechnicalFormat,
   TechnicalQuestionCategory,
-  TestCase,
   TopicName,
 } from './types';
-
-const defaultProblem: Problem = {
-  id: 'hm-1',
-  title: 'Two Sum',
-  difficulty: 'Easy',
-  pattern: 'HashMap',
-  description:
-    'Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.',
-  examples: ['Input: nums = [2,7,11,15], target = 9\nOutput: [0,1]'],
-  constraints: ['2 <= nums.length <= 10^4', '-10^9 <= nums[i] <= 10^9', 'Only one valid answer exists.'],
-  starterCode: `function twoSum(nums: number[], target: number): number[] {\n  // Your solution here\n  \n}`,
-  testCases: [
-    { input: 'twoSum([2,7,11,15], 9)', expected: '[0,1]' },
-    { input: 'twoSum([3,2,4], 6)', expected: '[1,2]' },
-    { input: 'twoSum([3,3], 6)', expected: '[0,1]' },
-  ],
-};
-
-const defaultGate: CommitmentGateItem[] = [
-  { id: 'constraints', label: 'Constraints Recap', description: 'Summarize the key constraints in 1-3 bullets', completed: false },
-  { id: 'pattern', label: 'Chosen Pattern', description: 'Name the algorithm pattern (e.g., HashMap, Sliding Window)', completed: false },
-  { id: 'approach', label: 'Approach Plan', description: 'Outline your approach in 4-8 steps', completed: false },
-  { id: 'complexity', label: 'Complexity Estimate', description: 'State time and space complexity', completed: false },
-  { id: 'edges', label: 'Edge Cases', description: 'List 3-6 edge cases to handle', completed: false },
-];
-
-const defaultHints: HintLevel[] = [
-  { level: 1, label: 'Nudge', description: 'A small push in the right direction', content: 'Think about what data structure lets you look up values in O(1) time. What if you stored the complement?', unlocked: false, color: 'var(--neon-lime)' },
-  { level: 2, label: 'Structure', description: 'Data structure + algorithm steps', content: 'Use a HashMap to store each number\'s index as you iterate. For each number, check if (target - num) exists in the map.', unlocked: false, color: 'var(--neon-amber)' },
-  { level: 3, label: 'Pseudocode', description: 'Detailed pseudocode outline', content: '1. Create empty map\n2. For each num at index i:\n   a. complement = target - num\n   b. If complement in map → return [map[complement], i]\n   c. Else → map[num] = i\n3. Return [] (no solution)', unlocked: false, color: 'var(--neon-purple)' },
-];
 
 const SYSTEM_DESIGN_STARTER = `## [requirements]
 
@@ -299,44 +267,49 @@ export default function App() {
   } : null;
 
   const [showLanding, setShowLanding] = useState(!initial && !safeGetItem('sim-skip-landing'));
-  const [mode, setMode] = useState<Mode>(initial?.mode ?? 'TEACHER');
-  const [currentProblem, setCurrentProblem] = useState<Problem | null>(initial?.currentProblem ?? defaultProblem);
   const [sidebarPanel, setSidebarPanel] = useState<SidebarPanel>(null);
-  const [editorTab, setEditorTab] = useState<EditorTab>(initial?.editorTab ?? 'solution');
-  const [consoleOpen, setConsoleOpen] = useState(false);
-  const [interviewModalOpen, setInterviewModalOpen] = useState(false);
-  const [commitmentGateOpen, setCommitmentGateOpen] = useState(false);
-  const [hintLadderOpen, setHintLadderOpen] = useState(false);
-  const [hintsUsed, setHintsUsed] = useState(initial?.hintsUsed ?? 0);
-  const [timerSeconds, setTimerSeconds] = useState(initial?.timerSeconds ?? 2700);
-  const [timerRunning, setTimerRunning] = useState(initial?.timerRunning ?? false);
-  const [editorCode, setEditorCode] = useState(initial?.editorCode ?? defaultProblem.starterCode);
-  const [testCode, setTestCode] = useState(initial?.testCode ?? '// Write custom test cases here\nconsole.log(twoSum([2,7,11,15], 9)); // expected: [0,1]');
-  const [notes, setNotes] = useState(initial?.notes ?? '// Scratch pad\n// Pattern: HashMap\n// Key insight: store complement');
-  const [testResults, setTestResults] = useState<TestCase[]>([]);
-  const [consoleLogs, setConsoleLogs] = useState<ConsoleMessage[]>([]);
-  const [runningTests, setRunningTests] = useState(false);
-  const [commitmentGate, setCommitmentGate] = useState<CommitmentGateItem[]>(initial?.commitmentGate ?? defaultGate);
-  const [hints, setHints] = useState<HintLevel[]>(initial?.hints ?? defaultHints);
   const [mobileView, setMobileView] = useState<'chat' | 'editor'>('chat');
-  const [language, setLanguage] = useState<SupportedLanguage>(() => {
-    const saved = safeGetItem('sim-settings');
-    if (saved) {
-      try {
-        const lang = JSON.parse(saved).language;
-        if (lang === 'javascript' || lang === 'python') return lang;
-      } catch { /* ignore */ }
-    }
-    return 'typescript';
-  });
-  const [interviewStage, setInterviewStage] = useState<InterviewStage | null>(initial?.interviewStage ?? null);
-  const [interviewCategory, setInterviewCategory] = useState<TechnicalQuestionCategory | null>(initial?.interviewCategory ?? null);
-  const [sdTopicId, setSdTopicId] = useState<SystemDesignTopicId | null>(initial?.sdTopicId ?? null);
 
-  const [reviewRubricOpen, setReviewRubricOpen] = useState(false);
+  // ── Extracted domain hooks ──
+  const timer = useTimerState({
+    timerSeconds: initial?.timerSeconds,
+    timerRunning: initial?.timerRunning,
+  });
+
+  const editor = useEditorState({
+    editorCode: initial?.editorCode,
+    testCode: initial?.testCode,
+    notes: initial?.notes,
+    editorTab: initial?.editorTab,
+  });
+
+  const interview = useInterviewSession({
+    mode: initial?.mode,
+    currentProblem: initial?.currentProblem ?? DEFAULT_PROBLEM,
+    interviewStage: initial?.interviewStage,
+    interviewCategory: initial?.interviewCategory,
+    sdTopicId: initial?.sdTopicId,
+    hintsUsed: initial?.hintsUsed,
+    commitmentGate: initial?.commitmentGate,
+    hints: initial?.hints,
+  });
 
   const { sdState, sdDispatch, advancePhase, PHASE_ORDER } = useSystemDesignState(restored?.sdState);
-  const isSystemDesignActive = interviewStage === 'system-design' && sdState.active;
+  const isSystemDesignActive = interview.interviewStage === 'system-design' && sdState.active;
+
+  // ── Dynamic SEO: document title + meta description per route ──
+  const seoTitle = interview.currentProblem
+    ? `${interview.currentProblem.title} — ${interview.currentProblem.pattern}`
+    : interview.interviewStage
+      ? `${interview.interviewStage.replace(/-/g, ' ')} Interview`
+      : sidebarPanel
+        ? sidebarPanel.charAt(0).toUpperCase() + sidebarPanel.slice(1)
+        : null;
+  const seoDescription = interview.currentProblem
+    ? `Solve ${interview.currentProblem.title} — ${interview.currentProblem.pattern} pattern (${interview.currentProblem.difficulty}). AI-coached coding interview prep with Socratic teaching.`
+    : null;
+  useDocumentTitle(seoTitle);
+  useMetaTags(seoDescription);
 
   const {
     mistakes, dueForReview, addMistake, reviewMistake, removeMistake,
@@ -369,43 +342,36 @@ export default function App() {
     const settings = getSettings();
     const memory = buildMemorySummary(stats, mistakes, settings);
     return {
-      mode,
-      currentProblem: currentProblem
+      mode: interview.mode,
+      currentProblem: interview.currentProblem
         ? {
-            title: currentProblem.title,
-            difficulty: currentProblem.difficulty,
-            pattern: currentProblem.pattern,
-            description: currentProblem.description,
-            constraints: currentProblem.constraints,
+            title: interview.currentProblem.title,
+            difficulty: interview.currentProblem.difficulty,
+            pattern: interview.currentProblem.pattern,
+            description: interview.currentProblem.description,
+            constraints: interview.currentProblem.constraints,
           }
         : null,
-      hintsUsed,
-      commitmentGateCompleted: commitmentGate.filter((i) => i.completed).length,
-      interviewStage,
-      technicalQuestionCategory: interviewCategory ?? undefined,
-      language,
+      hintsUsed: interview.hintsUsed,
+      commitmentGateCompleted: interview.commitmentGate.filter((i) => i.completed).length,
+      interviewStage: interview.interviewStage,
+      technicalQuestionCategory: interview.interviewCategory ?? undefined,
+      language: editor.language,
       memory,
     };
-  }, [mode, currentProblem, hintsUsed, commitmentGate, interviewStage, interviewCategory, language, stats, mistakes]);
+  }, [interview.mode, interview.currentProblem, interview.hintsUsed, interview.commitmentGate, interview.interviewStage, interview.interviewCategory, editor.language, stats, mistakes]);
 
   const handleEditorUpdate = useCallback(
     (starterCode: string, testCode: string) => {
-      if (starterCode) setEditorCode(starterCode);
-      if (testCode) setTestCode(testCode);
+      if (starterCode) editor.setEditorCode(starterCode);
+      if (testCode) editor.setTestCode(testCode);
     },
-    [],
+    [editor.setEditorCode, editor.setTestCode],
   );
 
   const handleLanguageChange = useCallback((newLang: SupportedLanguage) => {
-    setLanguage(newLang);
-    // Load appropriate starter code for the new language
-    if (currentProblem) {
-      const starter = getStarterCode(currentProblem, newLang);
-      const tests = getTestCode(currentProblem, newLang);
-      if (starter) setEditorCode(starter);
-      if (tests) setTestCode(tests);
-    }
-  }, [currentProblem]);
+    editor.handleLanguageChange(newLang, interview.currentProblem);
+  }, [editor.handleLanguageChange, interview.currentProblem]);
 
   const handleRateLimit = useCallback((remaining: number, limit: number, plan: string) => {
     setRateLimitInfo({ remaining, limit, plan });
@@ -419,27 +385,16 @@ export default function App() {
     onRateLimit: handleRateLimit,
   });
 
-  useEffect(() => {
-    if (!timerRunning) return;
-    const interval = setInterval(() => {
-      setTimerSeconds((s) => {
-        if (s <= 0) {
-          setTimerRunning(false);
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timerRunning]);
-
   // ── Auto-save session to localStorage ──
   // Snapshot ref: always holds latest session data (cheap render-time assignment)
   const sessionSnapshotRef = useRef<Parameters<typeof saveSession>[0]>();
   sessionSnapshotRef.current = {
-    mode, currentProblem, editorTab, hintsUsed, timerSeconds,
-    timerRunning, editorCode, testCode, notes, commitmentGate,
-    hints, interviewStage, interviewCategory, sdTopicId, sdState, messages,
+    mode: interview.mode, currentProblem: interview.currentProblem, editorTab: editor.editorTab,
+    hintsUsed: interview.hintsUsed, timerSeconds: timer.timerSeconds,
+    timerRunning: timer.timerRunning, editorCode: editor.editorCode, testCode: editor.testCode,
+    notes: editor.notes, commitmentGate: interview.commitmentGate,
+    hints: interview.hints, interviewStage: interview.interviewStage,
+    interviewCategory: interview.interviewCategory, sdTopicId: interview.sdTopicId, sdState, messages,
   };
   const isStreamingRef = useRef(isStreaming);
   isStreamingRef.current = isStreaming;
@@ -448,7 +403,7 @@ export default function App() {
   useEffect(() => {
     if (isStreaming) return;
     saveSession(sessionSnapshotRef.current!);
-  }, [isStreaming, mode, currentProblem, editorTab, hintsUsed, interviewStage, interviewCategory, sdTopicId, sdState, commitmentGate, hints, saveSession]);
+  }, [isStreaming, interview.mode, interview.currentProblem, editor.editorTab, interview.hintsUsed, interview.interviewStage, interview.interviewCategory, interview.sdTopicId, sdState, interview.commitmentGate, interview.hints, saveSession]);
 
   // Periodic save for content changes (editorCode, timerSeconds, notes, messages)
   useEffect(() => {
@@ -515,40 +470,40 @@ export default function App() {
     if (panel === 'interview') return; // Modal, no URL change
     if (panel === null) {
       // Navigate to current problem or home
-      const pid = currentProblem?.id;
+      const pid = interview.currentProblem?.id;
       navigate(pid ? `/problems/${pid}` : '/', { replace: true });
     } else {
       navigate(`/${panel}`, { replace: true });
     }
-  }, [navigate, currentProblem]);
+  }, [navigate, interview.currentProblem]);
 
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
     // Local side effects for slash commands
     if (content.startsWith('/hint') || content.startsWith('/stuck')) {
-      const nextLevel = (hintsUsed + 1) as 1 | 2 | 3;
+      const nextLevel = (interview.hintsUsed + 1) as 1 | 2 | 3;
       if (nextLevel <= 3) {
-        setHints((prev) =>
+        interview.setHints((prev) =>
           prev.map((h) => (h.level === nextLevel ? { ...h, unlocked: true } : h))
         );
-        setHintsUsed(nextLevel);
+        interview.setHintsUsed(nextLevel);
         // Auto-log mistake when hint 3 is used (user is deeply stuck)
-        if (nextLevel === 3 && currentProblem) {
+        if (nextLevel === 3 && interview.currentProblem) {
           addMistake({
-            pattern: currentProblem.pattern as PatternName,
-            problemId: currentProblem.id,
-            problemTitle: currentProblem.title,
-            description: `Needed all 3 hints to solve ${currentProblem.title}`,
+            pattern: interview.currentProblem.pattern as PatternName,
+            problemId: interview.currentProblem.id,
+            problemTitle: interview.currentProblem.title,
+            description: `Needed all 3 hints to solve ${interview.currentProblem.title}`,
           });
         }
       }
-      setHintLadderOpen(true);
+      interview.setHintLadderOpen(true);
     } else if (content.startsWith('/review')) {
-      setMode('REVIEWER');
-      setReviewRubricOpen(true);
+      interview.setMode('REVIEWER');
+      interview.setReviewRubricOpen(true);
       // Auto-include code context for AI review
-      if (currentProblem && editorCode) {
-        const codeContext = `\n\n**My code for ${currentProblem.title}:**\n\`\`\`typescript\n${editorCode}\n\`\`\``;
+      if (interview.currentProblem && editor.editorCode) {
+        const codeContext = `\n\n**My code for ${interview.currentProblem.title}:**\n\`\`\`typescript\n${editor.editorCode}\n\`\`\``;
         sendMessage(content + codeContext);
         return;
       }
@@ -559,45 +514,45 @@ export default function App() {
       if (rec) {
         const problem = problemsById[rec.id];
         if (problem) {
-          setCurrentProblem(problem);
-          setEditorCode(getStarterCode(problem, language));
-          setTestCode(getTestCode(problem, language));
-          setTestResults([]);
-          setHintsUsed(0);
-          setHints((prev) => prev.map((h) => ({ ...h, unlocked: false, content: '' })));
-          setCommitmentGate(defaultGate.map((g) => ({ ...g, completed: false })));
+          interview.setCurrentProblem(problem);
+          editor.setEditorCode(getStarterCode(problem, editor.language));
+          editor.setTestCode(getTestCode(problem, editor.language));
+          editor.setTestResults([]);
+          interview.setHintsUsed(0);
+          interview.setHints((prev) => prev.map((h) => ({ ...h, unlocked: false, content: '' })));
+          interview.setCommitmentGate(DEFAULT_GATE.map((g) => ({ ...g, completed: false })));
         }
       }
     } else if (content.startsWith('/check')) {
       // Auto-include editor code for approach validation
-      if (currentProblem && editorCode) {
-        const codeContext = `\n\n**My current code for ${currentProblem.title}:**\n\`\`\`typescript\n${editorCode}\n\`\`\``;
+      if (interview.currentProblem && editor.editorCode) {
+        const codeContext = `\n\n**My current code for ${interview.currentProblem.title}:**\n\`\`\`typescript\n${editor.editorCode}\n\`\`\``;
         sendMessage(content + codeContext);
         return;
       }
     } else if (content.startsWith('/continue')) {
       // Enrich with session state so Claude can recap
-      const gateStatus = commitmentGate.map((g) => `${g.completed ? '[x]' : '[ ]'} ${g.label}`).join(', ');
+      const gateStatus = interview.commitmentGate.map((g) => `${g.completed ? '[x]' : '[ ]'} ${g.label}`).join(', ');
       const parts = [
-        currentProblem ? `Problem: ${currentProblem.title} (${currentProblem.difficulty}, ${currentProblem.pattern})` : 'No active problem',
-        `Mode: ${mode}`,
-        `Hints: ${hintsUsed}/3`,
+        interview.currentProblem ? `Problem: ${interview.currentProblem.title} (${interview.currentProblem.difficulty}, ${interview.currentProblem.pattern})` : 'No active problem',
+        `Mode: ${interview.mode}`,
+        `Hints: ${interview.hintsUsed}/3`,
         `Gate: ${gateStatus}`,
-        interviewStage ? `Interview: ${interviewStage}` : null,
-        timerRunning ? `Timer: ${Math.floor(timerSeconds / 60)}m left` : null,
+        interview.interviewStage ? `Interview: ${interview.interviewStage}` : null,
+        timer.timerRunning ? `Timer: ${Math.floor(timer.timerSeconds / 60)}m left` : null,
       ].filter(Boolean).join(' | ');
       sendMessage(`/continue\n\n[Session: ${parts}]`);
       return;
     } else if (content.startsWith('/recap')) {
       // Enrich with detailed session state
-      const gateLines = commitmentGate.map((g) => `- [${g.completed ? 'x' : ' '}] ${g.label}`).join('\n');
+      const gateLines = interview.commitmentGate.map((g) => `- [${g.completed ? 'x' : ' '}] ${g.label}`).join('\n');
       const sessionInfo = [
-        currentProblem ? `**Problem:** ${currentProblem.title} (${currentProblem.difficulty}, ${currentProblem.pattern})` : '**Problem:** None',
-        `**Mode:** ${mode}`,
-        `**Hints used:** ${hintsUsed}/3`,
+        interview.currentProblem ? `**Problem:** ${interview.currentProblem.title} (${interview.currentProblem.difficulty}, ${interview.currentProblem.pattern})` : '**Problem:** None',
+        `**Mode:** ${interview.mode}`,
+        `**Hints used:** ${interview.hintsUsed}/3`,
         `**Commitment gate:**\n${gateLines}`,
-        interviewStage ? `**Interview stage:** ${interviewStage}` : null,
-        timerRunning ? `**Timer:** ${Math.floor(timerSeconds / 60)}m ${timerSeconds % 60}s remaining` : null,
+        interview.interviewStage ? `**Interview stage:** ${interview.interviewStage}` : null,
+        timer.timerRunning ? `**Timer:** ${Math.floor(timer.timerSeconds / 60)}m ${timer.timerSeconds % 60}s remaining` : null,
       ].filter(Boolean).join('\n');
       sendMessage(`/recap\n\n${sessionInfo}`);
       return;
@@ -605,17 +560,17 @@ export default function App() {
 
     // Send to Claude API
     sendMessage(content);
-  }, [hintsUsed, sendMessage, currentProblem, addMistake, getNextProblem, language, editorCode, mode, commitmentGate, interviewStage, timerRunning, timerSeconds]);
+  }, [interview, editor, timer, sendMessage, addMistake, getNextProblem]);
 
   async function handleRunTests() {
-    if (!currentProblem || runningTests) return;
-    setRunningTests(true);
-    setConsoleOpen(true);
+    if (!interview.currentProblem || editor.runningTests) return;
+    editor.setRunningTests(true);
+    editor.setConsoleOpen(true);
 
     try {
-      const { results, logs } = await executeTests(editorCode, currentProblem.testCases, language);
-      setTestResults(results);
-      setConsoleLogs(logs);
+      const { results, logs } = await executeTests(editor.editorCode, interview.currentProblem.testCases, editor.language);
+      editor.setTestResults(results);
+      editor.setConsoleLogs(logs);
 
       const passed = results.filter((r) => r.passed).length;
       const total = results.length;
@@ -623,18 +578,18 @@ export default function App() {
 
       // Record problem attempt in stats
       recordProblemAttempt({
-        problemId: currentProblem.id,
+        problemId: interview.currentProblem.id,
         status: allPassed ? 'solved' : 'attempted',
         score: allPassed ? 4 : null,
         time: null,
-        hintsUsed,
-        code: editorCode,
+        hintsUsed: interview.hintsUsed,
+        code: editor.editorCode,
       });
 
       // Update pattern strength
-      if (currentProblem.pattern) {
+      if (interview.currentProblem.pattern) {
         updatePatternStrength(
-          currentProblem.pattern as PatternName,
+          interview.currentProblem.pattern as PatternName,
           allPassed,
           allPassed ? 4 : (passed / total) * 4,
         );
@@ -644,19 +599,19 @@ export default function App() {
       if (!allPassed) {
         const failedCount = total - passed;
         addMistake({
-          pattern: currentProblem.pattern as PatternName,
-          problemId: currentProblem.id,
-          problemTitle: currentProblem.title,
+          pattern: interview.currentProblem.pattern as PatternName,
+          problemId: interview.currentProblem.id,
+          problemTitle: interview.currentProblem.title,
           description: `Failed ${failedCount}/${total} test cases`,
         });
       }
     } finally {
-      setRunningTests(false);
+      editor.setRunningTests(false);
     }
   }
 
   function handleToggleGateItem(id: string) {
-    setCommitmentGate((prev) =>
+    interview.setCommitmentGate((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, completed: !item.completed } : item
       )
@@ -664,11 +619,11 @@ export default function App() {
   }
 
   function handleRequestHint(level: 1 | 2 | 3) {
-    if (level > hintsUsed + 1) return;
-    setHints((prev) =>
+    if (level > interview.hintsUsed + 1) return;
+    interview.setHints((prev) =>
       prev.map((h) => (h.level === level ? { ...h, unlocked: true } : h))
     );
-    setHintsUsed(Math.max(hintsUsed, level));
+    interview.setHintsUsed(Math.max(interview.hintsUsed, level));
   }
 
   function handleStartInterview(config: {
@@ -683,27 +638,27 @@ export default function App() {
   }) {
     clearSession();
     // Set UI state
-    setMode('INTERVIEWER');
-    setTimerRunning(true);
-    setTimerSeconds(2700);
-    setHintsUsed(0);
-    setHints(defaultHints);
-    setCommitmentGate(defaultGate);
-    setTestResults([]);
-    setConsoleOpen(false);
-    setEditorTab('solution');
-    setInterviewStage(config.stage);
-    setInterviewCategory(config.category ?? null);
-    setSdTopicId(config.systemDesignTopic ?? null);
+    interview.setMode('INTERVIEWER');
+    timer.setTimerRunning(true);
+    timer.setTimerSeconds(2700);
+    interview.setHintsUsed(0);
+    interview.setHints(DEFAULT_HINTS);
+    interview.setCommitmentGate(DEFAULT_GATE);
+    editor.setTestResults([]);
+    editor.setConsoleOpen(false);
+    editor.setEditorTab('solution');
+    interview.setInterviewStage(config.stage);
+    interview.setInterviewCategory(config.category ?? null);
+    interview.setSdTopicId(config.systemDesignTopic ?? null);
 
     // Clear messages for fresh interview
     setMessages([]);
 
     // Reset editor content based on interview type
     if (config.stage === 'system-design') {
-      setCurrentProblem(null);
-      setEditorCode(SYSTEM_DESIGN_STARTER);
-      setNotes('');
+      interview.setCurrentProblem(null);
+      editor.setEditorCode(SYSTEM_DESIGN_STARTER);
+      editor.setNotes('');
 
       // Initialize system design workspace state
       let sdTitle = 'Custom System Design';
@@ -720,15 +675,15 @@ export default function App() {
       }
       sdDispatch({ type: 'INIT', topicTitle: sdTitle, topicPrompt: sdPrompt });
     } else if (config.stage === 'technical') {
-      setCurrentProblem(null); // Will be set by Claude's response
-      setEditorCode('// Your solution here\n');
-      setTestCode('// Write test cases here');
-      setNotes('');
+      interview.setCurrentProblem(null); // Will be set by Claude's response
+      editor.setEditorCode('// Your solution here\n');
+      editor.setTestCode('// Write test cases here');
+      editor.setNotes('');
     } else {
-      setCurrentProblem(null);
-      setEditorCode('// Use this space for notes during the interview\n');
-      setTestCode('');
-      setNotes('');
+      interview.setCurrentProblem(null);
+      editor.setEditorCode('// Use this space for notes during the interview\n');
+      editor.setTestCode('');
+      editor.setNotes('');
     }
 
     // Build command based on selection
@@ -769,23 +724,23 @@ export default function App() {
     if (!problem) return;
 
     // Load full problem data into editor (language-aware)
-    setCurrentProblem(problem);
-    setEditorCode(getStarterCode(problem, language));
-    setTestCode(getTestCode(problem, language));
+    interview.setCurrentProblem(problem);
+    editor.setEditorCode(getStarterCode(problem, editor.language));
+    editor.setTestCode(getTestCode(problem, editor.language));
 
     // Reset UI state
-    setTestResults([]);
-    setConsoleOpen(false);
-    setHintsUsed(0);
-    setHintLadderOpen(false);
-    setHints(defaultHints);
-    setCommitmentGate(defaultGate);
-    setInterviewStage(null);
-    setInterviewCategory(null);
-    setMode('TEACHER');
-    setTimerRunning(false);
-    setEditorTab('solution');
-    setNotes('');
+    editor.setTestResults([]);
+    editor.setConsoleOpen(false);
+    interview.setHintsUsed(0);
+    interview.setHintLadderOpen(false);
+    interview.setHints(DEFAULT_HINTS);
+    interview.setCommitmentGate(DEFAULT_GATE);
+    interview.setInterviewStage(null);
+    interview.setInterviewCategory(null);
+    interview.setMode('TEACHER');
+    timer.setTimerRunning(false);
+    editor.setEditorTab('solution');
+    editor.setNotes('');
     sdDispatch({ type: 'RESET' });
 
     // Close sidebar and update URL
@@ -816,8 +771,8 @@ export default function App() {
   }
 
   const readinessScore = getReadinessScore();
-  const gateCompleted = commitmentGate.filter((i) => i.completed).length;
-  const progressPercent = readinessScore > 0 ? readinessScore : (currentProblem ? (gateCompleted / commitmentGate.length) * 100 : 0);
+  const gateCompleted = interview.commitmentGate.filter((i) => i.completed).length;
+  const progressPercent = readinessScore > 0 ? readinessScore : (interview.currentProblem ? (gateCompleted / interview.commitmentGate.length) * 100 : 0);
 
   if (showLanding) {
     return (
@@ -865,11 +820,11 @@ export default function App() {
         </div>
       )}
       <TopNav
-        mode={mode}
-        problem={currentProblem}
-        timerSeconds={timerSeconds}
-        timerRunning={timerRunning}
-        hintsUsed={hintsUsed}
+        mode={interview.mode}
+        problem={interview.currentProblem}
+        timerSeconds={timer.timerSeconds}
+        timerRunning={timer.timerRunning}
+        hintsUsed={interview.hintsUsed}
         progressPercent={progressPercent}
         user={user}
         onSignOut={signOut}
@@ -883,9 +838,9 @@ export default function App() {
         <Sidebar
           activePanel={sidebarPanel}
           onPanelChange={handlePanelChange}
-          onLaunchInterview={() => setInterviewModalOpen(true)}
+          onLaunchInterview={() => interview.setInterviewModalOpen(true)}
           onSelectProblem={handleSelectProblem}
-          currentProblemId={currentProblem?.id || null}
+          currentProblemId={interview.currentProblem?.id || null}
           mistakes={mistakes}
           dueForReview={dueForReview}
           onReviewMistake={reviewMistake}
@@ -911,14 +866,14 @@ export default function App() {
               sdDispatch={sdDispatch}
               advancePhase={advancePhase}
               phaseOrder={PHASE_ORDER}
-              timerSeconds={timerSeconds}
+              timerSeconds={timer.timerSeconds}
               messages={messages}
               onSendMessage={handleSendMessage}
               isStreaming={isStreaming}
               onStopStreaming={stopStreaming}
               chatPanel={
                 <ChatPanel
-                  mode={mode}
+                  mode={interview.mode}
                   messages={messages}
                   onSendMessage={handleSendMessage}
                   hidden={false}
@@ -930,24 +885,24 @@ export default function App() {
               }
               editorPanel={
                 <EditorPanel
-                  problemId={currentProblem?.id}
-                  activeTab={editorTab}
-                  onTabChange={setEditorTab}
-                  code={editorCode}
-                  testCode={testCode}
-                  notes={notes}
-                  onCodeChange={setEditorCode}
-                  onTestCodeChange={setTestCode}
-                  onNotesChange={setNotes}
+                  problemId={interview.currentProblem?.id}
+                  activeTab={editor.editorTab}
+                  onTabChange={editor.setEditorTab}
+                  code={editor.editorCode}
+                  testCode={editor.testCode}
+                  notes={editor.notes}
+                  onCodeChange={editor.setEditorCode}
+                  onTestCodeChange={editor.setTestCode}
+                  onNotesChange={editor.setNotes}
                   onRunTests={handleRunTests}
-                  runningTests={runningTests}
-                  testResults={testResults}
-                  consoleLogs={consoleLogs}
-                  consoleOpen={consoleOpen}
-                  onToggleConsole={() => setConsoleOpen(!consoleOpen)}
+                  runningTests={editor.runningTests}
+                  testResults={editor.testResults}
+                  consoleLogs={editor.consoleLogs}
+                  consoleOpen={editor.consoleOpen}
+                  onToggleConsole={() => editor.setConsoleOpen(!editor.consoleOpen)}
                   hidden={false}
-                  interviewStage={interviewStage}
-                  systemDesignTopicId={sdTopicId}
+                  interviewStage={interview.interviewStage}
+                  systemDesignTopicId={interview.sdTopicId}
                   onSendMessage={handleSendMessage}
                   onLanguageChange={handleLanguageChange}
                 />
@@ -967,7 +922,7 @@ export default function App() {
                 </button>
               )}
               <ChatPanel
-                mode={mode}
+                mode={interview.mode}
                 messages={messages}
                 onSendMessage={handleSendMessage}
                 hidden={mobileView !== 'chat'}
@@ -989,24 +944,24 @@ export default function App() {
                 />
               )}
               <EditorPanel
-                problemId={currentProblem?.id}
-                activeTab={editorTab}
-                onTabChange={setEditorTab}
-                code={editorCode}
-                testCode={testCode}
-                notes={notes}
-                onCodeChange={setEditorCode}
-                onTestCodeChange={setTestCode}
-                onNotesChange={setNotes}
+                problemId={interview.currentProblem?.id}
+                activeTab={editor.editorTab}
+                onTabChange={editor.setEditorTab}
+                code={editor.editorCode}
+                testCode={editor.testCode}
+                notes={editor.notes}
+                onCodeChange={editor.setEditorCode}
+                onTestCodeChange={editor.setTestCode}
+                onNotesChange={editor.setNotes}
                 onRunTests={handleRunTests}
-                runningTests={runningTests}
-                testResults={testResults}
-                consoleLogs={consoleLogs}
-                consoleOpen={consoleOpen}
-                onToggleConsole={() => setConsoleOpen(!consoleOpen)}
+                runningTests={editor.runningTests}
+                testResults={editor.testResults}
+                consoleLogs={editor.consoleLogs}
+                consoleOpen={editor.consoleOpen}
+                onToggleConsole={() => editor.setConsoleOpen(!editor.consoleOpen)}
                 hidden={mobileView !== 'editor'}
-                interviewStage={interviewStage}
-                systemDesignTopicId={sdTopicId}
+                interviewStage={interview.interviewStage}
+                systemDesignTopicId={interview.sdTopicId}
                 onSendMessage={handleSendMessage}
                 onLanguageChange={handleLanguageChange}
               />
@@ -1028,9 +983,9 @@ export default function App() {
         </div>
 
         <CommitmentGate
-          open={commitmentGateOpen}
-          onClose={() => setCommitmentGateOpen(false)}
-          items={commitmentGate}
+          open={interview.commitmentGateOpen}
+          onClose={() => interview.setCommitmentGateOpen(false)}
+          items={interview.commitmentGate}
           onToggle={handleToggleGateItem}
         />
       </div>
@@ -1054,35 +1009,35 @@ export default function App() {
 
       <ErrorBoundary name="Modals">
       <Suspense fallback={null}>
-        {interviewModalOpen && (
+        {interview.interviewModalOpen && (
           <InterviewLauncher
-            open={interviewModalOpen}
-            onClose={() => setInterviewModalOpen(false)}
+            open={interview.interviewModalOpen}
+            onClose={() => interview.setInterviewModalOpen(false)}
             onStart={handleStartInterview}
           />
         )}
 
-        {reviewRubricOpen && (
+        {interview.reviewRubricOpen && (
           <ReviewRubric
-          problemTitle={currentProblem?.title ?? 'Current Problem'}
-          problemId={currentProblem?.id ?? null}
+          problemTitle={interview.currentProblem?.title ?? 'Current Problem'}
+          problemId={interview.currentProblem?.id ?? null}
           onSubmit={(review: ReviewResult) => {
             recordReview(review);
-            if (currentProblem?.pattern) {
+            if (interview.currentProblem?.pattern) {
               updatePatternStrength(
-                currentProblem.pattern as PatternName,
+                interview.currentProblem.pattern as PatternName,
                 review.overallScore >= 3,
                 review.overallScore,
               );
             }
           }}
-          onClose={() => setReviewRubricOpen(false)}
+          onClose={() => interview.setReviewRubricOpen(false)}
         />
       )}
       </Suspense>
       </ErrorBoundary>
 
-      {hintsUsed > 0 && hintLadderOpen && (
+      {interview.hintsUsed > 0 && interview.hintLadderOpen && (
         <div
           style={{
             position: 'fixed',
@@ -1101,14 +1056,14 @@ export default function App() {
             Hint Ladder
             <button
               type="button"
-              onClick={() => setHintLadderOpen(false)}
+              onClick={() => interview.setHintLadderOpen(false)}
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
               aria-label="Close hint ladder"
             >
               ×
             </button>
           </div>
-          <HintLadder hints={hints} onRequestHint={handleRequestHint} />
+          <HintLadder hints={interview.hints} onRequestHint={handleRequestHint} />
         </div>
       )}
     </div>
