@@ -220,6 +220,55 @@
   50% { opacity: 0.5; transform: translateY(-50%) scale(0.8); }
 }
 
+/* Mode Switcher (segmented control) */
+.mode-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.mode-switcher-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border: none;
+  border-radius: calc(var(--radius-lg) - 2px);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: var(--font-medium);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.mode-switcher-btn:hover:not(.active) {
+  color: var(--text-secondary);
+  background: var(--bg-overlay);
+}
+
+.mode-switcher-btn.active.mode-teacher {
+  background: var(--mode-teacher-bg);
+  color: var(--mode-teacher);
+}
+
+.mode-switcher-btn.active.mode-interviewer {
+  background: var(--mode-interviewer-bg);
+  color: var(--mode-interviewer);
+}
+
+.mode-switcher-btn.active.mode-reviewer {
+  background: var(--mode-reviewer-bg);
+  color: var(--mode-reviewer);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    CARDS
    ═══════════════════════════════════════════════════════════════════════ */

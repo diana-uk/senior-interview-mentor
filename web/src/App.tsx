@@ -42,6 +42,7 @@ import type {
   ChatContext,
   Difficulty,
   InterviewStage,
+  Mode,
   PatternName,
   ReviewResult,
   SidebarPanel,
@@ -477,6 +478,30 @@ export default function App() {
     }
   }, [navigate, interview.currentProblem]);
 
+  /** Handle mode switch from TopNav segmented control */
+  const handleModeChange = useCallback((newMode: Mode) => {
+    if (newMode === interview.mode) return;
+
+    // Guard: warn if leaving an active interview
+    if (interview.mode === 'INTERVIEWER' && timer.timerRunning) {
+      const confirmed = window.confirm('End current interview? Your progress will be preserved but the timer will stop.');
+      if (!confirmed) return;
+      timer.setTimerRunning(false);
+    }
+
+    interview.setMode(newMode);
+
+    if (newMode === 'INTERVIEWER') {
+      interview.setInterviewModalOpen(true);
+    } else if (newMode === 'REVIEWER') {
+      interview.setReviewRubricOpen(true);
+    } else {
+      // TEACHER — reset interview-specific state
+      interview.setInterviewStage(null);
+      interview.setInterviewCategory(null);
+    }
+  }, [interview, timer]);
+
   /** Handle local side effects for slash commands, then send to Claude */
   const handleSendMessage = useCallback((content: string) => {
     // Local side effects for slash commands
@@ -845,6 +870,7 @@ export default function App() {
         syncing={syncing}
         plan={subscription.plan}
         onManageSubscription={subscription.manage}
+        onModeChange={handleModeChange}
       />
 
       <div className="app-body">

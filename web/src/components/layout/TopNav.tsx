@@ -1,8 +1,14 @@
-import { Lightbulb, Timer } from 'lucide-react';
+import { BookOpen, ClipboardCheck, Lightbulb, Mic, Timer } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import ProfileDropdown from '../auth/ProfileDropdown';
 import type { Difficulty, Mode, Problem } from '../../types';
 import type { PlanId } from '../../config/tiers';
+
+const MODE_CONFIG: { mode: Mode; label: string; icon: typeof BookOpen }[] = [
+  { mode: 'TEACHER', label: 'Teacher', icon: BookOpen },
+  { mode: 'INTERVIEWER', label: 'Interviewer', icon: Mic },
+  { mode: 'REVIEWER', label: 'Reviewer', icon: ClipboardCheck },
+];
 
 interface TopNavProps {
   mode: Mode;
@@ -17,6 +23,7 @@ interface TopNavProps {
   syncing?: boolean;
   plan?: PlanId;
   onManageSubscription?: () => void;
+  onModeChange?: (mode: Mode) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -36,12 +43,7 @@ function getDifficultyClass(d: Difficulty): string {
   return `badge badge-${d.toLowerCase()}`;
 }
 
-function getModeClass(mode: Mode): string {
-  const m = mode.toLowerCase();
-  return `badge badge-pulse badge-${m}`;
-}
-
-export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent, user, onSignOut, onSync, syncing, plan, onManageSubscription }: TopNavProps) {
+export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent, user, onSignOut, onSync, syncing, plan, onManageSubscription, onModeChange }: TopNavProps) {
   const circumference = 2 * Math.PI * 10;
   const offset = circumference - (progressPercent / 100) * circumference;
 
@@ -66,9 +68,21 @@ export default function TopNav({ mode, problem, timerSeconds, timerRunning, hint
       </div>
 
       <div className="topnav-center">
-        <span className={getModeClass(mode)}>
-          {mode}
-        </span>
+        <div className="mode-switcher" role="radiogroup" aria-label="Coaching mode">
+          {MODE_CONFIG.map(({ mode: m, label, icon: Icon }) => (
+            <button
+              key={m}
+              type="button"
+              role="radio"
+              aria-checked={mode === m}
+              className={`mode-switcher-btn mode-${m.toLowerCase()}${mode === m ? ' active' : ''}`}
+              onClick={() => onModeChange?.(m)}
+            >
+              <Icon size={12} aria-hidden="true" />
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="topnav-right">
