@@ -4,6 +4,7 @@ import type {
   SystemDesignAction,
   SystemDesignPhase,
   PhaseStatus,
+  ScalingState,
 } from '../types';
 
 const PHASE_ORDER: SystemDesignPhase[] = [
@@ -28,6 +29,35 @@ function defaultPhaseStatuses(): Record<SystemDesignPhase, PhaseStatus> {
   };
 }
 
+function defaultScaling(): ScalingState {
+  return {
+    capacity: {
+      readQps: '',
+      writeQps: '',
+      storageDayGb: '',
+      storageGrowthTbYr: '',
+      bandwidthMbS: '',
+      cacheMemGb: '',
+    },
+    computeStrategy: '',
+    computeDetails: '',
+    dbReplication: '',
+    dbSharding: '',
+    dbShardKey: '',
+    dbDetails: '',
+    cachePattern: '',
+    evictionPolicy: '',
+    cacheTtl: '',
+    cacheDetails: '',
+    lbAlgorithm: '',
+    useCdn: false,
+    lbDetails: '',
+    reliabilityChecks: [],
+    metrics: [],
+    alertingDetails: '',
+  };
+}
+
 const initialState: SystemDesignState = {
   active: false,
   currentPhase: 'overview',
@@ -40,6 +70,8 @@ const initialState: SystemDesignState = {
   dbJustification: '',
   diagramNodes: [],
   diagramEdges: [],
+  deepDiveChallenges: [],
+  scaling: defaultScaling(),
 };
 
 function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDesignState {
@@ -60,6 +92,8 @@ function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDe
         },
         topicTitle: action.topicTitle,
         topicPrompt: action.topicPrompt,
+        deepDiveChallenges: [],
+        scaling: defaultScaling(),
       };
 
     case 'SET_PHASE': {
@@ -112,6 +146,12 @@ function reducer(state: SystemDesignState, action: SystemDesignAction): SystemDe
 
     case 'UPDATE_DIAGRAM':
       return { ...state, diagramNodes: action.nodes, diagramEdges: action.edges };
+
+    case 'UPDATE_DEEP_DIVES':
+      return { ...state, deepDiveChallenges: action.challenges };
+
+    case 'UPDATE_SCALING':
+      return { ...state, scaling: action.scaling };
 
     case 'RESET':
       return initialState;

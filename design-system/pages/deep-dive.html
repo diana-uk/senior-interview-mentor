@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Dives Workspace - Senior Interview Mentor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../layout.css">
+  <link rel="stylesheet" href="../animations.css">
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════
+       DEEP DIVES WORKSPACE
+       ═══════════════════════════════════════════════════════════════════ */
+
+    .sd-deepdive {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── Phase Sidebar ── */
+    .phase-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      border-right: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .phase-sidebar__timer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2-5) var(--space-3);
+      background: var(--bg-overlay);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+    }
+
+    .phase-sidebar__timer .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--neon-cyan);
+    }
+
+    .phase-sidebar__timer-value {
+      font-family: var(--font-mono);
+      font-weight: var(--font-semibold);
+      font-size: 15px;
+      color: var(--text-bright);
+    }
+
+    .phase-sidebar__progress {
+      margin-bottom: var(--space-5);
+    }
+
+    .phase-sidebar__progress-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--space-1);
+      display: block;
+    }
+
+    .phase-sidebar__progress-track {
+      height: 4px;
+      background: var(--bg-overlay);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .phase-sidebar__progress-fill {
+      height: 100%;
+      background: var(--neon-cyan);
+      border-radius: 2px;
+      transition: width 0.3s var(--ease-out);
+    }
+
+    .phase-sidebar__steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .phase-sidebar__step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2-5);
+      padding: var(--space-2-5) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+      text-align: left;
+    }
+
+    .phase-sidebar__step:hover {
+      background: var(--bg-overlay);
+    }
+
+    .phase-sidebar__step--active {
+      background: var(--neon-cyan-subtle);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .phase-sidebar__step--completed {
+      color: var(--text-secondary);
+    }
+
+    .phase-sidebar__step-indicator {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .phase-sidebar__step-indicator .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .phase-sidebar__step--completed .phase-sidebar__step-indicator {
+      color: var(--neon-lime);
+    }
+
+    .phase-sidebar__step-number {
+      font-size: var(--text-xxs);
+      color: var(--text-muted);
+      width: 16px;
+      flex-shrink: 0;
+    }
+
+    .phase-sidebar__step-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Main Content ── */
+    .sd-deepdive__main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg-deep);
+      overflow: hidden;
+    }
+
+    .sd-deepdive__scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    /* ── Challenge Tab Bar ── */
+    .sd-deepdive__tabs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .sd-deepdive__tab {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1-5) var(--space-3);
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-default);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .sd-deepdive__tab:hover {
+      border-color: var(--neon-cyan-dim);
+      color: var(--text-primary);
+    }
+
+    .sd-deepdive__tab--active {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 12px var(--neon-cyan-glow);
+    }
+
+    .sd-deepdive__tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--bg-overlay);
+      font-size: var(--text-xxs);
+      font-weight: var(--font-bold);
+      color: var(--text-muted);
+    }
+
+    .sd-deepdive__tab--active .sd-deepdive__tab-badge {
+      background: rgba(0, 240, 255, 0.2);
+      color: var(--neon-cyan);
+    }
+
+    .sd-deepdive__tab-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      line-height: 1;
+      padding: 0;
+    }
+
+    .sd-deepdive__tab-close:hover {
+      background: var(--neon-red-subtle);
+      color: var(--neon-red);
+    }
+
+    .sd-deepdive__add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1-5) var(--space-3);
+      border-radius: var(--radius-full);
+      border: 1px dashed var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      flex-shrink: 0;
+    }
+
+    .sd-deepdive__add-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+    }
+
+    .sd-deepdive__add-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .sd-deepdive__add-btn:disabled:hover {
+      border-color: var(--border-strong);
+      color: var(--text-muted);
+      background: transparent;
+    }
+
+    /* ── Empty State ── */
+    .sd-deepdive__empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-5);
+      padding: var(--space-12) var(--space-8);
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      text-align: center;
+      flex: 1;
+    }
+
+    .sd-deepdive__empty-icon {
+      font-size: 48px;
+      color: var(--neon-cyan-dim);
+      opacity: 0.6;
+    }
+
+    .sd-deepdive__empty-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .sd-deepdive__empty-desc {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      max-width: 400px;
+      line-height: var(--leading-relaxed);
+    }
+
+    .sd-deepdive__templates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+      max-width: 500px;
+    }
+
+    .sd-deepdive__template-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1-5);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__template-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+      box-shadow: 0 0 8px var(--neon-cyan-glow);
+    }
+
+    .sd-deepdive__template-btn .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    /* ── Challenge Editor ── */
+    .sd-deepdive__editor {
+      display: none;
+      flex-direction: column;
+      gap: var(--space-5);
+      flex: 1;
+    }
+
+    .sd-deepdive__editor--visible {
+      display: flex;
+    }
+
+    /* Section block */
+    .sd-deepdive__section {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+
+    .sd-deepdive__section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .sd-deepdive__section-header .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--neon-cyan);
+    }
+
+    .sd-deepdive__section-header h3 {
+      font-size: 15px;
+      font-weight: var(--font-semibold);
+      color: var(--text-bright);
+      margin: 0;
+    }
+
+    .sd-deepdive__hint {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Form fields */
+    .sd-deepdive__label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-1-5);
+    }
+
+    .sd-deepdive__input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--font-medium);
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__input:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 2px var(--neon-cyan-glow);
+    }
+
+    .sd-deepdive__input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sd-deepdive__textarea {
+      width: 100%;
+      padding: var(--space-2-5) var(--space-3);
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      resize: vertical;
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__textarea:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 2px var(--neon-cyan-glow);
+    }
+
+    .sd-deepdive__textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ── Approach Comparison Cards ── */
+    .sd-deepdive__approaches {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .sd-deepdive__approach-card {
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      position: relative;
+      border-left: 3px solid var(--border-default);
+    }
+
+    .sd-deepdive__approach-card[data-color="cyan"]    { border-left-color: var(--neon-cyan); }
+    .sd-deepdive__approach-card[data-color="magenta"] { border-left-color: var(--neon-magenta); }
+    .sd-deepdive__approach-card[data-color="amber"]   { border-left-color: var(--neon-amber); }
+    .sd-deepdive__approach-card[data-color="purple"]  { border-left-color: var(--neon-purple); }
+
+    .sd-deepdive__approach-name {
+      width: 100%;
+      padding: var(--space-1-5) var(--space-2);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-bright);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__approach-name:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+    }
+
+    .sd-deepdive__approach-name::placeholder {
+      color: var(--text-muted);
+      font-weight: var(--font-normal);
+    }
+
+    .sd-deepdive__approach-field label {
+      display: block;
+      font-size: var(--text-xxs);
+      font-weight: var(--font-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-1);
+    }
+
+    .sd-deepdive__approach-card[data-color="cyan"]    .sd-deepdive__approach-field label { color: var(--neon-cyan-dim); }
+    .sd-deepdive__approach-card[data-color="magenta"] .sd-deepdive__approach-field label { color: var(--neon-magenta-dim); }
+    .sd-deepdive__approach-card[data-color="amber"]   .sd-deepdive__approach-field label { color: var(--neon-amber-dim); }
+    .sd-deepdive__approach-card[data-color="purple"]  .sd-deepdive__approach-field label { color: var(--neon-purple-dim); }
+
+    .sd-deepdive__approach-pros,
+    .sd-deepdive__approach-cons {
+      width: 100%;
+      padding: var(--space-1-5) var(--space-2);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      line-height: var(--leading-normal);
+      resize: vertical;
+      min-height: 56px;
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__approach-pros:focus,
+    .sd-deepdive__approach-cons:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+    }
+
+    .sd-deepdive__approach-pros::placeholder,
+    .sd-deepdive__approach-cons::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sd-deepdive__add-approach {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-1);
+      padding: var(--space-3);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+      min-height: 100px;
+    }
+
+    .sd-deepdive__add-approach:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+    }
+
+    .sd-deepdive__add-approach:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ── Chosen Approach (Radio Group) ── */
+    .sd-deepdive__chosen-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+
+    .sd-deepdive__chosen-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2-5) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: var(--bg-deep);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-deepdive__chosen-option:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+
+    .sd-deepdive__chosen-option--selected {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+    }
+
+    .sd-deepdive__chosen-radio {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-deep);
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--duration-fast) var(--ease-out);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .sd-deepdive__chosen-radio:checked {
+      border-color: var(--neon-cyan);
+      background: var(--bg-deep);
+    }
+
+    .sd-deepdive__chosen-radio:checked::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+    }
+
+    .sd-deepdive__chosen-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+    }
+
+    .sd-deepdive__chosen-option--selected .sd-deepdive__chosen-label {
+      color: var(--neon-cyan);
+    }
+
+    /* ── Actions Bar ── */
+    .sd-deepdive__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .sd-deepdive__actions .btn:last-child {
+      margin-left: auto;
+    }
+
+    /* ── Mentor Panel ── */
+    .mentor-panel {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mentor-panel__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .mentor-panel__title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .mentor-panel__badge {
+      font-size: var(--text-xxs);
+      font-weight: var(--font-semibold);
+      color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+
+    .mentor-panel__messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .mentor-msg {
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+    }
+
+    .mentor-msg--ai {
+      background: var(--bg-overlay);
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+    }
+
+    .mentor-msg--user {
+      background: var(--neon-cyan-subtle);
+      color: var(--text-primary);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      margin-left: var(--space-4);
+    }
+
+    .mentor-msg strong {
+      color: var(--text-bright);
+    }
+
+    .mentor-msg p {
+      margin: 0;
+    }
+
+    .mentor-msg p + p {
+      margin-top: var(--space-2);
+    }
+
+    .mentor-panel__input {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-top: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .mentor-panel__textarea {
+      flex: 1;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      resize: none;
+      min-height: 36px;
+      max-height: 100px;
+      line-height: var(--leading-normal);
+    }
+
+    .mentor-panel__textarea:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+    }
+
+    .mentor-panel__textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .mentor-panel__send {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--neon-cyan);
+      color: var(--bg-void);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .mentor-panel__send:hover {
+      box-shadow: 0 0 12px var(--neon-cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .mentor-panel__send .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    /* ── Field Group Utility ── */
+    .sd-deepdive__field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1-5);
+    }
+
+    .sd-deepdive__field-group + .sd-deepdive__field-group {
+      margin-top: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-body" style="height:100vh;">
+      <div class="sd-deepdive">
+
+        <!-- ═══ Phase Progress Sidebar ═══ -->
+        <aside class="phase-sidebar">
+          <div class="phase-sidebar__timer">
+            <span class="material-symbols-outlined">timer</span>
+            <span class="phase-sidebar__timer-value">22:38</span>
+          </div>
+
+          <div class="phase-sidebar__progress">
+            <span class="phase-sidebar__progress-label">5/7 completed</span>
+            <div class="phase-sidebar__progress-track">
+              <div class="phase-sidebar__progress-fill" style="width:71%"></div>
+            </div>
+          </div>
+
+          <div class="phase-sidebar__steps">
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">1</span>
+              <span class="phase-sidebar__step-label">Overview</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">2</span>
+              <span class="phase-sidebar__step-label">Requirements</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">3</span>
+              <span class="phase-sidebar__step-label">API Design</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">4</span>
+              <span class="phase-sidebar__step-label">Data Model</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">5</span>
+              <span class="phase-sidebar__step-label">Architecture</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--active">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">search</span>
+              </span>
+              <span class="phase-sidebar__step-number">6</span>
+              <span class="phase-sidebar__step-label">Deep Dives</span>
+            </button>
+            <button type="button" class="phase-sidebar__step">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">7</span>
+              <span class="phase-sidebar__step-label">Scaling</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- ═══ Main Content ═══ -->
+        <div class="sd-deepdive__main">
+
+          <!-- Challenge Tab Bar -->
+          <div class="sd-deepdive__tabs" id="tabBar">
+            <!-- Tabs populated by JS -->
+          </div>
+
+          <!-- Scrollable Content -->
+          <div class="sd-deepdive__scroll" id="scrollArea">
+
+            <!-- Empty State (shown when no challenges) -->
+            <div class="sd-deepdive__empty" id="emptyState">
+              <span class="material-symbols-outlined sd-deepdive__empty-icon">search</span>
+              <div class="sd-deepdive__empty-title">Pick a Technical Challenge</div>
+              <div class="sd-deepdive__empty-desc">
+                Deep dives demonstrate your ability to analyze complex tradeoffs.
+                Choose a challenge area or create your own.
+              </div>
+              <div class="sd-deepdive__templates">
+                <button type="button" class="sd-deepdive__template-btn" data-template="caching">
+                  <span class="material-symbols-outlined">cached</span>
+                  Caching Strategy
+                </button>
+                <button type="button" class="sd-deepdive__template-btn" data-template="consistency">
+                  <span class="material-symbols-outlined">sync</span>
+                  Consistency Model
+                </button>
+                <button type="button" class="sd-deepdive__template-btn" data-template="ratelimit">
+                  <span class="material-symbols-outlined">speed</span>
+                  Rate Limiting
+                </button>
+                <button type="button" class="sd-deepdive__template-btn" data-template="partition">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  Data Partitioning
+                </button>
+                <button type="button" class="sd-deepdive__template-btn" data-template="conflict">
+                  <span class="material-symbols-outlined">merge_type</span>
+                  Conflict Resolution
+                </button>
+              </div>
+            </div>
+
+            <!-- Challenge Editor (shown when a challenge is selected) -->
+            <div class="sd-deepdive__editor" id="challengeEditor">
+
+              <!-- Title -->
+              <div class="sd-deepdive__section">
+                <div class="sd-deepdive__section-header">
+                  <span class="material-symbols-outlined">edit_note</span>
+                  <h3>Challenge Title</h3>
+                </div>
+                <input
+                  type="text"
+                  class="sd-deepdive__input"
+                  id="challengeTitle"
+                  placeholder="e.g., Caching strategy for read-heavy timeline feed"
+                >
+              </div>
+
+              <!-- Problem Statement -->
+              <div class="sd-deepdive__section">
+                <div class="sd-deepdive__section-header">
+                  <span class="material-symbols-outlined">description</span>
+                  <h3>Problem Statement</h3>
+                </div>
+                <p class="sd-deepdive__hint">What's the technical challenge? Why does it matter for this system?</p>
+                <textarea
+                  class="sd-deepdive__textarea"
+                  id="problemStatement"
+                  rows="4"
+                  placeholder="Describe the specific technical challenge you want to explore..."
+                ></textarea>
+              </div>
+
+              <!-- Approach Comparison -->
+              <div class="sd-deepdive__section">
+                <div class="sd-deepdive__section-header">
+                  <span class="material-symbols-outlined">compare_arrows</span>
+                  <h3>Approach Comparison</h3>
+                </div>
+                <p class="sd-deepdive__hint">Compare 2-4 approaches side-by-side. Each approach should have clear pros and cons.</p>
+
+                <div class="sd-deepdive__approaches" id="approachCards">
+                  <!-- Approach Card 1 -->
+                  <div class="sd-deepdive__approach-card" data-color="cyan">
+                    <input type="text" class="sd-deepdive__approach-name" placeholder="Approach name (e.g., Write-through cache)" data-approach="0">
+                    <div class="sd-deepdive__approach-field">
+                      <label>Pros</label>
+                      <textarea class="sd-deepdive__approach-pros" rows="3" placeholder="What does this approach do well?"></textarea>
+                    </div>
+                    <div class="sd-deepdive__approach-field">
+                      <label>Cons</label>
+                      <textarea class="sd-deepdive__approach-cons" rows="3" placeholder="What are the drawbacks?"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Approach Card 2 -->
+                  <div class="sd-deepdive__approach-card" data-color="magenta">
+                    <input type="text" class="sd-deepdive__approach-name" placeholder="Approach name (e.g., Write-behind cache)" data-approach="1">
+                    <div class="sd-deepdive__approach-field">
+                      <label>Pros</label>
+                      <textarea class="sd-deepdive__approach-pros" rows="3" placeholder="What does this approach do well?"></textarea>
+                    </div>
+                    <div class="sd-deepdive__approach-field">
+                      <label>Cons</label>
+                      <textarea class="sd-deepdive__approach-cons" rows="3" placeholder="What are the drawbacks?"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" class="sd-deepdive__add-approach" id="addApproachBtn">
+                  <span class="material-symbols-outlined" style="font-size:18px">add</span>
+                  Add Approach
+                </button>
+              </div>
+
+              <!-- Chosen Approach -->
+              <div class="sd-deepdive__section">
+                <div class="sd-deepdive__section-header">
+                  <span class="material-symbols-outlined">check_circle</span>
+                  <h3>Chosen Approach</h3>
+                </div>
+                <p class="sd-deepdive__hint">Select which approach you'd recommend and explain why.</p>
+
+                <div class="sd-deepdive__chosen-options" id="chosenOptions">
+                  <!-- Populated by JS based on approach names -->
+                </div>
+
+                <div class="sd-deepdive__field-group" style="margin-top:var(--space-3)">
+                  <label class="sd-deepdive__label">Justification</label>
+                  <textarea
+                    class="sd-deepdive__textarea"
+                    id="justification"
+                    rows="3"
+                    placeholder="Why is this the right choice for this system? What constraints drive this decision?"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- Tradeoffs -->
+              <div class="sd-deepdive__section">
+                <div class="sd-deepdive__section-header">
+                  <span class="material-symbols-outlined">balance</span>
+                  <h3>Tradeoffs</h3>
+                </div>
+                <p class="sd-deepdive__hint">What are you sacrificing? Under what conditions would you choose differently?</p>
+                <textarea
+                  class="sd-deepdive__textarea"
+                  id="tradeoffs"
+                  rows="4"
+                  placeholder="e.g., We sacrifice strong consistency for availability. If this were a banking system with strict regulatory requirements, we'd choose the write-through approach instead..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions Bar -->
+          <div class="sd-deepdive__actions">
+            <button type="button" class="btn btn-secondary" id="reviewBtn" disabled>
+              <span class="material-symbols-outlined" style="font-size:16px">rate_review</span>
+              Review Deep Dives
+            </button>
+            <button type="button" class="btn btn-primary">
+              Next: Scaling
+              <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Mentor Panel ═══ -->
+        <div class="mentor-panel">
+          <div class="mentor-panel__header">
+            <span class="mentor-panel__title">Mentor</span>
+            <span class="mentor-panel__badge">Interviewer</span>
+          </div>
+
+          <div class="mentor-panel__messages">
+            <div class="mentor-msg mentor-msg--ai">
+              <p><strong>Phase 6: Deep Dives</strong></p>
+              <p>Now let's go deeper. Pick 1-3 technical challenges from your design and analyze them in detail.</p>
+              <p>For each challenge, I want to see:</p>
+              <p>&bull; Multiple approaches compared<br>
+                 &bull; A clear decision with justification<br>
+                 &bull; Explicit tradeoff reasoning</p>
+              <p>This is where you show senior-level depth. What area interests you most?</p>
+            </div>
+          </div>
+
+          <div class="mentor-panel__input">
+            <textarea class="mentor-panel__textarea" placeholder="Ask about deep dives..." rows="1"></textarea>
+            <button type="button" class="mentor-panel__send" aria-label="Send message">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════════
+       DEEP DIVES WORKSPACE — Vanilla JS Controller
+       ═══════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      // ── DOM References ──
+      const tabBar = document.getElementById('tabBar');
+      const emptyState = document.getElementById('emptyState');
+      const challengeEditor = document.getElementById('challengeEditor');
+      const approachCards = document.getElementById('approachCards');
+      const addApproachBtn = document.getElementById('addApproachBtn');
+      const chosenOptions = document.getElementById('chosenOptions');
+      const reviewBtn = document.getElementById('reviewBtn');
+      const titleInput = document.getElementById('challengeTitle');
+      const problemInput = document.getElementById('problemStatement');
+      const justificationInput = document.getElementById('justification');
+      const tradeoffsInput = document.getElementById('tradeoffs');
+
+      // ── Constants ──
+      const MAX_CHALLENGES = 3;
+      const MAX_APPROACHES = 4;
+      const APPROACH_COLORS = ['cyan', 'magenta', 'amber', 'purple'];
+
+      const TEMPLATES = {
+        caching: {
+          title: 'Caching Strategy',
+          problem: 'How should we cache frequently accessed data to reduce database load and improve read latency?',
+          approaches: ['Write-through Cache', 'Write-behind Cache']
+        },
+        consistency: {
+          title: 'Consistency Model',
+          problem: 'What consistency guarantees should the system provide, and how do we handle eventual consistency scenarios?',
+          approaches: ['Strong Consistency', 'Eventual Consistency']
+        },
+        ratelimit: {
+          title: 'Rate Limiting',
+          problem: 'How do we protect the system from abuse while allowing legitimate high-volume traffic?',
+          approaches: ['Token Bucket', 'Sliding Window']
+        },
+        partition: {
+          title: 'Data Partitioning',
+          problem: 'How should we partition data across multiple nodes to handle growth beyond a single machine?',
+          approaches: ['Hash-based Sharding', 'Range-based Sharding']
+        },
+        conflict: {
+          title: 'Conflict Resolution',
+          problem: 'How do we handle conflicting writes in a distributed system with multiple write paths?',
+          approaches: ['Last-Writer-Wins', 'CRDTs / Merge Functions']
+        }
+      };
+
+      // ── State ──
+      let challenges = [];
+      let activeIndex = -1;
+
+      // ── Render Functions ──
+      function renderTabs() {
+        let html = '';
+        challenges.forEach((ch, i) => {
+          const activeClass = i === activeIndex ? ' sd-deepdive__tab--active' : '';
+          const displayTitle = ch.title || 'Untitled';
+          const truncated = displayTitle.length > 20 ? displayTitle.slice(0, 20) + '…' : displayTitle;
+          html += '<button type="button" class="sd-deepdive__tab' + activeClass + '" data-idx="' + i + '">'
+                + '<span class="sd-deepdive__tab-badge">' + (i + 1) + '</span>'
+                + '<span>' + truncated + '</span>'
+                + '<span class="sd-deepdive__tab-close" data-delete="' + i + '" title="Remove challenge">&times;</span>'
+                + '</button>';
+        });
+
+        const disabledAttr = challenges.length >= MAX_CHALLENGES ? ' disabled' : '';
+        html += '<button type="button" class="sd-deepdive__add-btn"' + disabledAttr + ' id="addChallengeBtn">'
+              + '<span class="material-symbols-outlined" style="font-size:14px">add</span>'
+              + 'Add Deep Dive'
+              + '</button>';
+
+        tabBar.innerHTML = html;
+
+        // Bind tab click handlers
+        tabBar.querySelectorAll('.sd-deepdive__tab').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            if (e.target.classList.contains('sd-deepdive__tab-close') || e.target.dataset.delete !== undefined) return;
+            selectChallenge(parseInt(btn.dataset.idx));
+          });
+        });
+
+        // Bind delete handlers
+        tabBar.querySelectorAll('.sd-deepdive__tab-close').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteChallenge(parseInt(btn.dataset.delete));
+          });
+        });
+
+        // Bind add button
+        var addBtn = document.getElementById('addChallengeBtn');
+        if (addBtn) {
+          addBtn.addEventListener('click', function() {
+            addChallenge();
+          });
+        }
+      }
+
+      function renderView() {
+        if (challenges.length === 0) {
+          emptyState.style.display = '';
+          challengeEditor.classList.remove('sd-deepdive__editor--visible');
+          reviewBtn.disabled = true;
+        } else {
+          emptyState.style.display = 'none';
+          challengeEditor.classList.add('sd-deepdive__editor--visible');
+          reviewBtn.disabled = false;
+          loadChallenge(activeIndex);
+        }
+        renderTabs();
+      }
+
+      function loadChallenge(idx) {
+        var ch = challenges[idx];
+        if (!ch) return;
+
+        titleInput.value = ch.title || '';
+        problemInput.value = ch.problem || '';
+        justificationInput.value = ch.justification || '';
+        tradeoffsInput.value = ch.tradeoffs || '';
+
+        renderApproachCards(ch);
+        renderChosenOptions(ch);
+      }
+
+      function renderApproachCards(ch) {
+        var html = '';
+        ch.approaches.forEach(function(a, i) {
+          html += '<div class="sd-deepdive__approach-card" data-color="' + APPROACH_COLORS[i] + '">'
+                + '<input type="text" class="sd-deepdive__approach-name" placeholder="Approach name" value="' + escapeAttr(a.name) + '" data-approach="' + i + '">'
+                + '<div class="sd-deepdive__approach-field"><label>Pros</label>'
+                + '<textarea class="sd-deepdive__approach-pros" rows="3" placeholder="What does this approach do well?" data-approach="' + i + '">' + escapeHTML(a.pros) + '</textarea></div>'
+                + '<div class="sd-deepdive__approach-field"><label>Cons</label>'
+                + '<textarea class="sd-deepdive__approach-cons" rows="3" placeholder="What are the drawbacks?" data-approach="' + i + '">' + escapeHTML(a.cons) + '</textarea></div>'
+                + '</div>';
+        });
+        approachCards.innerHTML = html;
+
+        addApproachBtn.disabled = ch.approaches.length >= MAX_APPROACHES;
+
+        // Bind approach input handlers
+        approachCards.querySelectorAll('.sd-deepdive__approach-name').forEach(function(input) {
+          input.addEventListener('input', function() {
+            var ai = parseInt(input.dataset.approach);
+            ch.approaches[ai].name = input.value;
+            renderChosenOptions(ch);
+          });
+        });
+        approachCards.querySelectorAll('.sd-deepdive__approach-pros').forEach(function(ta) {
+          ta.addEventListener('input', function() {
+            ch.approaches[parseInt(ta.dataset.approach)].pros = ta.value;
+          });
+        });
+        approachCards.querySelectorAll('.sd-deepdive__approach-cons').forEach(function(ta) {
+          ta.addEventListener('input', function() {
+            ch.approaches[parseInt(ta.dataset.approach)].cons = ta.value;
+          });
+        });
+      }
+
+      function renderChosenOptions(ch) {
+        var html = '';
+        ch.approaches.forEach(function(a, i) {
+          var label = a.name || 'Approach ' + (i + 1);
+          var checked = ch.chosenIndex === i ? ' checked' : '';
+          var selectedClass = ch.chosenIndex === i ? ' sd-deepdive__chosen-option--selected' : '';
+          html += '<label class="sd-deepdive__chosen-option' + selectedClass + '">'
+                + '<input type="radio" name="chosenApproach" class="sd-deepdive__chosen-radio" value="' + i + '"' + checked + '>'
+                + '<span class="sd-deepdive__chosen-label">' + escapeHTML(label) + '</span>'
+                + '</label>';
+        });
+        chosenOptions.innerHTML = html;
+
+        chosenOptions.querySelectorAll('.sd-deepdive__chosen-radio').forEach(function(radio) {
+          radio.addEventListener('change', function() {
+            ch.chosenIndex = parseInt(radio.value);
+            renderChosenOptions(ch);
+          });
+        });
+      }
+
+      // ── CRUD Operations ──
+      function addChallenge(template) {
+        if (challenges.length >= MAX_CHALLENGES) return;
+
+        var ch = {
+          title: '',
+          problem: '',
+          approaches: [
+            { name: '', pros: '', cons: '' },
+            { name: '', pros: '', cons: '' }
+          ],
+          chosenIndex: -1,
+          justification: '',
+          tradeoffs: ''
+        };
+
+        if (template && TEMPLATES[template]) {
+          var t = TEMPLATES[template];
+          ch.title = t.title;
+          ch.problem = t.problem;
+          ch.approaches = t.approaches.map(function(name) {
+            return { name: name, pros: '', cons: '' };
+          });
+        }
+
+        challenges.push(ch);
+        activeIndex = challenges.length - 1;
+        renderView();
+      }
+
+      function deleteChallenge(idx) {
+        challenges.splice(idx, 1);
+        if (activeIndex >= challenges.length) {
+          activeIndex = challenges.length - 1;
+        }
+        renderView();
+      }
+
+      function selectChallenge(idx) {
+        // Save current challenge state before switching
+        saveCurrentChallenge();
+        activeIndex = idx;
+        renderView();
+      }
+
+      function saveCurrentChallenge() {
+        if (activeIndex < 0 || activeIndex >= challenges.length) return;
+        var ch = challenges[activeIndex];
+        ch.title = titleInput.value;
+        ch.problem = problemInput.value;
+        ch.justification = justificationInput.value;
+        ch.tradeoffs = tradeoffsInput.value;
+      }
+
+      // ── Helpers ──
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function escapeAttr(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // ── Event Bindings ──
+
+      // Template buttons
+      document.querySelectorAll('.sd-deepdive__template-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          addChallenge(btn.dataset.template);
+        });
+      });
+
+      // Add approach
+      addApproachBtn.addEventListener('click', function() {
+        if (activeIndex < 0) return;
+        var ch = challenges[activeIndex];
+        if (ch.approaches.length >= MAX_APPROACHES) return;
+        ch.approaches.push({ name: '', pros: '', cons: '' });
+        renderApproachCards(ch);
+        renderChosenOptions(ch);
+      });
+
+      // Title sync to tabs on input
+      titleInput.addEventListener('input', function() {
+        if (activeIndex >= 0) {
+          challenges[activeIndex].title = titleInput.value;
+          renderTabs();
+        }
+      });
+
+      // Save on blur for other fields
+      [problemInput, justificationInput, tradeoffsInput].forEach(function(el) {
+        el.addEventListener('input', function() {
+          if (activeIndex >= 0) {
+            var ch = challenges[activeIndex];
+            ch.problem = problemInput.value;
+            ch.justification = justificationInput.value;
+            ch.tradeoffs = tradeoffsInput.value;
+          }
+        });
+      });
+
+      // Review button
+      reviewBtn.addEventListener('click', function() {
+        saveCurrentChallenge();
+        var msgs = document.querySelector('.mentor-panel__messages');
+        var summary = challenges.map(function(ch, i) {
+          var chosen = ch.chosenIndex >= 0 ? ch.approaches[ch.chosenIndex].name : '(none selected)';
+          return '<strong>Challenge ' + (i + 1) + ': ' + escapeHTML(ch.title || 'Untitled') + '</strong><br>'
+               + 'Problem: ' + escapeHTML(ch.problem) + '<br>'
+               + 'Approaches: ' + ch.approaches.map(function(a) { return escapeHTML(a.name || '?'); }).join(', ') + '<br>'
+               + 'Chosen: ' + escapeHTML(chosen) + '<br>'
+               + 'Justification: ' + escapeHTML(ch.justification) + '<br>'
+               + 'Tradeoffs: ' + escapeHTML(ch.tradeoffs);
+        }).join('<br><br>');
+
+        var userMsg = document.createElement('div');
+        userMsg.className = 'mentor-msg mentor-msg--user';
+        userMsg.innerHTML = '<p><strong>Please review my deep dives:</strong></p>';
+        msgs.appendChild(userMsg);
+
+        var aiMsg = document.createElement('div');
+        aiMsg.className = 'mentor-msg mentor-msg--ai';
+        aiMsg.innerHTML = '<p>' + summary + '</p><p style="margin-top:var(--space-3);color:var(--text-secondary);font-style:italic">(AI review would appear here in the real app)</p>';
+        msgs.appendChild(aiMsg);
+
+        msgs.scrollTop = msgs.scrollHeight;
+      });
+
+      // ── Init ──
+      renderView();
+
+    })();
+  </script>
+</body>
+</html>

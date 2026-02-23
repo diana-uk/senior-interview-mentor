@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaling Workspace - Senior Interview Mentor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../components.css">
+  <link rel="stylesheet" href="../layout.css">
+  <link rel="stylesheet" href="../animations.css">
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════
+       SCALING WORKSPACE
+       ═══════════════════════════════════════════════════════════════════ */
+
+    .sd-scaling {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── Phase Sidebar (reused from deep-dive) ── */
+    .phase-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      border-right: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .phase-sidebar__timer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2-5) var(--space-3);
+      background: var(--bg-overlay);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-4);
+    }
+
+    .phase-sidebar__timer .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--neon-amber);
+    }
+
+    .phase-sidebar__timer-value {
+      font-family: var(--font-mono);
+      font-weight: var(--font-semibold);
+      font-size: 15px;
+      color: var(--text-bright);
+    }
+
+    .phase-sidebar__progress {
+      margin-bottom: var(--space-5);
+    }
+
+    .phase-sidebar__progress-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: var(--space-1);
+      display: block;
+    }
+
+    .phase-sidebar__progress-track {
+      height: 4px;
+      background: var(--bg-overlay);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .phase-sidebar__progress-fill {
+      height: 100%;
+      background: var(--neon-amber);
+      border-radius: 2px;
+      transition: width 0.3s var(--ease-out);
+    }
+
+    .phase-sidebar__steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .phase-sidebar__step {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2-5);
+      padding: var(--space-2-5) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+      text-align: left;
+    }
+
+    .phase-sidebar__step:hover {
+      background: var(--bg-overlay);
+    }
+
+    .phase-sidebar__step--active {
+      background: var(--neon-amber-subtle);
+      border-color: var(--neon-amber);
+      color: var(--neon-amber);
+    }
+
+    .phase-sidebar__step--completed {
+      color: var(--text-secondary);
+    }
+
+    .phase-sidebar__step-indicator {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .phase-sidebar__step-indicator .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .phase-sidebar__step--completed .phase-sidebar__step-indicator {
+      color: var(--neon-lime);
+    }
+
+    .phase-sidebar__step-number {
+      font-size: var(--text-xxs);
+      color: var(--text-muted);
+      width: 16px;
+      flex-shrink: 0;
+    }
+
+    .phase-sidebar__step-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Main Content ── */
+    .sd-scaling__main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg-deep);
+      overflow: hidden;
+    }
+
+    .sd-scaling__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .sd-scaling__header .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--neon-amber);
+    }
+
+    .sd-scaling__header-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--text-bright);
+    }
+
+    .sd-scaling__scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* ── Section Block (shared) ── */
+    .sd-scaling__section {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .sd-scaling__section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__section-header:hover {
+      background: var(--bg-raised);
+    }
+
+    .sd-scaling__section-header .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .sd-scaling__section-title {
+      font-size: 14px;
+      font-weight: var(--font-semibold);
+      color: var(--text-bright);
+      flex: 1;
+    }
+
+    .sd-scaling__section-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      flex-shrink: 0;
+      transition: background var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__section-dot--filled {
+      background: var(--neon-lime);
+      box-shadow: 0 0 6px var(--neon-lime-glow);
+    }
+
+    .sd-scaling__section-chevron {
+      font-size: 20px;
+      color: var(--text-muted);
+      transition: transform var(--duration-normal) var(--ease-out);
+      flex-shrink: 0;
+    }
+
+    .sd-scaling__section--open .sd-scaling__section-chevron {
+      transform: rotate(180deg);
+    }
+
+    .sd-scaling__section-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--duration-normal) var(--ease-out);
+    }
+
+    .sd-scaling__section--open .sd-scaling__section-body {
+      max-height: 2000px;
+    }
+
+    .sd-scaling__section-content {
+      padding: 0 var(--space-5) var(--space-5) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* ── Capacity Estimation Grid ── */
+    .sd-scaling__capacity {
+      border-left: 3px solid var(--neon-amber);
+    }
+
+    .sd-scaling__capacity .sd-scaling__section-header .material-symbols-outlined {
+      color: var(--neon-amber);
+    }
+
+    .sd-scaling__cap-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .sd-scaling__cap-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .sd-scaling__cap-label {
+      font-size: var(--text-xxs);
+      font-weight: var(--font-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+
+    .sd-scaling__cap-input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__cap-input-wrap:focus-within {
+      border-color: var(--neon-amber);
+      box-shadow: 0 0 0 2px var(--neon-amber-glow);
+    }
+
+    .sd-scaling__cap-input {
+      flex: 1;
+      padding: var(--space-2) var(--space-2-5);
+      background: transparent;
+      border: none;
+      color: var(--neon-amber);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      min-width: 0;
+    }
+
+    .sd-scaling__cap-input:focus {
+      outline: none;
+    }
+
+    .sd-scaling__cap-input::placeholder {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .sd-scaling__cap-unit {
+      padding: var(--space-2) var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--text-xxs);
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-default);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Scaling Strategy Sections ── */
+
+    /* Section accent colors */
+    .sd-scaling__section--compute { border-left: 3px solid var(--neon-cyan); }
+    .sd-scaling__section--compute .sd-scaling__section-header .material-symbols-outlined { color: var(--neon-cyan); }
+
+    .sd-scaling__section--database { border-left: 3px solid var(--neon-purple); }
+    .sd-scaling__section--database .sd-scaling__section-header .material-symbols-outlined { color: var(--neon-purple); }
+
+    .sd-scaling__section--caching { border-left: 3px solid var(--neon-amber); }
+    .sd-scaling__section--caching .sd-scaling__section-header .material-symbols-outlined { color: var(--neon-amber); }
+
+    .sd-scaling__section--loadbalancing { border-left: 3px solid var(--neon-lime); }
+    .sd-scaling__section--loadbalancing .sd-scaling__section-header .material-symbols-outlined { color: var(--neon-lime); }
+
+    .sd-scaling__section--reliability { border-left: 3px solid var(--neon-magenta); }
+    .sd-scaling__section--reliability .sd-scaling__section-header .material-symbols-outlined { color: var(--neon-magenta); }
+
+    /* ── Form Elements ── */
+    .sd-scaling__label {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      margin-bottom: var(--space-1-5);
+    }
+
+    .sd-scaling__radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .sd-scaling__radio-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: var(--bg-deep);
+      cursor: pointer;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__radio-label:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+
+    .sd-scaling__radio-label--selected {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+      color: var(--neon-cyan);
+    }
+
+    /* Per-section selected radio colors */
+    .sd-scaling__section--compute .sd-scaling__radio-label--selected {
+      border-color: var(--neon-cyan);
+      background: var(--neon-cyan-subtle);
+      color: var(--neon-cyan);
+    }
+    .sd-scaling__section--database .sd-scaling__radio-label--selected {
+      border-color: var(--neon-purple);
+      background: var(--neon-purple-subtle);
+      color: var(--neon-purple);
+    }
+    .sd-scaling__section--caching .sd-scaling__radio-label--selected {
+      border-color: var(--neon-amber);
+      background: var(--neon-amber-subtle);
+      color: var(--neon-amber);
+    }
+    .sd-scaling__section--loadbalancing .sd-scaling__radio-label--selected {
+      border-color: var(--neon-lime);
+      background: var(--neon-lime-subtle);
+      color: var(--neon-lime);
+    }
+    .sd-scaling__section--reliability .sd-scaling__radio-label--selected {
+      border-color: var(--neon-magenta);
+      background: var(--neon-magenta-subtle);
+      color: var(--neon-magenta);
+    }
+
+    .sd-scaling__radio {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-deep);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__radio:checked {
+      border-color: currentColor;
+    }
+
+    .sd-scaling__radio:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .sd-scaling__textarea {
+      width: 100%;
+      padding: var(--space-2-5) var(--space-3);
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      resize: vertical;
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__textarea:focus {
+      outline: none;
+      border-color: var(--neon-amber);
+      box-shadow: 0 0 0 2px var(--neon-amber-glow);
+    }
+
+    .sd-scaling__textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sd-scaling__input {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__input:focus {
+      outline: none;
+      border-color: var(--neon-amber);
+      box-shadow: 0 0 0 2px var(--neon-amber-glow);
+    }
+
+    .sd-scaling__input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ── Checkbox Group ── */
+    .sd-scaling__checklist {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .sd-scaling__check-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2-5);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: var(--bg-deep);
+      cursor: pointer;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__check-label:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
+    }
+
+    .sd-scaling__check-label--checked {
+      border-color: var(--neon-magenta);
+      background: var(--neon-magenta-subtle);
+      color: var(--neon-magenta);
+    }
+
+    .sd-scaling__checkbox {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-deep);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__checkbox:checked {
+      border-color: var(--neon-magenta);
+      background: var(--neon-magenta);
+    }
+
+    .sd-scaling__checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: -2px;
+      left: 1px;
+      font-size: 10px;
+      color: var(--bg-void);
+      font-weight: var(--font-bold);
+    }
+
+    /* ── Tag/Pill Input (Metrics) ── */
+    .sd-scaling__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .sd-scaling__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2-5);
+      border-radius: var(--radius-full);
+      background: var(--neon-magenta-subtle);
+      border: 1px solid rgba(255, 0, 170, 0.2);
+      color: var(--neon-magenta);
+      font-size: var(--text-xxs);
+      font-weight: var(--font-medium);
+      animation: tagIn var(--duration-normal) var(--ease-spring);
+    }
+
+    @keyframes tagIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .sd-scaling__tag-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--neon-magenta);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__tag-remove:hover {
+      background: var(--neon-magenta);
+      color: var(--bg-void);
+    }
+
+    .sd-scaling__tag-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .sd-scaling__tag-input {
+      flex: 1;
+      padding: var(--space-1-5) var(--space-2-5);
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__tag-input:focus {
+      outline: none;
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 0 2px var(--neon-magenta-glow);
+    }
+
+    .sd-scaling__tag-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .sd-scaling__tag-suggestions {
+      display: flex;
+      gap: var(--space-1);
+      flex-wrap: wrap;
+      margin-top: var(--space-1);
+    }
+
+    .sd-scaling__tag-suggestion {
+      padding: var(--space-0-5) var(--space-2);
+      border-radius: var(--radius-full);
+      border: 1px dashed var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-size: var(--text-xxs);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__tag-suggestion:hover {
+      border-color: var(--neon-magenta);
+      color: var(--neon-magenta);
+      background: var(--neon-magenta-subtle);
+    }
+
+    .sd-scaling__tag-suggestion--used {
+      opacity: 0.3;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ── Field group ── */
+    .sd-scaling__field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1-5);
+    }
+
+    /* ── CDN Checkbox (Load Balancing section) ── */
+    .sd-scaling__cdn-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2-5);
+      padding: var(--space-2-5) var(--space-3);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-default);
+      background: var(--bg-deep);
+      cursor: pointer;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .sd-scaling__cdn-toggle:hover {
+      border-color: var(--border-strong);
+    }
+
+    .sd-scaling__cdn-toggle--checked {
+      border-color: var(--neon-lime);
+      background: var(--neon-lime-subtle);
+      color: var(--neon-lime);
+    }
+
+    .sd-scaling__cdn-checkbox {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 2px solid var(--border-strong);
+      background: var(--bg-deep);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .sd-scaling__cdn-checkbox:checked {
+      border-color: var(--neon-lime);
+      background: var(--neon-lime);
+    }
+
+    .sd-scaling__cdn-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: -2px;
+      left: 1px;
+      font-size: 10px;
+      color: var(--bg-void);
+      font-weight: var(--font-bold);
+    }
+
+    /* ── Actions Bar ── */
+    .sd-scaling__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .sd-scaling__actions .btn:last-child {
+      margin-left: auto;
+    }
+
+    /* ── Mentor Panel ── */
+    .mentor-panel {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mentor-panel__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .mentor-panel__title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .mentor-panel__badge {
+      font-size: var(--text-xxs);
+      font-weight: var(--font-semibold);
+      color: var(--neon-amber);
+      background: var(--neon-amber-subtle);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+    }
+
+    .mentor-panel__messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .mentor-msg {
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+    }
+
+    .mentor-msg--ai {
+      background: var(--bg-overlay);
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+    }
+
+    .mentor-msg--user {
+      background: var(--neon-amber-subtle);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 170, 0, 0.15);
+      margin-left: var(--space-4);
+    }
+
+    .mentor-msg strong {
+      color: var(--text-bright);
+    }
+
+    .mentor-msg p {
+      margin: 0;
+    }
+
+    .mentor-msg p + p {
+      margin-top: var(--space-2);
+    }
+
+    .mentor-panel__input {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      border-top: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+
+    .mentor-panel__textarea {
+      flex: 1;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      resize: none;
+      min-height: 36px;
+      max-height: 100px;
+      line-height: var(--leading-normal);
+    }
+
+    .mentor-panel__textarea:focus {
+      outline: none;
+      border-color: var(--neon-amber);
+    }
+
+    .mentor-panel__textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .mentor-panel__send {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--neon-amber);
+      color: var(--bg-void);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--duration-fast) var(--ease-out);
+    }
+
+    .mentor-panel__send:hover {
+      box-shadow: 0 0 12px var(--neon-amber-glow);
+      transform: translateY(-1px);
+    }
+
+    .mentor-panel__send .material-symbols-outlined {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-body" style="height:100vh;">
+      <div class="sd-scaling">
+
+        <!-- ═══ Phase Progress Sidebar ═══ -->
+        <aside class="phase-sidebar">
+          <div class="phase-sidebar__timer">
+            <span class="material-symbols-outlined">timer</span>
+            <span class="phase-sidebar__timer-value">08:14</span>
+          </div>
+
+          <div class="phase-sidebar__progress">
+            <span class="phase-sidebar__progress-label">6/7 completed</span>
+            <div class="phase-sidebar__progress-track">
+              <div class="phase-sidebar__progress-fill" style="width:86%"></div>
+            </div>
+          </div>
+
+          <div class="phase-sidebar__steps">
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">1</span>
+              <span class="phase-sidebar__step-label">Overview</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">2</span>
+              <span class="phase-sidebar__step-label">Requirements</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">3</span>
+              <span class="phase-sidebar__step-label">API Design</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">4</span>
+              <span class="phase-sidebar__step-label">Data Model</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">5</span>
+              <span class="phase-sidebar__step-label">Architecture</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--completed">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">check_circle</span>
+              </span>
+              <span class="phase-sidebar__step-number">6</span>
+              <span class="phase-sidebar__step-label">Deep Dives</span>
+            </button>
+            <button type="button" class="phase-sidebar__step phase-sidebar__step--active">
+              <span class="phase-sidebar__step-indicator">
+                <span class="material-symbols-outlined">trending_up</span>
+              </span>
+              <span class="phase-sidebar__step-number">7</span>
+              <span class="phase-sidebar__step-label">Scaling</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- ═══ Main Content ═══ -->
+        <div class="sd-scaling__main">
+
+          <!-- Header -->
+          <div class="sd-scaling__header">
+            <span class="material-symbols-outlined">trending_up</span>
+            <span class="sd-scaling__header-title">Scaling & Reliability</span>
+          </div>
+
+          <!-- Scrollable Content -->
+          <div class="sd-scaling__scroll">
+
+            <!-- ── Capacity Estimation Panel ── -->
+            <div class="sd-scaling__section sd-scaling__capacity sd-scaling__section--open" data-section="capacity">
+              <div class="sd-scaling__section-header" data-toggle="capacity">
+                <span class="material-symbols-outlined">calculate</span>
+                <span class="sd-scaling__section-title">Capacity Estimation</span>
+                <span class="sd-scaling__section-dot" id="dotCapacity"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__cap-grid">
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Read QPS</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="10,000" data-cap="readQps">
+                        <span class="sd-scaling__cap-unit">req/s</span>
+                      </div>
+                    </div>
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Write QPS</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="1,000" data-cap="writeQps">
+                        <span class="sd-scaling__cap-unit">req/s</span>
+                      </div>
+                    </div>
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Storage / Day</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="50" data-cap="storageDayGb">
+                        <span class="sd-scaling__cap-unit">GB/day</span>
+                      </div>
+                    </div>
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Storage Growth</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="18" data-cap="storageGrowth">
+                        <span class="sd-scaling__cap-unit">TB/yr</span>
+                      </div>
+                    </div>
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Bandwidth In/Out</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="500" data-cap="bandwidth">
+                        <span class="sd-scaling__cap-unit">MB/s</span>
+                      </div>
+                    </div>
+                    <div class="sd-scaling__cap-field">
+                      <span class="sd-scaling__cap-label">Cache Memory</span>
+                      <div class="sd-scaling__cap-input-wrap">
+                        <input type="text" class="sd-scaling__cap-input" placeholder="128" data-cap="cacheMem">
+                        <span class="sd-scaling__cap-unit">GB</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 1. Compute Scaling ── -->
+            <div class="sd-scaling__section sd-scaling__section--compute sd-scaling__section--open" data-section="compute">
+              <div class="sd-scaling__section-header" data-toggle="compute">
+                <span class="material-symbols-outlined">memory</span>
+                <span class="sd-scaling__section-title">Compute Scaling</span>
+                <span class="sd-scaling__section-dot" id="dotCompute"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Strategy</span>
+                    <div class="sd-scaling__radio-group" data-radio="computeStrategy">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="computeStrategy" value="horizontal" class="sd-scaling__radio"> Horizontal
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="computeStrategy" value="vertical" class="sd-scaling__radio"> Vertical
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="computeStrategy" value="both" class="sd-scaling__radio"> Both
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Details</span>
+                    <textarea class="sd-scaling__textarea" rows="3" placeholder="How will you scale compute? Auto-scaling policies, container orchestration, serverless considerations..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 2. Database Scaling ── -->
+            <div class="sd-scaling__section sd-scaling__section--database" data-section="database">
+              <div class="sd-scaling__section-header" data-toggle="database">
+                <span class="material-symbols-outlined">storage</span>
+                <span class="sd-scaling__section-title">Database Scaling</span>
+                <span class="sd-scaling__section-dot" id="dotDatabase"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Replication</span>
+                    <div class="sd-scaling__radio-group" data-radio="dbReplication">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbReplication" value="primary-replica" class="sd-scaling__radio"> Primary-Replica
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbReplication" value="multi-primary" class="sd-scaling__radio"> Multi-Primary
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbReplication" value="none" class="sd-scaling__radio"> None
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Sharding</span>
+                    <div class="sd-scaling__radio-group" data-radio="dbSharding">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbSharding" value="hash" class="sd-scaling__radio"> Hash-based
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbSharding" value="range" class="sd-scaling__radio"> Range-based
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbSharding" value="geo" class="sd-scaling__radio"> Geographic
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="dbSharding" value="none" class="sd-scaling__radio"> None
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Shard Key</span>
+                    <input type="text" class="sd-scaling__input" placeholder="e.g., user_id, region, timestamp">
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Details</span>
+                    <textarea class="sd-scaling__textarea" rows="3" placeholder="Replication lag tolerance, failover strategy, read/write splitting..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 3. Caching ── -->
+            <div class="sd-scaling__section sd-scaling__section--caching" data-section="caching">
+              <div class="sd-scaling__section-header" data-toggle="caching">
+                <span class="material-symbols-outlined">cached</span>
+                <span class="sd-scaling__section-title">Caching</span>
+                <span class="sd-scaling__section-dot" id="dotCaching"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Cache Pattern</span>
+                    <div class="sd-scaling__radio-group" data-radio="cachePattern">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="cachePattern" value="cache-aside" class="sd-scaling__radio"> Cache-Aside
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="cachePattern" value="write-through" class="sd-scaling__radio"> Write-Through
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="cachePattern" value="write-behind" class="sd-scaling__radio"> Write-Behind
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="cachePattern" value="read-through" class="sd-scaling__radio"> Read-Through
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Eviction Policy</span>
+                    <div class="sd-scaling__radio-group" data-radio="eviction">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="eviction" value="lru" class="sd-scaling__radio"> LRU
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="eviction" value="lfu" class="sd-scaling__radio"> LFU
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="eviction" value="ttl" class="sd-scaling__radio"> TTL-based
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">TTL</span>
+                    <input type="text" class="sd-scaling__input" placeholder="e.g., 5 minutes, 1 hour, 24 hours">
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Details</span>
+                    <textarea class="sd-scaling__textarea" rows="3" placeholder="Cache invalidation strategy, warm-up approach, cache stampede prevention..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 4. Load Balancing & CDN ── -->
+            <div class="sd-scaling__section sd-scaling__section--loadbalancing" data-section="loadbalancing">
+              <div class="sd-scaling__section-header" data-toggle="loadbalancing">
+                <span class="material-symbols-outlined">dns</span>
+                <span class="sd-scaling__section-title">Load Balancing & CDN</span>
+                <span class="sd-scaling__section-dot" id="dotLb"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">LB Algorithm</span>
+                    <div class="sd-scaling__radio-group" data-radio="lbAlgo">
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="lbAlgo" value="round-robin" class="sd-scaling__radio"> Round Robin
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="lbAlgo" value="least-connections" class="sd-scaling__radio"> Least Connections
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="lbAlgo" value="consistent-hash" class="sd-scaling__radio"> Consistent Hash
+                      </label>
+                      <label class="sd-scaling__radio-label">
+                        <input type="radio" name="lbAlgo" value="weighted" class="sd-scaling__radio"> Weighted
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">CDN</span>
+                    <label class="sd-scaling__cdn-toggle" id="cdnToggle">
+                      <input type="checkbox" class="sd-scaling__cdn-checkbox" id="cdnCheckbox">
+                      <span>Use CDN for static assets and edge caching</span>
+                    </label>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Details</span>
+                    <textarea class="sd-scaling__textarea" rows="3" placeholder="Health check configuration, sticky sessions, L4 vs L7, CDN cache rules..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 5. Reliability & Monitoring ── -->
+            <div class="sd-scaling__section sd-scaling__section--reliability" data-section="reliability">
+              <div class="sd-scaling__section-header" data-toggle="reliability">
+                <span class="material-symbols-outlined">shield</span>
+                <span class="sd-scaling__section-title">Reliability & Monitoring</span>
+                <span class="sd-scaling__section-dot" id="dotReliability"></span>
+                <span class="material-symbols-outlined sd-scaling__section-chevron">expand_more</span>
+              </div>
+              <div class="sd-scaling__section-body">
+                <div class="sd-scaling__section-content">
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Reliability Patterns</span>
+                    <div class="sd-scaling__checklist" id="reliabilityChecklist">
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="circuit-breakers"> Circuit Breakers
+                      </label>
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="retries"> Retries with Exponential Backoff
+                      </label>
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="health-checks"> Health Checks
+                      </label>
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="graceful-degradation"> Graceful Degradation
+                      </label>
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="rate-limiting"> Rate Limiting
+                      </label>
+                      <label class="sd-scaling__check-label">
+                        <input type="checkbox" class="sd-scaling__checkbox" data-check="bulkhead"> Bulkhead Isolation
+                      </label>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Key Metrics to Monitor</span>
+                    <div class="sd-scaling__tags" id="metricTags"></div>
+                    <div class="sd-scaling__tag-input-wrap">
+                      <input type="text" class="sd-scaling__tag-input" id="metricInput" placeholder="Type a metric and press Enter">
+                    </div>
+                    <div class="sd-scaling__tag-suggestions" id="metricSuggestions">
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="P99 latency">P99 latency</button>
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="Error rate">Error rate</button>
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="Cache hit ratio">Cache hit ratio</button>
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="QPS">QPS</button>
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="CPU utilization">CPU utilization</button>
+                      <button type="button" class="sd-scaling__tag-suggestion" data-metric="Memory usage">Memory usage</button>
+                    </div>
+                  </div>
+                  <div class="sd-scaling__field-group">
+                    <span class="sd-scaling__label">Alerting Strategy</span>
+                    <textarea class="sd-scaling__textarea" rows="3" placeholder="Alert thresholds, escalation policies, on-call rotation, runbook approach..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Actions Bar -->
+          <div class="sd-scaling__actions">
+            <button type="button" class="btn btn-secondary" id="reviewBtn">
+              <span class="material-symbols-outlined" style="font-size:16px">rate_review</span>
+              Review Scaling Plan
+            </button>
+            <button type="button" class="btn btn-primary" id="finishBtn">
+              <span class="material-symbols-outlined" style="font-size:16px">flag</span>
+              Finish Interview
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ Mentor Panel ═══ -->
+        <div class="mentor-panel">
+          <div class="mentor-panel__header">
+            <span class="mentor-panel__title">Mentor</span>
+            <span class="mentor-panel__badge">Interviewer</span>
+          </div>
+
+          <div class="mentor-panel__messages" id="mentorMessages">
+            <div class="mentor-msg mentor-msg--ai">
+              <p><strong>Phase 7: Scaling & Reliability</strong></p>
+              <p>Final phase! Let's make sure your system can handle real-world load.</p>
+              <p>Start with <strong>capacity estimation</strong> &mdash; back-of-the-envelope numbers for QPS, storage, and bandwidth. Then work through each scaling strategy.</p>
+              <p>Key areas to cover:</p>
+              <p>&bull; How does compute scale?<br>
+                 &bull; Database replication & sharding<br>
+                 &bull; Caching strategy<br>
+                 &bull; Load balancing<br>
+                 &bull; What metrics would you monitor?</p>
+            </div>
+          </div>
+
+          <div class="mentor-panel__input">
+            <textarea class="mentor-panel__textarea" placeholder="Ask about scaling..." rows="1"></textarea>
+            <button type="button" class="mentor-panel__send" aria-label="Send message">
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════════
+       SCALING WORKSPACE — Vanilla JS Controller
+       ═══════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      // ── Accordion Toggle ──
+      document.querySelectorAll('.sd-scaling__section-header').forEach(function(header) {
+        header.addEventListener('click', function() {
+          var section = header.closest('.sd-scaling__section');
+          section.classList.toggle('sd-scaling__section--open');
+        });
+      });
+
+      // ── Radio Group Interaction ──
+      document.querySelectorAll('.sd-scaling__radio').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+          var group = radio.closest('.sd-scaling__radio-group');
+          group.querySelectorAll('.sd-scaling__radio-label').forEach(function(label) {
+            label.classList.remove('sd-scaling__radio-label--selected');
+          });
+          radio.closest('.sd-scaling__radio-label').classList.add('sd-scaling__radio-label--selected');
+          updateCompletionDots();
+        });
+      });
+
+      // ── Checkbox Group Interaction ──
+      document.querySelectorAll('.sd-scaling__checkbox').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          var label = cb.closest('.sd-scaling__check-label');
+          label.classList.toggle('sd-scaling__check-label--checked', cb.checked);
+          updateCompletionDots();
+        });
+      });
+
+      // ── CDN Toggle ──
+      var cdnCheckbox = document.getElementById('cdnCheckbox');
+      var cdnToggle = document.getElementById('cdnToggle');
+      cdnCheckbox.addEventListener('change', function() {
+        cdnToggle.classList.toggle('sd-scaling__cdn-toggle--checked', cdnCheckbox.checked);
+        updateCompletionDots();
+      });
+
+      // ── Metric Tag Input ──
+      var metrics = [];
+      var metricInput = document.getElementById('metricInput');
+      var metricTags = document.getElementById('metricTags');
+      var metricSuggestions = document.getElementById('metricSuggestions');
+
+      function addMetric(name) {
+        name = name.trim();
+        if (!name || metrics.includes(name)) return;
+        metrics.push(name);
+        renderMetrics();
+        updateSuggestions();
+        updateCompletionDots();
+      }
+
+      function removeMetric(name) {
+        metrics = metrics.filter(function(m) { return m !== name; });
+        renderMetrics();
+        updateSuggestions();
+        updateCompletionDots();
+      }
+
+      function renderMetrics() {
+        var html = '';
+        metrics.forEach(function(m) {
+          html += '<span class="sd-scaling__tag">'
+                + escapeHTML(m)
+                + '<button type="button" class="sd-scaling__tag-remove" data-metric="' + escapeAttr(m) + '" title="Remove">&times;</button>'
+                + '</span>';
+        });
+        metricTags.innerHTML = html;
+
+        metricTags.querySelectorAll('.sd-scaling__tag-remove').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            removeMetric(btn.dataset.metric);
+          });
+        });
+      }
+
+      function updateSuggestions() {
+        metricSuggestions.querySelectorAll('.sd-scaling__tag-suggestion').forEach(function(btn) {
+          var used = metrics.includes(btn.dataset.metric);
+          btn.classList.toggle('sd-scaling__tag-suggestion--used', used);
+        });
+      }
+
+      metricInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addMetric(metricInput.value);
+          metricInput.value = '';
+        }
+      });
+
+      metricSuggestions.querySelectorAll('.sd-scaling__tag-suggestion').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          addMetric(btn.dataset.metric);
+        });
+      });
+
+      // ── Completion Dots ──
+      function updateCompletionDots() {
+        // Capacity: filled if any input has value
+        var capFilled = false;
+        document.querySelectorAll('.sd-scaling__cap-input').forEach(function(input) {
+          if (input.value.trim()) capFilled = true;
+        });
+        setDot('dotCapacity', capFilled);
+
+        // Compute: filled if a radio is selected
+        setDot('dotCompute', isRadioSelected('computeStrategy'));
+
+        // Database: filled if replication or sharding selected
+        setDot('dotDatabase', isRadioSelected('dbReplication') || isRadioSelected('dbSharding'));
+
+        // Caching: filled if cache pattern selected
+        setDot('dotCaching', isRadioSelected('cachePattern'));
+
+        // Load Balancing: filled if LB algo selected or CDN checked
+        setDot('dotLb', isRadioSelected('lbAlgo') || cdnCheckbox.checked);
+
+        // Reliability: filled if any checkbox checked or metrics added
+        var anyChecked = false;
+        document.querySelectorAll('.sd-scaling__checkbox').forEach(function(cb) {
+          if (cb.checked) anyChecked = true;
+        });
+        setDot('dotReliability', anyChecked || metrics.length > 0);
+      }
+
+      function isRadioSelected(name) {
+        return document.querySelector('input[name="' + name + '"]:checked') !== null;
+      }
+
+      function setDot(id, filled) {
+        var dot = document.getElementById(id);
+        if (dot) {
+          dot.classList.toggle('sd-scaling__section-dot--filled', filled);
+        }
+      }
+
+      // Also update dots on capacity input change
+      document.querySelectorAll('.sd-scaling__cap-input').forEach(function(input) {
+        input.addEventListener('input', updateCompletionDots);
+      });
+
+      // ── Review Button ──
+      document.getElementById('reviewBtn').addEventListener('click', function() {
+        var msgs = document.getElementById('mentorMessages');
+
+        var userMsg = document.createElement('div');
+        userMsg.className = 'mentor-msg mentor-msg--user';
+        userMsg.innerHTML = '<p><strong>Please review my scaling plan.</strong></p>';
+        msgs.appendChild(userMsg);
+
+        // Collect state for summary
+        var lines = [];
+
+        // Capacity
+        var caps = [];
+        document.querySelectorAll('.sd-scaling__cap-input').forEach(function(input) {
+          if (input.value.trim()) {
+            var label = input.closest('.sd-scaling__cap-field').querySelector('.sd-scaling__cap-label').textContent;
+            var unit = input.closest('.sd-scaling__cap-input-wrap').querySelector('.sd-scaling__cap-unit').textContent;
+            caps.push(label + ': ' + input.value.trim() + ' ' + unit);
+          }
+        });
+        if (caps.length) lines.push('<strong>Capacity:</strong> ' + caps.join(', '));
+
+        // Radio selections
+        ['computeStrategy', 'dbReplication', 'dbSharding', 'cachePattern', 'eviction', 'lbAlgo'].forEach(function(name) {
+          var checked = document.querySelector('input[name="' + name + '"]:checked');
+          if (checked) {
+            lines.push('<strong>' + name + ':</strong> ' + checked.value);
+          }
+        });
+
+        // CDN
+        if (cdnCheckbox.checked) lines.push('<strong>CDN:</strong> Enabled');
+
+        // Reliability checks
+        var checks = [];
+        document.querySelectorAll('.sd-scaling__checkbox:checked').forEach(function(cb) {
+          checks.push(cb.dataset.check);
+        });
+        if (checks.length) lines.push('<strong>Reliability:</strong> ' + checks.join(', '));
+
+        // Metrics
+        if (metrics.length) lines.push('<strong>Metrics:</strong> ' + metrics.join(', '));
+
+        var summary = lines.length ? lines.join('<br>') : '(No data filled in yet)';
+
+        var aiMsg = document.createElement('div');
+        aiMsg.className = 'mentor-msg mentor-msg--ai';
+        aiMsg.innerHTML = '<p>' + summary + '</p><p style="margin-top:var(--space-3);color:var(--text-secondary);font-style:italic">(AI review would appear here in the real app)</p>';
+        msgs.appendChild(aiMsg);
+
+        msgs.scrollTop = msgs.scrollHeight;
+      });
+
+      // ── Finish Button ──
+      document.getElementById('finishBtn').addEventListener('click', function() {
+        var msgs = document.getElementById('mentorMessages');
+
+        var aiMsg = document.createElement('div');
+        aiMsg.className = 'mentor-msg mentor-msg--ai';
+        aiMsg.innerHTML = '<p><strong>Interview Complete!</strong></p>'
+          + '<p>Great work making it through all 7 phases. In a real session, I would now provide a detailed rubric score and improvement areas.</p>'
+          + '<p>Key strengths to build on and areas for growth would be highlighted here.</p>';
+        msgs.appendChild(aiMsg);
+
+        msgs.scrollTop = msgs.scrollHeight;
+      });
+
+      // ── Helpers ──
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function escapeAttr(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // ── Init ──
+      updateCompletionDots();
+
+    })();
+  </script>
+</body>
+</html>

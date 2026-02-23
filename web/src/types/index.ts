@@ -214,6 +214,62 @@ export interface SystemDesignTopic {
   };
 }
 
+/* ── Deep Dive Types ── */
+
+export interface DeepDiveApproach {
+  name: string;
+  pros: string;
+  cons: string;
+}
+
+export interface DeepDiveChallenge {
+  id: string;
+  title: string;
+  problem: string;
+  approaches: DeepDiveApproach[];
+  chosenIndex: number; // -1 = none selected
+  justification: string;
+  tradeoffs: string;
+}
+
+/* ── Scaling Types ── */
+
+export interface CapacityEstimation {
+  readQps: string;
+  writeQps: string;
+  storageDayGb: string;
+  storageGrowthTbYr: string;
+  bandwidthMbS: string;
+  cacheMemGb: string;
+}
+
+export type ComputeStrategy = 'horizontal' | 'vertical' | 'both' | '';
+export type DbReplication = 'primary-replica' | 'multi-primary' | 'none' | '';
+export type DbSharding = 'hash' | 'range' | 'geo' | 'none' | '';
+export type CachePattern = 'cache-aside' | 'write-through' | 'write-behind' | 'read-through' | '';
+export type EvictionPolicy = 'lru' | 'lfu' | 'ttl' | '';
+export type LbAlgorithm = 'round-robin' | 'least-connections' | 'consistent-hash' | 'weighted' | '';
+
+export interface ScalingState {
+  capacity: CapacityEstimation;
+  computeStrategy: ComputeStrategy;
+  computeDetails: string;
+  dbReplication: DbReplication;
+  dbSharding: DbSharding;
+  dbShardKey: string;
+  dbDetails: string;
+  cachePattern: CachePattern;
+  evictionPolicy: EvictionPolicy;
+  cacheTtl: string;
+  cacheDetails: string;
+  lbAlgorithm: LbAlgorithm;
+  useCdn: boolean;
+  lbDetails: string;
+  reliabilityChecks: string[];
+  metrics: string[];
+  alertingDetails: string;
+}
+
 /* ── System Design Workspace Types ── */
 
 export type SystemDesignPhase =
@@ -260,6 +316,8 @@ export interface SystemDesignState {
     type?: string;
     data?: { edgeStyle?: 'solid' | 'dashed' | 'dotted' };
   }>;
+  deepDiveChallenges: DeepDiveChallenge[];
+  scaling: ScalingState;
 }
 
 export type SystemDesignAction =
@@ -271,6 +329,8 @@ export type SystemDesignAction =
   | { type: 'UPDATE_DB_CHOICE'; dbChoice: DbChoice }
   | { type: 'UPDATE_JUSTIFICATION'; justification: string }
   | { type: 'UPDATE_DIAGRAM'; nodes: SystemDesignState['diagramNodes']; edges: SystemDesignState['diagramEdges'] }
+  | { type: 'UPDATE_DEEP_DIVES'; challenges: DeepDiveChallenge[] }
+  | { type: 'UPDATE_SCALING'; scaling: ScalingState }
   | { type: 'RESET' };
 
 /* ── Mistake Tracking & Spaced Repetition ── */

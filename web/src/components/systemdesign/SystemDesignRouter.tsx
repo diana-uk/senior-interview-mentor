@@ -3,6 +3,8 @@ import SystemDesignPlanOverview from './SystemDesignPlanOverview';
 import ApiContractWorkspace from './ApiContractWorkspace';
 import DataModelWorkspace from './DataModelWorkspace';
 import ArchitectureWorkspace from './ArchitectureWorkspace';
+import DeepDiveWorkspace from './DeepDiveWorkspace';
+import ScalingWorkspace from './ScalingWorkspace';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 
 interface SystemDesignRouterProps {
@@ -34,7 +36,7 @@ export default function SystemDesignRouter({
   chatPanel,
   editorPanel,
 }: SystemDesignRouterProps) {
-  const { currentPhase, phaseStatuses, topicTitle, topicPrompt, endpoints, schema, dbChoice, dbJustification, diagramNodes, diagramEdges } = sdState;
+  const { currentPhase, phaseStatuses, topicTitle, topicPrompt, endpoints, schema, dbChoice, dbJustification, diagramNodes, diagramEdges, deepDiveChallenges, scaling } = sdState;
 
   function handlePhaseClick(phase: SystemDesignPhase) {
     sdDispatch({ type: 'SET_PHASE', phase });
@@ -111,10 +113,30 @@ export default function SystemDesignRouter({
         />
       );
 
-    // Text-based phases: requirements, deepdive, scaling
-    case 'requirements':
     case 'deepdive':
+      return (
+        <DeepDiveWorkspace
+          challenges={deepDiveChallenges}
+          onUpdateChallenges={(chs) => sdDispatch({ type: 'UPDATE_DEEP_DIVES', challenges: chs })}
+          onAdvancePhase={advancePhase}
+          {...sidebarProps}
+          {...mentorProps}
+        />
+      );
+
     case 'scaling':
+      return (
+        <ScalingWorkspace
+          scaling={scaling}
+          onUpdateScaling={(s) => sdDispatch({ type: 'UPDATE_SCALING', scaling: s })}
+          onAdvancePhase={advancePhase}
+          {...sidebarProps}
+          {...mentorProps}
+        />
+      );
+
+    // Text-based phase: requirements
+    case 'requirements':
       return (
         <div className="sd-text-phase">
           <PhaseProgressSidebar {...sidebarProps} />
