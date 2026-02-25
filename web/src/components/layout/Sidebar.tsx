@@ -46,6 +46,8 @@ interface SidebarProps {
   achievements?: Achievement[];
   unlockedCount?: number;
   totalCount?: number;
+  // Badge props
+  getProblemProgress?: (id: string) => { bestScore: number | null; bestTime: number | null; hintsUsed: number; attempts: number } | null;
 }
 
 const icons = [
@@ -84,6 +86,7 @@ export default function Sidebar({
   achievements,
   unlockedCount,
   totalCount,
+  getProblemProgress,
 }: SidebarProps) {
   function handleIconClick(id: SidebarPanel) {
     if (id === 'interview') {
@@ -150,6 +153,7 @@ export default function Sidebar({
                 currentId={currentProblemId}
                 getProblemStatus={getProblemStatus}
                 recommendations={recommendations}
+                getProblemProgress={getProblemProgress}
               />
             )}
             {activePanel === 'mistakes' && (
@@ -166,7 +170,7 @@ export default function Sidebar({
                 onStartQuestion={onStartBehavioral ?? (() => {})}
               />
             )}
-            {activePanel === 'stats' && <StatsPanel stats={stats} />}
+            {activePanel === 'stats' && <StatsPanel stats={stats} getProblemProgress={getProblemProgress} />}
             {activePanel === 'achievements' && achievements && (
               <AchievementsPanel
                 achievements={achievements}

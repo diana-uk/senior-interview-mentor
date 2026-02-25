@@ -588,6 +588,12 @@ export default function App() {
     sendMessage(content);
   }, [interview, editor, timer, sendMessage, addMistake, getNextProblem]);
 
+  const getProblemProgress = useCallback((id: string) => {
+    const p = stats.problemProgress[id];
+    if (!p) return null;
+    return { bestScore: p.bestScore, bestTime: p.bestTime, hintsUsed: p.hintsUsed, attempts: p.attempts };
+  }, [stats.problemProgress]);
+
   const handleShareSolution = useCallback(() => {
     if (!interview.currentProblem) return;
     exportSolutionCard({
@@ -907,6 +913,7 @@ export default function App() {
           achievements={achievements}
           unlockedCount={unlockedCount}
           totalCount={totalCount}
+          getProblemProgress={getProblemProgress}
         />
 
         <div
