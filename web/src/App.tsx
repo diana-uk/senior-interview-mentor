@@ -35,6 +35,7 @@ import { useAdaptiveRecommendation } from './hooks/useAdaptiveRecommendation';
 import { useAchievements } from './hooks/useAchievements';
 import { problemsById } from './data/problems';
 import { getStarterCode, getTestCode } from './utils/problemLanguage';
+import { exportSolutionCard } from './utils/solutionCard';
 import { buildMemorySummary } from './utils/memoryBuilder';
 import { getSettings } from './utils/settings';
 import type {
@@ -587,6 +588,21 @@ export default function App() {
     sendMessage(content);
   }, [interview, editor, timer, sendMessage, addMistake, getNextProblem]);
 
+  const handleShareSolution = useCallback(() => {
+    if (!interview.currentProblem) return;
+    exportSolutionCard({
+      problemTitle: interview.currentProblem.title,
+      difficulty: interview.currentProblem.difficulty,
+      pattern: interview.currentProblem.pattern,
+      timeComplexity: '—',
+      spaceComplexity: '—',
+      code: editor.editorCode,
+      timeSeconds: timer.timerSeconds,
+      hintsUsed: interview.hintsUsed,
+      score: null,
+    });
+  }, [interview.currentProblem, editor.editorCode, timer.timerSeconds, interview.hintsUsed]);
+
   async function handleRunTests() {
     if (editor.runningTests) return;
     editor.setRunningTests(true);
@@ -944,6 +960,7 @@ export default function App() {
                   systemDesignTopicId={interview.sdTopicId}
                   onSendMessage={handleSendMessage}
                   onLanguageChange={handleLanguageChange}
+                  onShareSolution={handleShareSolution}
                 />
               }
             />
@@ -1003,6 +1020,7 @@ export default function App() {
                 systemDesignTopicId={interview.sdTopicId}
                 onSendMessage={handleSendMessage}
                 onLanguageChange={handleLanguageChange}
+                onShareSolution={handleShareSolution}
               />
               {layout.isEditorCollapsed && (
                 <button

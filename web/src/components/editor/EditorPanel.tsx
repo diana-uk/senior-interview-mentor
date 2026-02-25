@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2 } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import SystemDesignEditor from './SystemDesignEditor';
@@ -61,6 +61,7 @@ interface EditorPanelProps {
   systemDesignTopicId?: SystemDesignTopicId | null;
   onSendMessage?: (message: string) => void;
   onLanguageChange?: (language: CodeLanguage) => void;
+  onShareSolution?: () => void;
 }
 
 const tabs: { id: EditorTab; label: string }[] = [
@@ -95,6 +96,7 @@ export default function EditorPanel({
   systemDesignTopicId,
   onSendMessage,
   onLanguageChange,
+  onShareSolution,
 }: EditorPanelProps) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
@@ -162,6 +164,18 @@ export default function EditorPanel({
             <button type="button" className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>
               <Play size={14} aria-hidden="true" />
               {runningTests ? 'Running...' : 'Run Tests'}
+            </button>
+          )}
+          {!isSystemDesign && onShareSolution && totalCount > 0 && passCount === totalCount && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={onShareSolution}
+              aria-label="Share solution card"
+              title="Share solution card"
+            >
+              <Share2 size={14} aria-hidden="true" />
+              Share
             </button>
           )}
         </div>
