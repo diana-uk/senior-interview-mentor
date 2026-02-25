@@ -40,6 +40,7 @@ interface SidebarProps {
   getProblemStatus: (id: string) => ProblemStatus;
   // Recommendation props
   recommendations?: RecommendedProblemEntry[];
+  dailyChallenge?: RecommendedProblemEntry | null;
   // Behavioral props
   onStartBehavioral?: (question: BehavioralQuestion) => void;
   // Achievement props
@@ -82,6 +83,7 @@ export default function Sidebar({
   stats,
   getProblemStatus,
   recommendations,
+  dailyChallenge,
   onStartBehavioral,
   achievements,
   unlockedCount,
@@ -153,6 +155,7 @@ export default function Sidebar({
                 currentId={currentProblemId}
                 getProblemStatus={getProblemStatus}
                 recommendations={recommendations}
+                dailyChallenge={dailyChallenge}
                 getProblemProgress={getProblemProgress}
               />
             )}

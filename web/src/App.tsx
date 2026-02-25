@@ -33,6 +33,7 @@ import { useMistakeTracker } from './hooks/useMistakeTracker';
 import { useStats } from './hooks/useStats';
 import { useAdaptiveRecommendation } from './hooks/useAdaptiveRecommendation';
 import { useAchievements } from './hooks/useAchievements';
+import { useDailyChallenge } from './hooks/useDailyChallenge';
 import { problemsById } from './data/problems';
 import { getStarterCode, getTestCode } from './utils/problemLanguage';
 import { exportSolutionCard } from './utils/solutionCard';
@@ -327,6 +328,7 @@ export default function App() {
     weakPatterns: getWeakPatterns(),
   });
   const { achievements, unlockedCount, totalCount, checkAchievements } = useAchievements();
+  const dailyChallenge = useDailyChallenge(getProblemStatus);
   const layout = useWorkspaceLayout();
   const [achievementToast, setAchievementToast] = useState<string | null>(null);
 
@@ -910,6 +912,7 @@ export default function App() {
           stats={stats}
           getProblemStatus={getProblemStatus}
           recommendations={getRecommendations(3)}
+          dailyChallenge={dailyChallenge}
           achievements={achievements}
           unlockedCount={unlockedCount}
           totalCount={totalCount}
