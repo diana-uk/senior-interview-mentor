@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+import { getBadgesForProblem } from '../../utils/solutionBadges';
 import type { Mode, PatternStrength, SessionRecord, StatsData } from '../../types';
 
 interface StatsPanelProps {
   stats: StatsData;
+  getProblemProgress?: (id: string) => { bestScore: number | null; bestTime: number | null; hintsUsed: number; attempts: number } | null;
 }
 
 const modeColors: Record<Mode, string> = {
@@ -212,7 +214,7 @@ function RadarChart({ patterns }: { patterns: PatternStrength[] }) {
 
 // ── Main StatsPanel ──
 
-export default function StatsPanel({ stats }: StatsPanelProps) {
+export default function StatsPanel({ stats, getProblemProgress }: StatsPanelProps) {
   const recentSessions = useMemo(() => stats.sessions.slice(0, 8), [stats.sessions]);
   const sortedPatterns = useMemo(
     () => stats.patternStrengths
@@ -360,6 +362,21 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
               >
                 {s.score !== null ? s.score.toFixed(1) : '—'}
               </span>
+              {getProblemProgress && s.problemId && (() => {
+                const progress = getProblemProgress(s.problemId);
+                if (!progress) return null;
+                const badges = getBadgesForProblem(progress);
+                if (badges.length === 0) return null;
+                return (
+                  <span style={{ display: 'flex', gap: 1, marginLeft: 4 }}>
+                    {badges.slice(0, 3).map(b => (
+                      <span key={b.id} title={b.label} style={{ fontSize: 11 }}>
+                        {b.icon}
+                      </span>
+                    ))}
+                  </span>
+                );
+              })()}
             </div>
           ))}
         </div>

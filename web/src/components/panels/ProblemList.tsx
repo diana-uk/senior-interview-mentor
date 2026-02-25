@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Search, CheckCircle, Circle, Clock, X, Sparkles, Zap } from 'lucide-react';
 import { problemsByPattern } from '../../data/problems';
+import { getBadgesForProblem } from '../../utils/solutionBadges';
 import type { Difficulty, ProblemStatus } from '../../types';
 
 export interface RecommendedProblemEntry {
@@ -17,6 +18,7 @@ interface ProblemListProps {
   getProblemStatus?: (id: string) => ProblemStatus;
   recommendations?: RecommendedProblemEntry[];
   dailyChallenge?: RecommendedProblemEntry | null;
+  getProblemProgress?: (id: string) => { bestScore: number | null; bestTime: number | null; hintsUsed: number; attempts: number } | null;
 }
 
 type SortOption = 'default' | 'difficulty' | 'status';
@@ -30,7 +32,7 @@ const STATUS_ICONS: Record<ProblemStatus, { icon: typeof CheckCircle; color: str
   unseen: { icon: Circle, color: 'var(--text-muted)' },
 };
 
-export default function ProblemList({ onSelect, currentId, getProblemStatus, recommendations, dailyChallenge }: ProblemListProps) {
+export default function ProblemList({ onSelect, currentId, getProblemStatus, recommendations, dailyChallenge, getProblemProgress }: ProblemListProps) {
   const [search, setSearch] = useState('');
   const [diffFilter, setDiffFilter] = useState<DifficultyFilter>('All');
   const [sortBy, setSortBy] = useState<SortOption>('default');
@@ -278,6 +280,21 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                   }}>
                     {p.title}
                   </span>
+                  {status === 'solved' && getProblemProgress && (() => {
+                    const progress = getProblemProgress(p.id);
+                    if (!progress) return null;
+                    const badges = getBadgesForProblem(progress);
+                    if (badges.length === 0) return null;
+                    return (
+                      <span style={{ display: 'flex', gap: 2, marginLeft: 4 }}>
+                        {badges.map(b => (
+                          <span key={b.id} title={b.label} style={{ fontSize: 12, cursor: 'default' }}>
+                            {b.icon}
+                          </span>
+                        ))}
+                      </span>
+                    );
+                  })()}
                   <span className={`badge badge-${p.difficulty.toLowerCase()}`}>
                     {p.difficulty}
                   </span>
