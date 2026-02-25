@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
-import type { Mode, PatternStrength, SessionRecord, StatsData } from '../../types';
+import { computeDifficultyDistribution } from '../../utils/difficultyDistribution';
+import type { Mode, PatternStrength, ProblemStatus, SessionRecord, StatsData } from '../../types';
 
 interface StatsPanelProps {
   stats: StatsData;
   getProblemProgress?: (id: string) => { bestScore: number | null; bestTime: number | null; hintsUsed: number; attempts: number } | null;
+  getProblemStatus?: (id: string) => ProblemStatus;
 }
 
 const modeColors: Record<Mode, string> = {
@@ -212,9 +214,58 @@ function RadarChart({ patterns }: { patterns: PatternStrength[] }) {
   );
 }
 
+// ── Difficulty Distribution Chart ──
+
+function DifficultyChart({ getProblemStatus }: { getProblemStatus: (id: string) => ProblemStatus }) {
+  const buckets = useMemo(() => computeDifficultyDistribution(getProblemStatus), [getProblemStatus]);
+  const totalProblems = buckets.reduce((s, b) => s + b.total, 0);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {buckets.map((b) => {
+        const solvedPct = b.total > 0 ? (b.solved / b.total) * 100 : 0;
+        const attemptedPct = b.total > 0 ? (b.attempted / b.total) * 100 : 0;
+        return (
+          <div key={b.difficulty}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+              <span style={{ fontSize: 11, color: b.color, fontWeight: 600 }}>{b.difficulty}</span>
+              <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                {b.solved}/{b.total}
+              </span>
+            </div>
+            <div
+              className="progress-bar"
+              style={{ height: 8 }}
+              role="progressbar"
+              aria-label={`${b.difficulty} progress`}
+              aria-valuenow={b.solved}
+              aria-valuemin={0}
+              aria-valuemax={b.total}
+            >
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${solvedPct}%`, background: b.color, borderRadius: attemptedPct > 0 ? '4px 0 0 4px' : undefined }}
+              />
+              {attemptedPct > 0 && (
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${attemptedPct}%`, background: b.color, opacity: 0.3, position: 'absolute', left: `${solvedPct}%` }}
+                />
+              )}
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', marginTop: 2 }}>
+        {buckets.reduce((s, b) => s + b.solved, 0)} of {totalProblems} solved
+      </div>
+    </div>
+  );
+}
+
 // ── Main StatsPanel ──
 
-export default function StatsPanel({ stats, getProblemProgress }: StatsPanelProps) {
+export default function StatsPanel({ stats, getProblemProgress, getProblemStatus }: StatsPanelProps) {
   const recentSessions = useMemo(() => stats.sessions.slice(0, 8), [stats.sessions]);
   const sortedPatterns = useMemo(
     () => stats.patternStrengths
@@ -249,6 +300,16 @@ export default function StatsPanel({ stats, getProblemProgress }: StatsPanelProp
           <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hints Used</div>
         </div>
       </div>
+
+      {/* Difficulty Distribution */}
+      {getProblemStatus && (
+        <>
+          <div className="section-label" style={{ marginBottom: 8 }}>Difficulty Progress</div>
+          <div className="card stagger-enter stagger-5" style={{ marginBottom: 16, padding: '10px 14px' }}>
+            <DifficultyChart getProblemStatus={getProblemStatus} />
+          </div>
+        </>
+      )}
 
       {/* Time spent */}
       {stats.totalTime > 0 && (

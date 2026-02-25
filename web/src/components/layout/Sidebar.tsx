@@ -173,7 +173,7 @@ export default function Sidebar({
                 onStartQuestion={onStartBehavioral ?? (() => {})}
               />
             )}
-            {activePanel === 'stats' && <StatsPanel stats={stats} getProblemProgress={getProblemProgress} />}
+            {activePanel === 'stats' && <StatsPanel stats={stats} getProblemProgress={getProblemProgress} getProblemStatus={getProblemStatus} />}
             {activePanel === 'achievements' && achievements && (
               <AchievementsPanel
                 achievements={achievements}
