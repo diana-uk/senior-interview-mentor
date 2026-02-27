@@ -15,6 +15,11 @@ export interface PythonWorkerOutput {
   error?: string;
 }
 
+interface BatchResultEntry {
+  result?: string;
+  error?: string;
+}
+
 // Reuse a single worker across calls (Pyodide init is expensive)
 let workerInstance: Worker | null = null;
 let workerReady = false;
@@ -91,6 +96,67 @@ sys.stderr = __stderr_capture
       var errorMsg = err.message || 'Python runtime error';
       logs.push({ type: 'error', message: errorMsg });
       self.postMessage({ type: 'result', logs: logs, error: errorMsg });
+    }
+  }
+
+  if (msg.type === 'run-batch') {
+    var logs = [];
+    var results = [];
+    try {
+      // Redirect stdout/stderr to capture print output
+      pyodide.runPython(\`
+import sys, io
+__stdout_capture = io.StringIO()
+__stderr_capture = io.StringIO()
+sys.stdout = __stdout_capture
+sys.stderr = __stderr_capture
+\`);
+
+      // Define user functions once
+      pyodide.runPython(msg.code);
+
+      // Run each test input individually
+      var testInputs = msg.testInputs || [];
+      for (var ti = 0; ti < testInputs.length; ti++) {
+        try {
+          if (testInputs[ti]) {
+            var pyResult = pyodide.runPython('import json; json.dumps(' + testInputs[ti] + ')');
+            results.push({ result: pyResult });
+          } else {
+            results.push({ result: undefined });
+          }
+        } catch (testErr) {
+          results.push({ error: testErr.message || 'Python runtime error' });
+        }
+      }
+
+      // Capture stdout
+      var stdout = pyodide.runPython('__stdout_capture.getvalue()');
+      if (stdout) {
+        stdout.split('\\n').filter(function(l) { return l.length > 0; }).forEach(function(line) {
+          logs.push({ type: 'log', message: line });
+        });
+      }
+
+      // Capture stderr
+      var stderr = pyodide.runPython('__stderr_capture.getvalue()');
+      if (stderr) {
+        stderr.split('\\n').filter(function(l) { return l.length > 0; }).forEach(function(line) {
+          logs.push({ type: 'warn', message: line });
+        });
+      }
+
+      // Reset stdout/stderr
+      pyodide.runPython('sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__');
+
+      self.postMessage({ type: 'batch-result', results: results, logs: logs });
+    } catch (err) {
+      // Code definition failed — all tests fail
+      try { pyodide.runPython('sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__'); } catch(e) {}
+      var errorMsg = err.message || 'Python runtime error';
+      logs.push({ type: 'error', message: errorMsg });
+      var failResults = (msg.testInputs || []).map(function() { return { error: errorMsg }; });
+      self.postMessage({ type: 'batch-result', results: failResults, logs: logs });
     }
   }
 };
@@ -178,6 +244,49 @@ export async function runPythonInWorker(
 
     worker.addEventListener('message', handler);
     worker.postMessage({ type: 'run', code, testInput });
+  });
+}
+
+/**
+ * Run Python code once and evaluate multiple test expressions in the Pyodide worker.
+ * Code is defined once; each test input is evaluated individually with error isolation.
+ */
+export async function runPythonBatchInWorker(
+  code: string,
+  testInputs: string[],
+): Promise<{ results: BatchResultEntry[]; logs: ConsoleMessage[] }> {
+  await ensureInitialized();
+  const worker = getWorker();
+
+  return new Promise((resolve) => {
+    let settled = false;
+
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        destroyWorker();
+        const error = `Execution timed out (${EXECUTION_TIMEOUT_MS / 1000}s limit)`;
+        resolve({
+          results: testInputs.map(() => ({ error })),
+          logs: [{ type: 'error' as const, message: error }],
+        });
+      }
+    }, EXECUTION_TIMEOUT_MS);
+
+    const handler = (e: MessageEvent) => {
+      if (e.data.type === 'batch-result' && !settled) {
+        settled = true;
+        clearTimeout(timer);
+        worker.removeEventListener('message', handler);
+        resolve({
+          results: e.data.results || testInputs.map(() => ({ error: 'No result' })),
+          logs: e.data.logs || [],
+        });
+      }
+    };
+
+    worker.addEventListener('message', handler);
+    worker.postMessage({ type: 'run-batch', code, testInputs });
   });
 }
 

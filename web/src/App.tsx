@@ -611,6 +611,11 @@ export default function App() {
     });
   }, [interview.currentProblem, editor.editorCode, timer.timerSeconds, interview.hintsUsed]);
 
+  const handleClearConsole = useCallback(() => {
+    editor.setTestResults([]);
+    editor.setConsoleLogs([]);
+  }, [editor]);
+
   async function handleRunTests() {
     if (editor.runningTests) return;
     editor.setRunningTests(true);
@@ -1005,6 +1010,7 @@ export default function App() {
                   onSendMessage={handleSendMessage}
                   onLanguageChange={handleLanguageChange}
                   onShareSolution={handleShareSolution}
+                  onClearConsole={handleClearConsole}
                 />
               }
             />
@@ -1065,6 +1071,7 @@ export default function App() {
                 onSendMessage={handleSendMessage}
                 onLanguageChange={handleLanguageChange}
                 onShareSolution={handleShareSolution}
+                onClearConsole={handleClearConsole}
               />
               {layout.isEditorCollapsed && (
                 <button

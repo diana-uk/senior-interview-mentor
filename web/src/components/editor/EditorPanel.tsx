@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2 } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2 } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import { getSettings } from '../../utils/settings';
@@ -63,6 +63,7 @@ interface EditorPanelProps {
   onSendMessage?: (message: string) => void;
   onLanguageChange?: (language: CodeLanguage) => void;
   onShareSolution?: () => void;
+  onClearConsole?: () => void;
 }
 
 const tabs: { id: EditorTab; label: string }[] = [
@@ -98,6 +99,7 @@ export default function EditorPanel({
   onSendMessage,
   onLanguageChange,
   onShareSolution,
+  onClearConsole,
 }: EditorPanelProps) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
@@ -261,6 +263,17 @@ export default function EditorPanel({
                     <span className="output-tab-badge">{consoleLogs.length}</span>
                   )}
                 </button>
+                {(testResults.length > 0 || consoleLogs.length > 0) && (
+                  <button
+                    type="button"
+                    className="output-clear-btn"
+                    onClick={onClearConsole}
+                    aria-label="Clear output"
+                    title="Clear output"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
               </div>
             )}
           </div>

@@ -1,15 +1,21 @@
 import type { TestCase, ConsoleMessage, SupportedLanguage } from '../types';
 import { stripTypeAnnotations } from './stripTypes';
 import ExecutorWorker from './executor.worker?worker';
-import { runPythonInWorker } from './pyodideExecutor';
+import { runPythonInWorker, runPythonBatchInWorker } from './pyodideExecutor';
 import { extractPythonFuncName, toPythonTestInput } from './pythonTestAdapter';
 
 const EXECUTION_TIMEOUT_MS = 10_000; // 10 seconds per test case
+
+interface BatchResultEntry {
+  result?: string;
+  error?: string;
+}
 
 interface WorkerOutput {
   result?: string;
   logs: ConsoleMessage[];
   error?: string;
+  results?: BatchResultEntry[];
 }
 
 /** Run a single test case inside a Web Worker with a timeout. */
@@ -54,6 +60,56 @@ function runInWorker(code: string, testInput: string): Promise<WorkerOutput> {
   });
 }
 
+/** Run all test cases in a single Web Worker with a timeout. Code is defined once. */
+function runBatchInWorker(
+  code: string,
+  testInputs: string[],
+): Promise<{ results: BatchResultEntry[]; logs: ConsoleMessage[] }> {
+  return new Promise((resolve) => {
+    const worker = new ExecutorWorker();
+    let settled = false;
+
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        worker.terminate();
+        const error = `Execution timed out (${EXECUTION_TIMEOUT_MS / 1000}s limit)`;
+        resolve({
+          results: testInputs.map(() => ({ error })),
+          logs: [{ type: 'error', message: error }],
+        });
+      }
+    }, EXECUTION_TIMEOUT_MS);
+
+    worker.onmessage = (e: MessageEvent<WorkerOutput>) => {
+      if (!settled) {
+        settled = true;
+        clearTimeout(timer);
+        worker.terminate();
+        resolve({
+          results: e.data.results ?? testInputs.map(() => ({ error: 'No result' })),
+          logs: e.data.logs ?? [],
+        });
+      }
+    };
+
+    worker.onerror = (e) => {
+      if (!settled) {
+        settled = true;
+        clearTimeout(timer);
+        worker.terminate();
+        const error = e.message || 'Worker error';
+        resolve({
+          results: testInputs.map(() => ({ error })),
+          logs: [{ type: 'error', message: error }],
+        });
+      }
+    };
+
+    worker.postMessage({ code, testInputs });
+  });
+}
+
 /** Compare expected vs actual result, handling array order independence. */
 function compareResults(actual: string, expected: string): boolean {
   try {
@@ -71,30 +127,26 @@ function compareResults(actual: string, expected: string): boolean {
   }
 }
 
-/** Execute JS/TS test cases in sandboxed Web Workers. */
+/** Execute JS/TS test cases in a single sandboxed Web Worker (batch mode). */
 async function executeJsTests(
   code: string,
   testCases: TestCase[],
 ): Promise<{ results: TestCase[]; logs: ConsoleMessage[] }> {
   const jsCode = stripTypeAnnotations(code);
-  const allLogs: ConsoleMessage[] = [];
+  const testInputs = testCases.map((tc) => tc.input);
+  const batch = await runBatchInWorker(jsCode, testInputs);
 
-  const results = await Promise.all(
-    testCases.map(async (tc) => {
-      const output = await runInWorker(jsCode, tc.input);
-      allLogs.push(...output.logs);
+  const results = testCases.map((tc, i) => {
+    const entry = batch.results[i];
+    if (entry?.error) {
+      return { ...tc, actual: `Error: ${entry.error}`, passed: false };
+    }
+    const actual = String(entry?.result ?? '');
+    const passed = compareResults(actual, tc.expected);
+    return { ...tc, actual, passed };
+  });
 
-      if (output.error) {
-        return { ...tc, actual: `Error: ${output.error}`, passed: false };
-      }
-
-      const actual = String(output.result ?? '');
-      const passed = compareResults(actual, tc.expected);
-      return { ...tc, actual, passed };
-    }),
-  );
-
-  return { results, logs: allLogs };
+  return { results, logs: batch.logs };
 }
 
 /**
@@ -112,30 +164,25 @@ function convertTestInputToPython(jsInput: string, pythonCode: string): string {
   return toPythonTestInput(jsInput, jsFuncName, pyFuncName);
 }
 
-/** Execute Python test cases via Pyodide Web Worker. */
+/** Execute Python test cases via Pyodide Web Worker (batch mode). */
 async function executePythonTests(
   code: string,
   testCases: TestCase[],
 ): Promise<{ results: TestCase[]; logs: ConsoleMessage[] }> {
-  const allLogs: ConsoleMessage[] = [];
+  const testInputs = testCases.map((tc) => convertTestInputToPython(tc.input, code));
+  const batch = await runPythonBatchInWorker(code, testInputs);
 
-  // Run test cases sequentially (Pyodide worker is single-threaded, shared state)
-  const results: TestCase[] = [];
-  for (const tc of testCases) {
-    const pyTestInput = convertTestInputToPython(tc.input, code);
-    const output = await runPythonInWorker(code, pyTestInput);
-    allLogs.push(...output.logs);
-
-    if (output.error) {
-      results.push({ ...tc, actual: `Error: ${output.error}`, passed: false });
-    } else {
-      const actual = String(output.result ?? '');
-      const passed = compareResults(actual, tc.expected);
-      results.push({ ...tc, actual, passed });
+  const results = testCases.map((tc, i) => {
+    const entry = batch.results[i];
+    if (entry?.error) {
+      return { ...tc, actual: `Error: ${entry.error}`, passed: false };
     }
-  }
+    const actual = String(entry?.result ?? '');
+    const passed = compareResults(actual, tc.expected);
+    return { ...tc, actual, passed };
+  });
 
-  return { results, logs: allLogs };
+  return { results, logs: batch.logs };
 }
 
 /** Execute all test cases in sandboxed Web Workers. Routes to JS or Python executor. */

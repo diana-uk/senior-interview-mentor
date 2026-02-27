@@ -804,6 +804,33 @@
   font-weight: var(--font-semibold);
 }
 
+/* Clear output button */
+.output-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 4px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.output-clear-btn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+}
+
+.output-clear-btn:active {
+  color: var(--color-error);
+}
+
 /* Console log entries */
 .console-entry {
   display: flex;
