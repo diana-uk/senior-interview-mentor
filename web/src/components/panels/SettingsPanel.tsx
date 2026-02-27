@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadSettings, saveSettings, type UserSettings } from '../../utils/settings';
+import { loadSettings, saveSettings, type UserSettings, type Theme } from '../../utils/settings';
 import { safeGetItem, safeRemoveItem } from '../../utils/storage.js';
 
 interface SettingsPanelProps {
@@ -14,12 +14,56 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
     onSettingsChange?.(settings);
   }, [settings, onSettingsChange]);
 
+  useEffect(() => {
+    if (settings.theme === 'midnight') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', settings.theme);
+    }
+  }, [settings.theme]);
+
   function update<K extends keyof UserSettings>(key: K, value: UserSettings[K]) {
     setSettings((prev) => ({ ...prev, [key]: value }));
   }
 
+  const themes: { value: Theme; label: string }[] = [
+    { value: 'midnight', label: 'Midnight' },
+    { value: 'daylight', label: 'Daylight' },
+    { value: 'oled', label: 'OLED Black' },
+    { value: 'warm', label: 'Warm Night' },
+  ];
+
   return (
     <div>
+      {/* Appearance */}
+      <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card-header" style={{ marginBottom: 8 }}>
+          <span className="card-title" style={{ fontSize: 12 }}>Appearance</span>
+        </div>
+        <div className="card-body">
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {themes.map(({ value, label }) => (
+              <button
+                type="button"
+                key={value}
+                aria-pressed={settings.theme === value}
+                className={`btn ${settings.theme === value ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                onClick={() => update('theme', value)}
+                style={{ flex: 1, minWidth: 70, fontSize: 10 }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 6 }}>
+            {settings.theme === 'midnight' && 'Default dark theme with cool neon accents.'}
+            {settings.theme === 'daylight' && 'Light mode for daytime coding sessions.'}
+            {settings.theme === 'oled' && 'True black for OLED screens — maximum contrast.'}
+            {settings.theme === 'warm' && 'Warm-toned dark theme — reduced blue light for late nights.'}
+          </div>
+        </div>
+      </div>
+
       {/* Language */}
       <div className="card" style={{ marginBottom: 12 }}>
         <div className="card-header" style={{ marginBottom: 8 }}>

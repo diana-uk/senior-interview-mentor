@@ -8,6 +8,14 @@
     <meta name="description" content="AI-powered coding interview coaching. Real-time Socratic teaching, 150+ LeetCode problems, system design, behavioral prep, and adaptive practice. Stop memorizing — start thinking." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#030305" />
+    <script>
+      try {
+        var s = JSON.parse(localStorage.getItem('sim-settings') || '{}');
+        if (s.theme && s.theme !== 'midnight') {
+          document.documentElement.setAttribute('data-theme', s.theme);
+        }
+      } catch (e) {}
+    </script>
     <link rel="canonical" href="https://seniormentor.dev" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
 

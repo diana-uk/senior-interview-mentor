@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME: WARM NIGHT
+   Reduced blue-light theme for late-night coding sessions
+
+   Design principles:
+   - Warm-toned darks with subtle purple/brown undertones
+   - Warm off-white text instead of cool blue-whites
+   - Warmer-shifted neon accents (cyan→teal, magenta→rose, lime→chartreuse)
+   - Warm-tinted glass surfaces
+   - Softer, warmer glows
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="warm"] {
+
+  /* ── Backgrounds (warm undertones) ── */
+  --bg-void:     #08060a;
+  --bg-abyss:    #0e0b12;
+  --bg-deep:     #14101a;
+  --bg-surface:  #1a1520;
+  --bg-elevated: #221c28;
+  --bg-raised:   #2a2430;
+  --bg-overlay:  #332c3a;
+  --bg-inset:    #0c0910;
+
+  /* ── Glass (warm tinted) ── */
+  --glass-surface:  rgba(26, 21, 32, 0.88);
+  --glass-elevated: rgba(34, 28, 40, 0.92);
+  --glass-blur:     20px;
+  --glass-border:   rgba(255, 240, 220, 0.06);
+
+  /* ── Borders (warm whites) ── */
+  --border-subtle:   rgba(255, 240, 220, 0.04);
+  --border-default:  rgba(255, 240, 220, 0.08);
+  --border-strong:   rgba(255, 240, 220, 0.13);
+  --border-emphasis: rgba(255, 240, 220, 0.18);
+  --border-focus:    rgba(0, 220, 200, 0.5);
+
+  /* ── Cyan → Warm Teal ── */
+  --neon-cyan:        #00dcc8;
+  --neon-cyan-bright: #33e6d6;
+  --neon-cyan-dim:    #009e90;
+  --neon-cyan-glow:   rgba(0, 220, 200, 0.3);
+  --neon-cyan-subtle: rgba(0, 220, 200, 0.1);
+
+  /* ── Magenta → Warm Rose ── */
+  --neon-magenta:        #ff2090;
+  --neon-magenta-dim:    #c01870;
+  --neon-magenta-glow:   rgba(255, 32, 144, 0.3);
+  --neon-magenta-subtle: rgba(255, 32, 144, 0.1);
+
+  /* ── Lime → Chartreuse ── */
+  --neon-lime:        #b8ff30;
+  --neon-lime-dim:    #88c020;
+  --neon-lime-glow:   rgba(184, 255, 48, 0.3);
+  --neon-lime-subtle: rgba(184, 255, 48, 0.1);
+
+  /* ── Amber → Warm Gold ── */
+  --neon-amber:        #ffbb33;
+  --neon-amber-dim:    #cc9020;
+  --neon-amber-glow:   rgba(255, 187, 51, 0.3);
+  --neon-amber-subtle: rgba(255, 187, 51, 0.1);
+
+  /* ── Red → Warm Coral ── */
+  --neon-red:        #ff4060;
+  --neon-red-dim:    #c03048;
+  --neon-red-glow:   rgba(255, 64, 96, 0.3);
+  --neon-red-subtle: rgba(255, 64, 96, 0.1);
+
+  /* ── Purple → Warm Violet ── */
+  --neon-purple:        #aa77ff;
+  --neon-purple-dim:    #7c55cc;
+  --neon-purple-glow:   rgba(170, 119, 255, 0.3);
+  --neon-purple-subtle: rgba(170, 119, 255, 0.1);
+
+  /* ── Text (warm off-whites) ── */
+  --text-bright:    #faf5ef;
+  --text-primary:   #e8ddd2;
+  --text-secondary: #a09688;
+  --text-muted:     #6e645a;
+  --text-disabled:  #4a4038;
+
+  /* ── Shadows (warm-tinted) ── */
+  --shadow-sm:    0 1px 2px rgba(8, 4, 0, 0.5);
+  --shadow-md:    0 4px 8px rgba(8, 4, 0, 0.5);
+  --shadow-lg:    0 8px 24px rgba(8, 4, 0, 0.5);
+  --shadow-xl:    0 16px 48px rgba(8, 4, 0, 0.5);
+  --shadow-inner: inset 0 2px 4px rgba(8, 4, 0, 0.3);
+
+  /* ── Glows (softer, warmer) ── */
+  --glow-cyan:    0 0 18px rgba(0, 220, 200, 0.25), 0 0 36px rgba(0, 220, 200, 0.1);
+  --glow-magenta: 0 0 18px rgba(255, 32, 144, 0.25), 0 0 36px rgba(255, 32, 144, 0.1);
+  --glow-lime:    0 0 18px rgba(184, 255, 48, 0.25), 0 0 36px rgba(184, 255, 48, 0.1);
+  --glow-amber:   0 0 18px rgba(255, 187, 51, 0.25), 0 0 36px rgba(255, 187, 51, 0.1);
+  --glow-red:     0 0 18px rgba(255, 64, 96, 0.25), 0 0 36px rgba(255, 64, 96, 0.1);
+  --glow-purple:  0 0 18px rgba(170, 119, 255, 0.25), 0 0 36px rgba(170, 119, 255, 0.1);
+}

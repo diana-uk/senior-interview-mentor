@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2 } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
+import { getSettings } from '../../utils/settings';
 import SystemDesignEditor from './SystemDesignEditor';
 
 export type CodeLanguage = 'typescript' | 'javascript' | 'python';
@@ -128,6 +129,7 @@ export default function EditorPanel({
   const passCount = testResults.filter((t) => t.passed).length;
   const totalCount = testResults.length;
 
+  const monacoTheme = getSettings().theme === 'daylight' ? 'vs' : 'vs-dark';
   const editorLanguage = activeTab === 'notes' ? 'markdown' : codeLanguage;
   const ext = codeLanguage === 'python' ? 'py' : codeLanguage === 'typescript' ? 'ts' : 'js';
   const pid = problemId ?? 'default';
@@ -197,7 +199,7 @@ export default function EditorPanel({
             height="100%"
             path={editorPath}
             language={editorLanguage}
-            theme="vs-dark"
+            theme={monacoTheme}
             value={currentContent}
             onChange={(value) => currentHandler(value ?? '')}
             beforeMount={handleEditorWillMount}

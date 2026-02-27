@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME: DAYLIGHT
+   Professional light mode for daytime coding sessions
+
+   Design principles:
+   - White/off-white layered backgrounds
+   - Darkened accent colors for WCAG AA contrast (4.5:1 min on white)
+   - Soft natural shadows instead of heavy black
+   - Greatly reduced glow effects
+   - White glass surfaces with light blur
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="daylight"] {
+
+  /* ── Backgrounds ── */
+  --bg-void:     #f0f1f5;
+  --bg-abyss:    #f5f6f9;
+  --bg-deep:     #f8f9fc;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-raised:   #f5f6f9;
+  --bg-overlay:  #ecedf2;
+  --bg-inset:    #e8e9f0;
+
+  /* ── Glass ── */
+  --glass-surface:  rgba(255, 255, 255, 0.85);
+  --glass-elevated: rgba(255, 255, 255, 0.92);
+  --glass-blur:     16px;
+  --glass-border:   rgba(0, 0, 0, 0.06);
+
+  /* ── Borders ── */
+  --border-subtle:   rgba(0, 0, 0, 0.04);
+  --border-default:  rgba(0, 0, 0, 0.10);
+  --border-strong:   rgba(0, 0, 0, 0.16);
+  --border-emphasis: rgba(0, 0, 0, 0.22);
+  --border-focus:    rgba(0, 120, 180, 0.5);
+
+  /* ── Neon Cyan → Dark Teal ── */
+  --neon-cyan:        #007a8c;
+  --neon-cyan-bright: #009aaf;
+  --neon-cyan-dim:    #005f6e;
+  --neon-cyan-glow:   rgba(0, 122, 140, 0.15);
+  --neon-cyan-subtle: rgba(0, 122, 140, 0.08);
+
+  /* ── Neon Magenta → Deep Rose ── */
+  --neon-magenta:        #c4006e;
+  --neon-magenta-dim:    #9a0058;
+  --neon-magenta-glow:   rgba(196, 0, 110, 0.15);
+  --neon-magenta-subtle: rgba(196, 0, 110, 0.08);
+
+  /* ── Neon Lime → Forest Green ── */
+  --neon-lime:        #3d7a00;
+  --neon-lime-dim:    #2d5c00;
+  --neon-lime-glow:   rgba(61, 122, 0, 0.15);
+  --neon-lime-subtle: rgba(61, 122, 0, 0.08);
+
+  /* ── Neon Amber → Deep Amber ── */
+  --neon-amber:        #a86800;
+  --neon-amber-dim:    #845200;
+  --neon-amber-glow:   rgba(168, 104, 0, 0.15);
+  --neon-amber-subtle: rgba(168, 104, 0, 0.08);
+
+  /* ── Neon Red → Crimson ── */
+  --neon-red:        #c41840;
+  --neon-red-dim:    #9c1433;
+  --neon-red-glow:   rgba(196, 24, 64, 0.15);
+  --neon-red-subtle: rgba(196, 24, 64, 0.08);
+
+  /* ── Neon Purple → Deep Violet ── */
+  --neon-purple:        #6633cc;
+  --neon-purple-dim:    #5228a3;
+  --neon-purple-glow:   rgba(102, 51, 204, 0.15);
+  --neon-purple-subtle: rgba(102, 51, 204, 0.08);
+
+  /* ── Text ── */
+  --text-bright:    #1a1d26;
+  --text-primary:   #2d3142;
+  --text-secondary: #6b7080;
+  --text-muted:     #9ca1b0;
+  --text-disabled:  #c8ccd6;
+
+  /* ── Shadows ── */
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md:    0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xl:    0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  /* ── Glows (greatly reduced — subtle box-shadow only) ── */
+  --glow-cyan:    0 0 8px rgba(0, 122, 140, 0.2);
+  --glow-magenta: 0 0 8px rgba(196, 0, 110, 0.2);
+  --glow-lime:    0 0 8px rgba(61, 122, 0, 0.2);
+  --glow-amber:   0 0 8px rgba(168, 104, 0, 0.2);
+  --glow-red:     0 0 8px rgba(196, 24, 64, 0.2);
+  --glow-purple:  0 0 8px rgba(102, 51, 204, 0.2);
+}

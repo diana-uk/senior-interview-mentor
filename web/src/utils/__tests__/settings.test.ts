@@ -77,6 +77,7 @@ describe('settings', () => {
         'notifyStreakAlert',
         'reminderTime',
         'soundEnabled',
+        'theme',
         'timerDefaultMinutes',
         'timerEnabled',
       ]);
@@ -139,6 +140,7 @@ describe('settings', () => {
         reminderTime: '08:00',
         hintStyle: 'analogies' as HintStyle,
         detailLevel: 'detailed' as DetailLevel,
+        theme: 'warm',
       };
       localStorageMock.setItem('sim-settings', JSON.stringify(custom));
       const settings = loadSettings();

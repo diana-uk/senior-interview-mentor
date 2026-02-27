@@ -1,5 +1,6 @@
 import { safeGetItem, safeSetItem } from './storage.js';
 
+export type Theme = 'midnight' | 'daylight' | 'oled' | 'warm';
 export type HintStyle = 'analogies' | 'pseudocode' | 'visual' | 'direct';
 export type DetailLevel = 'brief' | 'balanced' | 'detailed';
 
@@ -15,6 +16,7 @@ export interface UserSettings {
   reminderTime: string; // HH:MM format
   hintStyle: HintStyle;
   detailLevel: DetailLevel;
+  theme: Theme;
 }
 
 const STORAGE_KEY = 'sim-settings';
@@ -31,6 +33,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   reminderTime: '09:00',
   hintStyle: 'pseudocode',
   detailLevel: 'balanced',
+  theme: 'midnight',
 };
 
 export function loadSettings(): UserSettings {
