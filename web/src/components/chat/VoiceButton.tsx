@@ -6,10 +6,12 @@ import { detectFillers, type FillerReport } from '../../utils/fillerDetector';
 interface VoiceButtonProps {
   onTranscript: (text: string) => void;
   onFillerUpdate: (report: FillerReport) => void;
+  onLiveTranscript?: (text: string) => void;
+  onListeningChange?: (isListening: boolean) => void;
   disabled?: boolean;
 }
 
-export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: VoiceButtonProps) {
+export default function VoiceButton({ onTranscript, onFillerUpdate, onLiveTranscript, onListeningChange, disabled }: VoiceButtonProps) {
   const { isListening, isSupported, transcript, finalTranscript, start, stop, reset } =
     useSpeechRecognition();
   const resetCounterRef = useRef(0);
@@ -20,6 +22,16 @@ export default function VoiceButton({ onTranscript, onFillerUpdate, disabled }: 
     [transcript],
   );
   const fillerCount = fillerReport?.totalFillers ?? 0;
+
+  // Push live transcript to parent for real-time preview
+  useEffect(() => {
+    onLiveTranscript?.(transcript);
+  }, [transcript, onLiveTranscript]);
+
+  // Notify parent of listening state changes
+  useEffect(() => {
+    onListeningChange?.(isListening);
+  }, [isListening, onListeningChange]);
 
   // Notify parent of filler updates
   const prevTranscriptRef = useRef(transcript);

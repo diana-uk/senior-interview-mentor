@@ -1,0 +1,94 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME: OLED BLACK
+   True black for OLED screens — maximum battery savings, maximum contrast
+
+   Design principles:
+   - Pure #000000 base — OLED pixels fully off
+   - Minimal gray layers for depth
+   - Slightly brighter borders to compensate for extreme dark
+   - Same neon accents — they pop maximally on true black
+   - Shadows removed (invisible on pure black, saves rendering)
+   - Near-opaque glass surfaces
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="oled"] {
+
+  /* ── Backgrounds ── */
+  --bg-void:     #000000;
+  --bg-abyss:    #000000;
+  --bg-deep:     #050508;
+  --bg-surface:  #0a0a0e;
+  --bg-elevated: #0f0f14;
+  --bg-raised:   #14141c;
+  --bg-overlay:  #1a1a24;
+
+  /* ── Glass ── */
+  --glass-surface:  rgba(5, 5, 8, 0.95);
+  --glass-elevated: rgba(10, 10, 14, 0.95);
+  --glass-blur:     12px;
+  --glass-border:   rgba(255, 255, 255, 0.08);
+
+  /* ── Borders (slightly brighter to compensate for pure black) ── */
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-focus:   rgba(0, 240, 255, 0.6);
+
+  /* ── Neon Cyan (same — maximum pop on black) ── */
+  --neon-cyan:        #00f0ff;
+  --neon-cyan-dim:    #00a8b3;
+  --neon-cyan-glow:   rgba(0, 240, 255, 0.35);
+  --neon-cyan-subtle: rgba(0, 240, 255, 0.10);
+
+  /* ── Neon Magenta ── */
+  --neon-magenta:        #ff00aa;
+  --neon-magenta-dim:    #b30077;
+  --neon-magenta-glow:   rgba(255, 0, 170, 0.35);
+  --neon-magenta-subtle: rgba(255, 0, 170, 0.10);
+
+  /* ── Neon Lime ── */
+  --neon-lime:        #a3ff00;
+  --neon-lime-dim:    #72b300;
+  --neon-lime-glow:   rgba(163, 255, 0, 0.35);
+  --neon-lime-subtle: rgba(163, 255, 0, 0.10);
+
+  /* ── Neon Amber ── */
+  --neon-amber:        #ffaa00;
+  --neon-amber-dim:    #b37700;
+  --neon-amber-glow:   rgba(255, 170, 0, 0.35);
+  --neon-amber-subtle: rgba(255, 170, 0, 0.10);
+
+  /* ── Neon Red ── */
+  --neon-red:        #ff3366;
+  --neon-red-dim:    #b32447;
+  --neon-red-glow:   rgba(255, 51, 102, 0.35);
+  --neon-red-subtle: rgba(255, 51, 102, 0.10);
+
+  /* ── Neon Purple ── */
+  --neon-purple:        #9966ff;
+  --neon-purple-dim:    #6b47b3;
+  --neon-purple-glow:   rgba(153, 102, 255, 0.35);
+  --neon-purple-subtle: rgba(153, 102, 255, 0.10);
+
+  /* ── Text (high contrast on pure black) ── */
+  --text-bright:    #ffffff;
+  --text-primary:   #e8e8f0;
+  --text-secondary: #8888a0;
+  --text-muted:     #555568;
+  --text-disabled:  #333340;
+
+  /* ── Shadows (removed — invisible on pure black) ── */
+  --shadow-sm:    none;
+  --shadow-md:    none;
+  --shadow-lg:    none;
+  --shadow-xl:    none;
+  --shadow-inner: none;
+
+  /* ── Glows (slightly intensified for extra pop on black) ── */
+  --glow-cyan:    0 0 20px rgba(0, 240, 255, 0.35), 0 0 50px rgba(0, 240, 255, 0.15);
+  --glow-magenta: 0 0 20px rgba(255, 0, 170, 0.35), 0 0 50px rgba(255, 0, 170, 0.15);
+  --glow-lime:    0 0 20px rgba(163, 255, 0, 0.35), 0 0 50px rgba(163, 255, 0, 0.15);
+  --glow-amber:   0 0 20px rgba(255, 170, 0, 0.35), 0 0 50px rgba(255, 170, 0, 0.15);
+  --glow-red:     0 0 20px rgba(255, 51, 102, 0.35), 0 0 50px rgba(255, 51, 102, 0.15);
+  --glow-purple:  0 0 20px rgba(153, 102, 255, 0.35), 0 0 50px rgba(153, 102, 255, 0.15);
+}

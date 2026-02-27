@@ -29,6 +29,10 @@ html/
 # Claude plans (temporary)
 .claude/plans/
 
+# Claude local settings (machine-specific)
+.claude/settings.local.json
+**/settings.local.json
+
 # Electron
 dist-electron/
 release/

@@ -541,6 +541,22 @@
   color: var(--text-muted);
 }
 
+.chat-input-wrapper--recording {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 3px var(--neon-cyan-subtle), 0 0 12px rgba(0, 229, 255, 0.15);
+  animation: recording-pulse 2s ease-in-out infinite;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--neon-cyan-subtle), 0 0 12px rgba(0, 229, 255, 0.15); }
+  50% { box-shadow: 0 0 0 4px var(--neon-cyan-subtle), 0 0 20px rgba(0, 229, 255, 0.25); }
+}
+
+.chat-input--recording {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 .chat-send-btn {
   width: 36px;
   height: 36px;

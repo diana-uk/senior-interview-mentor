@@ -28,6 +28,8 @@ const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review
 export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming, rateLimitInfo, onUpgrade }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
+  const [liveTranscript, setLiveTranscript] = useState('');
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,12 +62,27 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
 
   const handleVoiceTranscript = useCallback((text: string) => {
     setInput((prev) => (prev ? prev + ' ' + text : text));
+    setLiveTranscript('');
     inputRef.current?.focus();
+  }, []);
+
+  const handleLiveTranscript = useCallback((text: string) => {
+    setLiveTranscript(text);
+  }, []);
+
+  const handleListeningChange = useCallback((listening: boolean) => {
+    setIsVoiceActive(listening);
+    if (!listening) setLiveTranscript('');
   }, []);
 
   const handleFillerUpdate = useCallback((report: FillerReport) => {
     setFillerReport(report);
   }, []);
+
+  // Combine typed input with live voice transcript for display
+  const displayValue = isVoiceActive && liveTranscript
+    ? (input ? input + ' ' + liveTranscript : liveTranscript)
+    : input;
 
   function handleEvaluateCommunication() {
     if (!fillerReport) return;
@@ -170,20 +187,23 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
             </button>
           )}
         </div>
-        <div className="chat-input-wrapper">
+        <div className={`chat-input-wrapper ${isVoiceActive ? 'chat-input-wrapper--recording' : ''}`}>
           <textarea
             ref={inputRef}
-            className="chat-input"
-            placeholder={isStreaming ? 'Mentor is responding...' : 'Type a message or use a /command...'}
-            value={input}
-            onChange={handleInput}
-            onKeyDown={handleKeyDown}
+            className={`chat-input ${isVoiceActive ? 'chat-input--recording' : ''}`}
+            placeholder={isVoiceActive ? 'Listening...' : isStreaming ? 'Mentor is responding...' : 'Type a message or use a /command...'}
+            value={displayValue}
+            onChange={isVoiceActive ? undefined : handleInput}
+            onKeyDown={isVoiceActive ? undefined : handleKeyDown}
             rows={1}
             disabled={isStreaming}
+            readOnly={isVoiceActive}
           />
           <VoiceButton
             onTranscript={handleVoiceTranscript}
             onFillerUpdate={handleFillerUpdate}
+            onLiveTranscript={handleLiveTranscript}
+            onListeningChange={handleListeningChange}
             disabled={isStreaming}
           />
           {isStreaming ? (

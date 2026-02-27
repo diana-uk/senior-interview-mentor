@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME: MIDNIGHT (Baseline Reference)
+   Neo-Terminal Elite — the default dark theme
+
+   These values match the :root defaults in tokens.css.
+   This file exists as a reference — it documents what Midnight looks like
+   when extracted from :root. No [data-theme] selector is needed because
+   :root already defines these values.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+  [data-theme="midnight"] is intentionally omitted.
+  Midnight is active whenever no data-theme attribute is set.
+  The values below are for reference only.
+*/
+
+/*
+  ── Backgrounds ──
+  --bg-void:       #030305
+  --bg-abyss:      #080810
+  --bg-deep:       #0c0c14
+  --bg-surface:    #10101a
+  --bg-elevated:   #161622
+  --bg-raised:     #1c1c2a
+  --bg-overlay:    #222233
+
+  ── Glass ──
+  --glass-surface:  rgba(16, 16, 26, 0.85)
+  --glass-elevated: rgba(22, 22, 34, 0.9)
+  --glass-blur:     20px
+  --glass-border:   rgba(255, 255, 255, 0.06)
+
+  ── Borders ──
+  --border-subtle:  rgba(255, 255, 255, 0.04)
+  --border-default: rgba(255, 255, 255, 0.08)
+  --border-strong:  rgba(255, 255, 255, 0.12)
+  --border-focus:   rgba(0, 240, 255, 0.5)
+
+  ── Neon Cyan ──
+  --neon-cyan:        #00f0ff
+  --neon-cyan-dim:    #00a8b3
+  --neon-cyan-glow:   rgba(0, 240, 255, 0.3)
+  --neon-cyan-subtle: rgba(0, 240, 255, 0.1)
+
+  ── Neon Magenta ──
+  --neon-magenta:        #ff00aa
+  --neon-magenta-dim:    #b30077
+  --neon-magenta-glow:   rgba(255, 0, 170, 0.3)
+  --neon-magenta-subtle: rgba(255, 0, 170, 0.1)
+
+  ── Neon Lime ──
+  --neon-lime:        #a3ff00
+  --neon-lime-dim:    #72b300
+  --neon-lime-glow:   rgba(163, 255, 0, 0.3)
+  --neon-lime-subtle: rgba(163, 255, 0, 0.1)
+
+  ── Neon Amber ──
+  --neon-amber:        #ffaa00
+  --neon-amber-dim:    #b37700
+  --neon-amber-glow:   rgba(255, 170, 0, 0.3)
+  --neon-amber-subtle: rgba(255, 170, 0, 0.1)
+
+  ── Neon Red ──
+  --neon-red:        #ff3366
+  --neon-red-dim:    #b32447
+  --neon-red-glow:   rgba(255, 51, 102, 0.3)
+  --neon-red-subtle: rgba(255, 51, 102, 0.1)
+
+  ── Neon Purple ──
+  --neon-purple:        #9966ff
+  --neon-purple-dim:    #6b47b3
+  --neon-purple-glow:   rgba(153, 102, 255, 0.3)
+  --neon-purple-subtle: rgba(153, 102, 255, 0.1)
+
+  ── Text ──
+  --text-bright:    #ffffff
+  --text-primary:   #e8e8f0
+  --text-secondary: #9090a8
+  --text-muted:     #606078
+  --text-disabled:  #404050
+
+  ── Shadows ──
+  --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.5)
+  --shadow-md:    0 4px 8px rgba(0, 0, 0, 0.5)
+  --shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.5)
+  --shadow-xl:    0 16px 48px rgba(0, 0, 0, 0.5)
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3)
+
+  ── Glows ──
+  --glow-cyan:    0 0 20px var(--neon-cyan-glow), 0 0 40px var(--neon-cyan-glow)
+  --glow-magenta: 0 0 20px var(--neon-magenta-glow), 0 0 40px var(--neon-magenta-glow)
+  --glow-lime:    0 0 20px var(--neon-lime-glow), 0 0 40px var(--neon-lime-glow)
+  --glow-amber:   0 0 20px var(--neon-amber-glow), 0 0 40px var(--neon-amber-glow)
+  --glow-red:     0 0 20px var(--neon-red-glow), 0 0 40px var(--neon-red-glow)
+  --glow-purple:  0 0 20px var(--neon-purple-glow), 0 0 40px var(--neon-purple-glow)
+*/

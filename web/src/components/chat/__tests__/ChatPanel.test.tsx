@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import ChatPanel from '../ChatPanel';
 import type { ChatMessage, Mode } from '../../../types';
 
@@ -17,10 +17,27 @@ vi.mock('../ThinkingBubble', () => ({
   default: () => <div data-testid="thinking-bubble">Thinking...</div>,
 }));
 
+// Store VoiceButton callbacks so tests can simulate voice events
+let voiceCallbacks: {
+  onTranscript?: (text: string) => void;
+  onFillerUpdate?: (report: unknown) => void;
+  onLiveTranscript?: (text: string) => void;
+  onListeningChange?: (listening: boolean) => void;
+} = {};
+
 vi.mock('../VoiceButton', () => ({
-  default: ({ disabled }: { disabled?: boolean }) => (
-    <button type="button" data-testid="voice-button" disabled={disabled}>Voice</button>
-  ),
+  default: (props: {
+    disabled?: boolean;
+    onTranscript?: (text: string) => void;
+    onFillerUpdate?: (report: unknown) => void;
+    onLiveTranscript?: (text: string) => void;
+    onListeningChange?: (listening: boolean) => void;
+  }) => {
+    voiceCallbacks = props;
+    return (
+      <button type="button" data-testid="voice-button" disabled={props.disabled}>Voice</button>
+    );
+  },
 }));
 
 vi.mock('lucide-react', () => ({
@@ -384,6 +401,168 @@ describe('ChatPanel', () => {
       renderChat({ isStreaming: true });
       const voiceBtn = screen.getByTestId('voice-button');
       expect(voiceBtn).toHaveProperty('disabled', true);
+    });
+  });
+
+  // ── Live transcription ──
+
+  describe('live transcription', () => {
+    it('shows live transcript in textarea when voice is active', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+        voiceCallbacks.onLiveTranscript?.('hello world');
+      });
+
+      expect(textarea.value).toBe('hello world');
+    });
+
+    it('appends live transcript to existing typed input', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      // Type something first
+      fireEvent.change(textarea, { target: { value: 'prefix' } });
+
+      // Start voice
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+        voiceCallbacks.onLiveTranscript?.('spoken text');
+      });
+
+      expect(textarea.value).toBe('prefix spoken text');
+    });
+
+    it('shows "Listening..." placeholder when voice is active', () => {
+      renderChat();
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+      });
+
+      expect(screen.getByPlaceholderText('Listening...')).toBeDefined();
+    });
+
+    it('adds recording CSS class to input wrapper when voice is active', () => {
+      const { container } = renderChat();
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+      });
+
+      const wrapper = container.querySelector('.chat-input-wrapper');
+      expect(wrapper!.className).toContain('chat-input-wrapper--recording');
+    });
+
+    it('adds recording CSS class to textarea when voice is active', () => {
+      renderChat();
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+      });
+
+      const textarea = screen.getByPlaceholderText('Listening...');
+      expect(textarea.className).toContain('chat-input--recording');
+    });
+
+    it('removes recording classes when voice stops', () => {
+      const { container } = renderChat();
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+      });
+      act(() => {
+        voiceCallbacks.onListeningChange?.(false);
+      });
+
+      const wrapper = container.querySelector('.chat-input-wrapper');
+      expect(wrapper!.className).not.toContain('chat-input-wrapper--recording');
+    });
+
+    it('clears live transcript when voice stops', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+        voiceCallbacks.onLiveTranscript?.('interim words');
+      });
+
+      expect(textarea.value).toBe('interim words');
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(false);
+      });
+
+      // After stopping, only the committed input remains (empty since no onTranscript fired)
+      expect(textarea.value).toBe('');
+    });
+
+    it('makes textarea readOnly during voice recording', () => {
+      renderChat();
+
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+      });
+
+      const textarea = screen.getByPlaceholderText('Listening...') as HTMLTextAreaElement;
+      expect(textarea.readOnly).toBe(true);
+    });
+
+    it('textarea is not readOnly when voice is inactive', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+      expect(textarea.readOnly).toBe(false);
+    });
+
+    it('merges final transcript into input on voice stop via onTranscript', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      // Simulate full voice flow: start → speak → stop
+      act(() => {
+        voiceCallbacks.onListeningChange?.(true);
+        voiceCallbacks.onLiveTranscript?.('final words');
+      });
+
+      act(() => {
+        voiceCallbacks.onTranscript?.('final words');
+        voiceCallbacks.onListeningChange?.(false);
+      });
+
+      // Final text should be in the input
+      expect(textarea.value).toBe('final words');
+    });
+
+    it('updates live transcript progressively as user speaks', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      act(() => { voiceCallbacks.onListeningChange?.(true); });
+
+      act(() => { voiceCallbacks.onLiveTranscript?.('hello'); });
+      expect(textarea.value).toBe('hello');
+
+      act(() => { voiceCallbacks.onLiveTranscript?.('hello world'); });
+      expect(textarea.value).toBe('hello world');
+
+      act(() => { voiceCallbacks.onLiveTranscript?.('hello world how are you'); });
+      expect(textarea.value).toBe('hello world how are you');
+    });
+
+    it('does not show live transcript when voice is inactive even if transcript is set', () => {
+      renderChat();
+      const textarea = screen.getByPlaceholderText('Type a message or use a /command...') as HTMLTextAreaElement;
+
+      // Only set transcript without activating voice
+      act(() => {
+        voiceCallbacks.onLiveTranscript?.('ghost text');
+      });
+
+      // Should not appear since voice is not active
+      expect(textarea.value).toBe('');
     });
   });
 
