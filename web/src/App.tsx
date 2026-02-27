@@ -618,54 +618,74 @@ export default function App() {
 
     try {
       if (interview.currentProblem) {
-        // Predefined problem — use structured test cases
-        const { results, logs } = await executeTests(editor.editorCode, interview.currentProblem.testCases, editor.language);
-        editor.setTestResults(results);
-        editor.setConsoleLogs(logs);
+        // Check if Tests tab content matches the current problem.
+        // They can diverge when AI overwrites tests via /solve, user edits
+        // the Tests tab, or session restore races.
+        const expectedTestCode = getTestCode(interview.currentProblem, editor.language);
+        const testsMatch = editor.testCode.trim() === expectedTestCode.trim();
 
-        const passed = results.filter((r) => r.passed).length;
-        const total = results.length;
-        const allPassed = passed === total;
+        if (!testsMatch) {
+          // Tests tab has diverged — run what the user actually sees
+          const parsedTests = parseTestCode(editor.testCode);
+          if (parsedTests.length > 0) {
+            const { results, logs } = await executeTests(editor.editorCode, parsedTests, editor.language);
+            editor.setTestResults(results);
+            editor.setConsoleLogs(logs);
+          } else {
+            const { logs } = await executeFreeform(editor.editorCode, editor.testCode, editor.language);
+            editor.setTestResults([]);
+            editor.setConsoleLogs(logs);
+          }
+        } else {
+          // Tests match — use structured test cases (fast path)
+          const { results, logs } = await executeTests(editor.editorCode, interview.currentProblem.testCases, editor.language);
+          editor.setTestResults(results);
+          editor.setConsoleLogs(logs);
 
-        recordProblemAttempt({
-          problemId: interview.currentProblem.id,
-          status: allPassed ? 'solved' : 'attempted',
-          score: allPassed ? 4 : null,
-          time: null,
-          hintsUsed: interview.hintsUsed,
-          code: editor.editorCode,
-        });
+          const passed = results.filter((r) => r.passed).length;
+          const total = results.length;
+          const allPassed = passed === total;
 
-        if (interview.currentProblem.pattern) {
-          updatePatternStrength(
-            interview.currentProblem.pattern as PatternName,
-            allPassed,
-            allPassed ? 4 : (passed / total) * 4,
-          );
-        }
+          recordProblemAttempt({
+            problemId: interview.currentProblem.id,
+            status: allPassed ? 'solved' : 'attempted',
+            score: allPassed ? 4 : null,
+            time: null,
+            hintsUsed: interview.hintsUsed,
+            code: editor.editorCode,
+          });
 
-        const defaultSeconds = getSettings().timerDefaultMinutes * 60;
-        const elapsed = timer.timerRunning ? Math.max(0, defaultSeconds - timer.timerSeconds) : 0;
-        recordSession({
-          problemId: interview.currentProblem.id,
-          problemTitle: interview.currentProblem.title,
-          mode: interview.mode,
-          duration: elapsed,
-          hintsUsed: interview.hintsUsed,
-          score: allPassed ? 4 : (passed / total) * 4,
-          patterns: interview.currentProblem.pattern
-            ? [interview.currentProblem.pattern as PatternName]
-            : [],
-        });
+          if (interview.currentProblem.pattern) {
+            updatePatternStrength(
+              interview.currentProblem.pattern as PatternName,
+              allPassed,
+              allPassed ? 4 : (passed / total) * 4,
+            );
+          }
 
-        if (!allPassed) {
-          const failedCount = total - passed;
-          addMistake({
-            pattern: interview.currentProblem.pattern as PatternName,
+          const defaultSeconds = getSettings().timerDefaultMinutes * 60;
+          const elapsed = timer.timerRunning ? Math.max(0, defaultSeconds - timer.timerSeconds) : 0;
+          recordSession({
             problemId: interview.currentProblem.id,
             problemTitle: interview.currentProblem.title,
-            description: `Failed ${failedCount}/${total} test cases`,
+            mode: interview.mode,
+            duration: elapsed,
+            hintsUsed: interview.hintsUsed,
+            score: allPassed ? 4 : (passed / total) * 4,
+            patterns: interview.currentProblem.pattern
+              ? [interview.currentProblem.pattern as PatternName]
+              : [],
           });
+
+          if (!allPassed) {
+            const failedCount = total - passed;
+            addMistake({
+              pattern: interview.currentProblem.pattern as PatternName,
+              problemId: interview.currentProblem.id,
+              problemTitle: interview.currentProblem.title,
+              description: `Failed ${failedCount}/${total} test cases`,
+            });
+          }
         }
       } else {
         // Custom/AI-generated problem — parse test code from Tests tab
