@@ -319,7 +319,7 @@ export default function App() {
     getWeakPatterns,
   } = useMistakeTracker();
   const {
-    stats, recordProblemAttempt, recordReview,
+    stats, recordSession, recordProblemAttempt, recordReview,
     updatePatternStrength, getProblemStatus,
   } = useStats();
   const { getNextProblem, getRecommendations, getReadinessScore } = useAdaptiveRecommendation({
@@ -643,6 +643,20 @@ export default function App() {
             allPassed ? 4 : (passed / total) * 4,
           );
         }
+
+        const defaultSeconds = getSettings().timerDefaultMinutes * 60;
+        const elapsed = timer.timerRunning ? Math.max(0, defaultSeconds - timer.timerSeconds) : 0;
+        recordSession({
+          problemId: interview.currentProblem.id,
+          problemTitle: interview.currentProblem.title,
+          mode: interview.mode,
+          duration: elapsed,
+          hintsUsed: interview.hintsUsed,
+          score: allPassed ? 4 : (passed / total) * 4,
+          patterns: interview.currentProblem.pattern
+            ? [interview.currentProblem.pattern as PatternName]
+            : [],
+        });
 
         if (!allPassed) {
           const failedCount = total - passed;
