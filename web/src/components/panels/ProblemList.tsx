@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, CheckCircle, Circle, Clock, X, Sparkles, Zap } from 'lucide-react';
+import { Search, CheckCircle, X, Sparkles, Zap } from 'lucide-react';
 import { problemsByPattern } from '../../data/problems';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
 import type { Difficulty, ProblemStatus } from '../../types';
@@ -26,11 +26,13 @@ type DifficultyFilter = Difficulty | 'All';
 
 const DIFFICULTY_ORDER: Record<Difficulty, number> = { Easy: 0, Medium: 1, Hard: 2 };
 
-const STATUS_ICONS: Record<ProblemStatus, { icon: typeof CheckCircle; color: string }> = {
-  solved: { icon: CheckCircle, color: 'var(--neon-lime)' },
-  attempted: { icon: Clock, color: 'var(--neon-amber)' },
-  unseen: { icon: Circle, color: 'var(--text-muted)' },
-};
+function StatusIndicator({ status }: { status: ProblemStatus }) {
+  if (status === 'solved') return <CheckCircle size={14} color="var(--neon-lime)" style={{ flexShrink: 0 }} />;
+  if (status === 'attempted') return (
+    <span aria-hidden="true" style={{ width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--neon-amber)', fontSize: 18, lineHeight: 1 }}>·</span>
+  );
+  return <span style={{ width: 14, flexShrink: 0 }} />;
+}
 
 export default function ProblemList({ onSelect, currentId, getProblemStatus, recommendations, dailyChallenge, getProblemProgress }: ProblemListProps) {
   const [search, setSearch] = useState('');
@@ -255,8 +257,6 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
           <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {problems.map((p) => {
               const status = getProblemStatus?.(p.id) ?? 'unseen';
-              const StatusIcon = STATUS_ICONS[status].icon;
-              const statusColor = STATUS_ICONS[status].color;
 
               return (
                 <div
@@ -272,7 +272,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                     borderColor: currentId === p.id ? 'var(--neon-cyan)' : 'var(--border-default)',
                   }}
                 >
-                  <StatusIcon size={14} color={statusColor} style={{ flexShrink: 0 }} />
+                  <StatusIndicator status={status} />
                   <span
                     title={p.title}
                     style={{
