@@ -8,6 +8,7 @@ import WorkspaceSplitter from './components/layout/WorkspaceSplitter';
 import CommitmentGate from './components/panels/CommitmentGate';
 import HintLadder from './components/panels/HintLadder';
 import AuthPage from './components/auth/AuthPage';
+import AppSkeleton from './components/AppSkeleton';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useAuth } from './hooks/useAuth';
 import { useSubscription } from './hooks/useSubscription';
@@ -170,6 +171,7 @@ export default function App() {
   const { user, session, loading: authLoading, signIn, signUp, signInWithOAuth, signOut, isAuthenticated } = useAuth();
   const subscription = useSubscription(session);
   const [authSkipped, setAuthSkipped] = useState(() => safeGetItem('sim-auth-skipped') === '1');
+  const [authTimedOut, setAuthTimedOut] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncToast, setSyncToast] = useState('');
   const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; limit: number; plan: string } | null>(null);
@@ -179,6 +181,12 @@ export default function App() {
     safeSetItem('sim-auth-skipped', '1');
     setAuthSkipped(true);
   }, []);
+
+  useEffect(() => {
+    if (!authLoading) { setAuthTimedOut(false); return; }
+    const t = setTimeout(() => setAuthTimedOut(true), 8000);
+    return () => clearTimeout(t);
+  }, [authLoading]);
 
   const handleSync = useCallback(async () => {
     if (!session?.access_token) return;
@@ -499,8 +507,10 @@ export default function App() {
     } else if (newMode === 'REVIEWER') {
       interview.setReviewRubricOpen(true);
     } else {
-      // TEACHER — reset interview-specific state
-      interview.setInterviewStage(null);
+      // TEACHER — reset interview-specific state, but keep system design workspace alive
+      if (interview.interviewStage !== 'system-design') {
+        interview.setInterviewStage(null);
+      }
       interview.setInterviewCategory(null);
     }
   }, [interview, timer]);
@@ -893,12 +903,20 @@ export default function App() {
   }
 
   if (authLoading) {
-    return (
-      <div className="auth-loading">
-        <div className="topnav-logo">S</div>
-        <span>Loading...</span>
-      </div>
-    );
+    if (authTimedOut) {
+      return (
+        <div className="auth-error-banner">
+          <div className="auth-error-banner__icon">⚠</div>
+          <div className="auth-error-banner__title">Could not connect</div>
+          <div>Working in offline mode — your progress is saved locally.</div>
+          <div className="auth-error-banner__actions">
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => window.location.reload()}>Retry</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={handleAuthSkip}>Continue</button>
+          </div>
+        </div>
+      );
+    }
+    return <AppSkeleton />;
   }
 
   if (!isAuthenticated && !authSkipped) {
