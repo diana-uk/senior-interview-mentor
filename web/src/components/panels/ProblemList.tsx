@@ -273,11 +273,14 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                   }}
                 >
                   <StatusIcon size={14} color={statusColor} style={{ flexShrink: 0 }} />
-                  <span style={{
-                    flex: 1, fontSize: 13,
-                    color: currentId === p.id ? 'var(--text-bright)' : 'var(--text-primary)',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>
+                  <span
+                    title={p.title}
+                    style={{
+                      flex: 1, fontSize: 13,
+                      color: currentId === p.id ? 'var(--text-bright)' : 'var(--text-primary)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}
+                  >
                     {p.title}
                   </span>
                   {status === 'solved' && getProblemProgress && (() => {
