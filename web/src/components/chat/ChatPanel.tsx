@@ -4,6 +4,7 @@ import type { ChatMessage, Mode } from '../../types';
 import ChatMessageItem from './ChatMessage';
 import ThinkingBubble from './ThinkingBubble';
 import VoiceButton from './VoiceButton';
+import CommandPalette, { filterCommands } from './CommandPalette';
 import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
 
 interface RateLimitInfo {
@@ -30,8 +31,18 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
   const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
   const [liveTranscript, setLiveTranscript] = useState('');
   const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [paletteIndex, setPaletteIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Show palette when input starts with "/" with no spaces (single token)
+  const showPalette = input.startsWith('/') && !input.includes(' ');
+  const paletteCommands = showPalette ? filterCommands(input) : [];
+
+  // Reset active index when the filtered list changes
+  useEffect(() => {
+    setPaletteIndex(0);
+  }, [input]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,7 +58,34 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
     }
   }
 
+  function selectPaletteCommand(cmd: string) {
+    setInput(cmd + ' ');
+    inputRef.current?.focus();
+  }
+
   function handleKeyDown(e: React.KeyboardEvent) {
+    if (showPalette && paletteCommands.length > 0) {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setPaletteIndex((i) => (i - 1 + paletteCommands.length) % paletteCommands.length);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setPaletteIndex((i) => (i + 1) % paletteCommands.length);
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        selectPaletteCommand(paletteCommands[paletteIndex].cmd);
+        return;
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setInput('');
+        return;
+      }
+    }
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -187,6 +225,16 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
             </button>
           )}
         </div>
+        <div style={{ position: 'relative' }}>
+          {showPalette && paletteCommands.length > 0 && (
+            <CommandPalette
+              query={input}
+              activeIndex={paletteIndex}
+              onSelect={selectPaletteCommand}
+              onClose={() => setInput('')}
+              onActiveChange={setPaletteIndex}
+            />
+          )}
         <div className={`chat-input-wrapper ${isVoiceActive ? 'chat-input-wrapper--recording' : ''}`}>
           <textarea
             ref={inputRef}
@@ -227,6 +275,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
               <Send size={16} aria-hidden="true" />
             </button>
           )}
+        </div>
         </div>
       </div>
     </div>

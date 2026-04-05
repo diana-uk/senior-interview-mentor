@@ -45,6 +45,17 @@ vi.mock('lucide-react', () => ({
   Square: (props: Record<string, unknown>) => <div data-testid="icon-square" {...props} />,
 }));
 
+vi.mock('../CommandPalette', () => ({
+  default: ({ query }: { query: string }) => (
+    <div data-testid="command-palette" data-query={query} />
+  ),
+  filterCommands: (query: string) => {
+    if (!query.startsWith('/')) return [];
+    const cmds = ['/solve', '/hint', '/next', '/continue', '/stuck', '/check', '/recap', '/pattern', '/mistakes', '/review', '/chat'];
+    return cmds.filter((c) => c.startsWith(query.toLowerCase())).map((c) => ({ cmd: c, description: '', group: '' }));
+  },
+}));
+
 vi.mock('../../../utils/fillerDetector', () => ({
   getFillerFeedback: () => 'No filler words detected.',
   detectFillers: () => ({ totalFillers: 0, fillerRate: 0, fillerWords: [] }),
