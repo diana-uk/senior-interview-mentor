@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2 } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2, RotateCcw } from 'lucide-react';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import { getSettings } from '../../utils/settings';
@@ -64,6 +64,7 @@ interface EditorPanelProps {
   onLanguageChange?: (language: CodeLanguage) => void;
   onShareSolution?: () => void;
   onClearConsole?: () => void;
+  onResetCode?: () => void;
 }
 
 const tabs: { id: EditorTab; label: string }[] = [
@@ -100,9 +101,11 @@ export default function EditorPanel({
   onLanguageChange,
   onShareSolution,
   onClearConsole,
+  onResetCode,
 }: EditorPanelProps) {
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
+  const [confirmReset, setConfirmReset] = useState(false);
 
   // Auto-switch output tab: console for freeform runs, tests for structured results
   useEffect(() => {
@@ -163,6 +166,37 @@ export default function EditorPanel({
               <option value="javascript">JavaScript</option>
               <option value="python">Python</option>
             </select>
+          )}
+          {!isSystemDesign && onResetCode && activeTab === 'solution' && (
+            confirmReset ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Reset to starter?</span>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => { onResetCode(); setConfirmReset(false); }}
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => setConfirmReset(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setConfirmReset(true)}
+                aria-label="Reset to starter code"
+                title="Reset to starter code"
+              >
+                <RotateCcw size={14} aria-hidden="true" />
+              </button>
+            )
           )}
           {!isSystemDesign && (
             <button type="button" className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>

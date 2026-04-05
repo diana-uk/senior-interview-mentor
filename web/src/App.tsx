@@ -1035,6 +1035,7 @@ export default function App() {
                   onLanguageChange={handleLanguageChange}
                   onShareSolution={handleShareSolution}
                   onClearConsole={handleClearConsole}
+                  onResetCode={interview.currentProblem ? () => editor.setEditorCode(getStarterCode(interview.currentProblem!, editor.language)) : undefined}
                 />
               }
             />
@@ -1096,6 +1097,7 @@ export default function App() {
                 onLanguageChange={handleLanguageChange}
                 onShareSolution={handleShareSolution}
                 onClearConsole={handleClearConsole}
+                onResetCode={interview.currentProblem ? () => editor.setEditorCode(getStarterCode(interview.currentProblem!, editor.language)) : undefined}
               />
               {layout.isEditorCollapsed && (
                 <button
