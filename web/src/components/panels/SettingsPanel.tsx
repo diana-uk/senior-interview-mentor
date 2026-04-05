@@ -8,6 +8,8 @@ interface SettingsPanelProps {
 
 export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   const [settings, setSettings] = useState<UserSettings>(loadSettings);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetConfirmInput, setResetConfirmInput] = useState('');
 
   useEffect(() => {
     saveSettings(settings);
@@ -364,15 +366,7 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            onClick={() => {
-              if (confirm('This will clear all progress, mistakes, and session data. This cannot be undone.')) {
-                safeRemoveItem('sim-mistakes');
-                safeRemoveItem('sim-stats');
-                safeRemoveItem('sim-session');
-                safeRemoveItem(STORAGE_KEY);
-                window.location.reload();
-              }
-            }}
+            onClick={() => setShowResetModal(true)}
             style={{ fontSize: 11, color: 'var(--neon-red)' }}
           >
             Reset All Data
@@ -383,6 +377,63 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
       <div style={{ fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', padding: '8px 0' }}>
         Senior Interview Mentor v0.1.0
       </div>
+
+      {showResetModal && (
+        <div
+          className="modal-backdrop"
+          onClick={() => { setShowResetModal(false); setResetConfirmInput(''); }}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 400 }}>
+            <div className="modal-header">
+              <div className="modal-title" style={{ color: 'var(--neon-red)' }}>Reset All Data</div>
+              <button
+                type="button"
+                className="modal-close"
+                aria-label="Close"
+                onClick={() => { setShowResetModal(false); setResetConfirmInput(''); }}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.5 }}>
+                This will permanently delete all progress, mistakes, and session data. This cannot be undone.
+              </p>
+              <input
+                className="input"
+                placeholder='Type "RESET" to confirm'
+                value={resetConfirmInput}
+                onChange={(e) => setResetConfirmInput(e.target.value)}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => { setShowResetModal(false); setResetConfirmInput(''); }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                disabled={resetConfirmInput !== 'RESET'}
+                onClick={() => {
+                  safeRemoveItem('sim-mistakes');
+                  safeRemoveItem('sim-stats');
+                  safeRemoveItem('sim-session');
+                  safeRemoveItem('sim-settings');
+                  window.location.reload();
+                }}
+              >
+                Delete Everything
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
