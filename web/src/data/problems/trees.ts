@@ -34,6 +34,7 @@ export const treesProblems: FullProblem[] = [
       { input: 'treeToArray(invertTree(buildTree([2,1,3])))', expected: '[2,3,1]' },
       { input: 'treeToArray(invertTree(buildTree([])))', expected: '[]' },
     ],
+    companies: ['apple', 'google', 'amazon'],
   },
   {
     group: 'Trees',
@@ -79,6 +80,7 @@ export const treesProblems: FullProblem[] = [
         expected: '1',
       },
     ],
+    companies: ['amazon', 'google', 'meta', 'microsoft'],
   },
   {
     group: 'Trees',
@@ -144,6 +146,7 @@ export const treesProblems: FullProblem[] = [
       { input: 'maxDepth(buildTree([1,null,2]))', expected: '2' },
       { input: 'maxDepth(buildTree([]))', expected: '0' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Trees',

@@ -32,6 +32,7 @@ export const binarySearchProblems: FullProblem[] = [
       { input: 'search([4,5,6,7,0,1,2], 3)', expected: '-1' },
       { input: 'search([1], 0)', expected: '-1' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Binary Search',
@@ -60,6 +61,7 @@ export const binarySearchProblems: FullProblem[] = [
       { input: 'findMin([4,5,6,7,0,1,2])', expected: '0' },
       { input: 'findMin([11,13,15,17])', expected: '11' },
     ],
+    companies: ['google', 'microsoft', 'meta'],
   },
   {
     group: 'Binary Search',
@@ -90,6 +92,7 @@ export const binarySearchProblems: FullProblem[] = [
       { input: 'findMedianSortedArrays([1,2], [3,4])', expected: '2.5' },
       { input: 'findMedianSortedArrays([0,0], [0,0])', expected: '0' },
     ],
+    companies: ['google', 'meta'],
   },
   {
     group: 'Binary Search',
@@ -118,6 +121,7 @@ export const binarySearchProblems: FullProblem[] = [
       { input: 'binarySearch([-1,0,3,5,9,12], 2)', expected: '-1' },
       { input: 'binarySearch([5], 5)', expected: '0' },
     ],
+    companies: ['amazon', 'google', 'meta'],
   },
   {
     group: 'Binary Search',

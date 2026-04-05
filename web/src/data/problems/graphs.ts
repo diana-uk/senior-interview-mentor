@@ -40,6 +40,7 @@ export const graphsProblems: FullProblem[] = [
       },
       { input: 'numIslands([["1"],["0"]])', expected: '1' },
     ],
+    companies: ['amazon', 'google', 'meta', 'microsoft', 'netflix'],
   },
   {
     group: 'Graphs',
@@ -69,6 +70,7 @@ export const graphsProblems: FullProblem[] = [
       { input: 'canFinish(2, [[1,0],[0,1]])', expected: 'false' },
       { input: 'canFinish(3, [[1,0],[2,1]])', expected: 'true' },
     ],
+    companies: ['google', 'meta', 'amazon'],
   },
   {
     group: 'Graphs',
@@ -148,6 +150,7 @@ export const graphsProblems: FullProblem[] = [
         expected: 'true',
       },
     ],
+    companies: ['google', 'meta', 'microsoft'],
   },
   {
     group: 'Graphs',

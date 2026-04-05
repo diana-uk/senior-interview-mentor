@@ -32,6 +32,7 @@ export const linkedListProblems: FullProblem[] = [
       { input: 'listToArray(reverseList(buildList([1,2])))', expected: '[2,1]' },
       { input: 'listToArray(reverseList(buildList([])))', expected: '[]' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Linked List',
@@ -73,6 +74,7 @@ export const linkedListProblems: FullProblem[] = [
         expected: '[0]',
       },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Linked List',
@@ -116,6 +118,7 @@ export const linkedListProblems: FullProblem[] = [
         expected: 'false',
       },
     ],
+    companies: ['amazon', 'google', 'microsoft'],
   },
   {
     group: 'Linked List',
