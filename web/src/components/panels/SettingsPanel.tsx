@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { loadSettings, saveSettings, type UserSettings, type Theme } from '../../utils/settings';
 import { safeGetItem, safeRemoveItem } from '../../utils/storage.js';
+import { showToast } from '../../utils/toast.js';
 
 interface SettingsPanelProps {
   onSettingsChange?: (settings: UserSettings) => void;
@@ -358,6 +359,7 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
               a.download = `interview-mentor-backup-${new Date().toISOString().split('T')[0]}.json`;
               a.click();
               URL.revokeObjectURL(url);
+              showToast('Data exported successfully', 'success', 3000);
             }}
             style={{ fontSize: 11 }}
           >

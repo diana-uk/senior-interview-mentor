@@ -20,6 +20,8 @@ import { useDocumentTitle } from './hooks/useDocumentTitle';
 import { useMetaTags } from './hooks/useMetaTags';
 import { logger } from './utils/logger.js';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
+import ToastContainer from './components/ui/ToastContainer';
+import { showToast } from './utils/toast.js';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -667,6 +669,12 @@ export default function App() {
           const total = results.length;
           const allPassed = passed === total;
 
+          if (allPassed) {
+            showToast(`All ${total} test${total !== 1 ? 's' : ''} passed!`, 'success', 3000);
+          } else {
+            showToast(`${total - passed} of ${total} test${total !== 1 ? 's' : ''} failed`, 'warning', 4000);
+          }
+
           recordProblemAttempt({
             problemId: interview.currentProblem.id,
             status: allPassed ? 'solved' : 'attempted',
@@ -1208,6 +1216,7 @@ export default function App() {
           <HintLadder hints={interview.hints} onRequestHint={handleRequestHint} />
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }
