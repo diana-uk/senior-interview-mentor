@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import type { Achievement, MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsData } from '../../types';
+import Tooltip from '../ui/Tooltip';
 import ProblemList from '../panels/ProblemList';
 import type { RecommendedProblemEntry } from '../panels/ProblemList';
 import MistakesPanel from '../panels/MistakesPanel';
@@ -105,38 +106,39 @@ export default function Sidebar({
     <>
       <aside className="sidebar">
         <div className="sidebar-nav">
-          {icons.map(({ id, icon: Icon }) => (
-            <button
-              type="button"
-              key={id}
-              className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}`}
-              onClick={() => handleIconClick(id)}
-              aria-label={icons.find(i => i.id === id)?.label ?? id}
-              title={id}
-              style={{ position: 'relative' }}
-            >
-              <Icon size={18} aria-hidden="true" />
-              {id === 'mistakes' && dueCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: 4, right: 4,
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: 'var(--neon-red)',
-                  border: '2px solid var(--bg-surface)',
-                }} />
-              )}
-            </button>
+          {icons.map(({ id, icon: Icon, label }) => (
+            <Tooltip key={id} content={label} position="right">
+              <button
+                type="button"
+                className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}`}
+                onClick={() => handleIconClick(id)}
+                aria-label={label}
+                style={{ position: 'relative' }}
+              >
+                <Icon size={18} aria-hidden="true" />
+                {id === 'mistakes' && dueCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: 4, right: 4,
+                    width: 8, height: 8, borderRadius: '50%',
+                    background: 'var(--neon-red)',
+                    border: '2px solid var(--bg-surface)',
+                  }} />
+                )}
+              </button>
+            </Tooltip>
           ))}
         </div>
         <div className="sidebar-footer">
-          <button
-            type="button"
-            className={`sidebar-nav-item ${activePanel === 'settings' ? 'sidebar-nav-item-active' : ''}`}
-            aria-label="Settings"
-            title="Settings"
-            onClick={() => handleIconClick('settings')}
-          >
-            <Settings size={18} aria-hidden="true" />
-          </button>
+          <Tooltip content="Settings" position="right">
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activePanel === 'settings' ? 'sidebar-nav-item-active' : ''}`}
+              aria-label="Settings"
+              onClick={() => handleIconClick('settings')}
+            >
+              <Settings size={18} aria-hidden="true" />
+            </button>
+          </Tooltip>
         </div>
       </aside>
 
