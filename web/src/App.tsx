@@ -280,7 +280,7 @@ export default function App() {
   } : null;
 
   const [showLanding, setShowLanding] = useState(!initial && !safeGetItem('sim-skip-landing'));
-  const [sidebarPanel, setSidebarPanel] = useState<SidebarPanel>(null);
+  const [sidebarPanel, setSidebarPanel] = useState<SidebarPanel>('dashboard');
   const [mobileView, setMobileView] = useState<'chat' | 'editor'>('chat');
 
   // ── Extracted domain hooks ──
