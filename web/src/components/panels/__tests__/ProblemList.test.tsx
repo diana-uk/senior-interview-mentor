@@ -270,7 +270,7 @@ describe('ProblemList', () => {
 
       const cards = document.querySelectorAll('.card-interactive');
       const titles = Array.from(cards).map(
-        (c) => c.querySelector('span')?.textContent,
+        (c) => c.querySelector('span[title]')?.textContent,
       );
       expect(titles).toEqual([
         'Valid Palindrome',
@@ -293,7 +293,7 @@ describe('ProblemList', () => {
 
       const cards = document.querySelectorAll('.card-interactive');
       const titles = Array.from(cards).map(
-        (c) => c.querySelector('span')?.textContent,
+        (c) => c.querySelector('span[title]')?.textContent,
       );
       // Status order: unseen(0) < attempted(1) < solved(2)
       expect(titles).toEqual([
