@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
+import { BarChart2 } from 'lucide-react';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
 import { computeDifficultyDistribution } from '../../utils/difficultyDistribution';
 import type { Mode, PatternStrength, ProblemStatus, SessionRecord, StatsData } from '../../types';
+import EmptyState from '../ui/EmptyState';
 
 interface StatsPanelProps {
   stats: StatsData;
@@ -395,9 +397,11 @@ export default function StatsPanel({ stats, getProblemProgress, getProblemStatus
       {/* Recent sessions */}
       <div className="section-label" style={{ marginBottom: 8 }}>Recent Sessions</div>
       {recentSessions.length === 0 ? (
-        <div className="card" style={{ padding: 16, textAlign: 'center' }}>
-          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>No sessions yet. Start solving!</span>
-        </div>
+        <EmptyState
+          icon={BarChart2}
+          title="No sessions yet"
+          description="Start a problem to begin tracking your progress."
+        />
       ) : (
         <div className="card stagger-enter stagger-7">
           {recentSessions.map((s, i) => (

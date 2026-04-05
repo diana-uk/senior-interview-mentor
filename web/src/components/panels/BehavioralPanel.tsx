@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Search, ChevronRight, Filter, Shuffle, X, Star, AlertTriangle, TrendingUp, Save, BookOpen, Trash2, Edit3 } from 'lucide-react';
+import EmptyState from '../ui/EmptyState';
 import {
   behavioralQuestions,
   getRandomQuestion,
@@ -540,12 +541,12 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
         </div>
 
         {stories.length === 0 ? (
-          <div className="empty-state" style={{ padding: '24px 16px' }}>
-            <div className="empty-state-title" style={{ fontSize: 14 }}>No saved stories</div>
-            <div className="empty-state-description" style={{ fontSize: 12 }}>
-              Practice a behavioral question and save your STAR response to build your story bank.
-            </div>
-          </div>
+          <EmptyState
+            icon={Star}
+            title="No stories yet"
+            description="Add your first STAR story to build your answer bank."
+            action={{ label: '+ Add Story', onClick: () => setView('browse') }}
+          />
         ) : (
           Object.entries(storiesByCategory).map(([cat, catStories]) => {
             const catMeta = CATEGORY_META[cat as BehavioralCategory];

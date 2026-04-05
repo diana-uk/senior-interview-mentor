@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight, Undo2 } from 'lucide-react';
+import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight, Undo2, BookOpen } from 'lucide-react';
 import type { MistakeEntryFull, PatternName } from '../../types';
+import EmptyState from '../ui/EmptyState';
 
 interface MistakesPanelProps {
   mistakes: MistakeEntryFull[];
@@ -238,12 +239,11 @@ export default function MistakesPanel({
       </div>
 
       {visibleMistakes.length === 0 && !pendingDelete ? (
-        <div className="empty-state" style={{ padding: '24px 16px' }}>
-          <div className="empty-state-title" style={{ fontSize: 14 }}>No mistakes logged</div>
-          <div className="empty-state-description" style={{ fontSize: 12 }}>
-            Mistakes are auto-logged when you fail tests or use Hint 3. You can also log them manually.
-          </div>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="No mistakes yet"
+          description="Complete a problem and your weak areas appear here. You can also log mistakes manually."
+        />
       ) : (
         Object.entries(byPattern).map(([pattern, entries], groupIndex) => (
           <div key={pattern} className={`card stagger-enter stagger-${groupIndex + 2}`} style={{ marginBottom: 8 }}>
