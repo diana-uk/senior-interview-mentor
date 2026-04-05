@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
@@ -29,7 +30,7 @@ app.use(
   cors({
     origin:
       config.nodeEnv === 'development'
-        ? ['http://localhost:5173', 'http://127.0.0.1:5173']
+        ? ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174']
         : false,
   }),
 );

@@ -1828,6 +1828,110 @@ body {
   background: var(--bg-void);
 }
 
+/* ════════════════════════════════════════
+   SKELETON LOADING
+   ════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-block {
+  background: linear-gradient(
+    90deg,
+    var(--bg-raised) 25%,
+    var(--bg-overlay) 50%,
+    var(--bg-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.app-skeleton {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-void);
+}
+
+.app-skeleton__topnav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.app-skeleton__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-skeleton__sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 56px;
+  padding: 16px 0;
+  border-right: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.app-skeleton__chat {
+  flex: 0 0 40%;
+  padding: 20px 16px;
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-skeleton__editor {
+  flex: 1;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ════════════════════════════════════════
+   AUTH ERROR BANNER
+   ════════════════════════════════════════ */
+
+.auth-error-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 12px;
+  background: var(--bg-void);
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-error-banner__icon {
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.auth-error-banner__title {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.auth-error-banner__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .auth-page {
   display: flex;
   align-items: center;
