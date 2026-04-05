@@ -79,3 +79,5 @@ export const allProblemsList: ProblemEntry[] = allProblems.map((p) => ({
 }));
 
 export const totalProblemCount = allProblems.length;
+
+export { allProblems as allFullProblems };

@@ -6,12 +6,14 @@ import {
   BarChart3,
   MessageSquare,
   Trophy,
+  Brain,
   Settings,
   X,
 } from 'lucide-react';
 import type { Achievement, MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsData } from '../../types';
 import Tooltip from '../ui/Tooltip';
 import DashboardPanel from '../panels/DashboardPanel';
+import PatternQuizPanel from '../panels/PatternQuizPanel';
 import ProblemList from '../panels/ProblemList';
 import type { RecommendedProblemEntry } from '../panels/ProblemList';
 import MistakesPanel from '../panels/MistakesPanel';
@@ -58,6 +60,7 @@ const icons = [
   { id: 'dashboard' as const, icon: Home, label: 'Home' },
   { id: 'interview' as const, icon: Play, label: 'Interview' },
   { id: 'problems' as const, icon: List, label: 'Problems' },
+  { id: 'quiz' as const, icon: Brain, label: 'Pattern Quiz' },
   { id: 'behavioral' as const, icon: MessageSquare, label: 'Behavioral' },
   { id: 'mistakes' as const, icon: AlertTriangle, label: 'Mistakes' },
   { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
@@ -67,6 +70,7 @@ const icons = [
 const panelTitles: Record<string, string> = {
   dashboard: 'Home',
   problems: 'Problems',
+  quiz: 'Pattern Quiz',
   behavioral: 'Behavioral Interview',
   mistakes: 'Mistake Tracker',
   stats: 'Statistics',
@@ -161,6 +165,9 @@ export default function Sidebar({
                 dailyChallenge={dailyChallenge}
                 onSelectProblem={onSelectProblem}
               />
+            )}
+            {activePanel === 'quiz' && (
+              <PatternQuizPanel onSelectProblem={onSelectProblem} />
             )}
             {activePanel === 'problems' && (
               <ProblemList
