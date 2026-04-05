@@ -467,6 +467,7 @@ export default function App() {
       '/mistakes': 'mistakes',
       '/problems': 'problems',
       '/history': 'history',
+      '/study': 'study',
     };
 
     if (path.startsWith('/problems/')) {

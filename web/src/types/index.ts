@@ -435,7 +435,7 @@ export interface StatsData {
 
 export type EditorTab = 'solution' | 'tests' | 'notes';
 
-export type SidebarPanel = 'dashboard' | 'interview' | 'problems' | 'quiz' | 'behavioral' | 'mistakes' | 'stats' | 'achievements' | 'history' | 'settings' | null;
+export type SidebarPanel = 'dashboard' | 'interview' | 'problems' | 'quiz' | 'behavioral' | 'mistakes' | 'stats' | 'achievements' | 'history' | 'study' | 'settings' | null;
 
 /* ── Achievements & Leaderboards ── */
 

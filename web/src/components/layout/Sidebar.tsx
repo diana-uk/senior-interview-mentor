@@ -8,6 +8,7 @@ import {
   Trophy,
   Brain,
   History,
+  CalendarDays,
   Settings,
   X,
 } from 'lucide-react';
@@ -23,6 +24,7 @@ import AchievementsPanel from '../panels/AchievementsPanel';
 import BehavioralPanel from '../panels/BehavioralPanel';
 import SettingsPanel from '../panels/SettingsPanel';
 import SessionHistoryPanel from '../panels/SessionHistoryPanel';
+import StudyPlanPanel from '../panels/StudyPlanPanel';
 import type { BehavioralQuestion } from '../../data/behavioral';
 
 interface SidebarProps {
@@ -71,6 +73,7 @@ const icons = [
   { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
   { id: 'achievements' as const, icon: Trophy, label: 'Achievements' },
   { id: 'history' as const, icon: History, label: 'History' },
+  { id: 'study' as const, icon: CalendarDays, label: 'Study Plan' },
 ];
 
 const panelTitles: Record<string, string> = {
@@ -82,6 +85,7 @@ const panelTitles: Record<string, string> = {
   stats: 'Statistics',
   achievements: 'Achievements',
   history: 'Session History',
+  study: 'Study Plan',
   settings: 'Settings',
 };
 
@@ -213,6 +217,9 @@ export default function Sidebar({
             )}
             {activePanel === 'history' && (
               <SessionHistoryPanel sessions={sessions} onResumeSession={onResumeSession} />
+            )}
+            {activePanel === 'study' && (
+              <StudyPlanPanel onSelectProblem={onSelectProblem} />
             )}
             {activePanel === 'settings' && <SettingsPanel />}
           </div>
