@@ -19,6 +19,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Focus-visible: keyboard-only focus ring */
+:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* Skip-to-content link for screen readers / keyboard users */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--neon-cyan);
+  color: var(--bg-void);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 4px);
+  text-decoration: none;
+  transition: top 0.1s;
+}
+.skip-link:focus {
+  top: 16px;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

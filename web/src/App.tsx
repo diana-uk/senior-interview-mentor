@@ -983,6 +983,7 @@ export default function App() {
         />
 
         <div
+          id="main-content"
           className={`workspace${layout.isChatCollapsed ? ' workspace-chat-collapsed' : ''}${layout.isEditorCollapsed ? ' workspace-editor-collapsed' : ''}`}
           style={{ '--chat-width': layout.isChatCollapsed ? '0%' : layout.isEditorCollapsed ? '100%' : `${layout.chatWidthPercent}%` } as React.CSSProperties}
         >
