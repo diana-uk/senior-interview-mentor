@@ -30,6 +30,7 @@ export const stackProblems: FullProblem[] = [
       { input: 'isValid("(]")', expected: 'false' },
       { input: 'isValid("([)]")', expected: 'false' },
     ],
+    companies: ['amazon', 'google', 'meta', 'microsoft'],
   },
   {
     group: 'Stack',
@@ -68,6 +69,7 @@ export const stackProblems: FullProblem[] = [
         expected: '-2',
       },
     ],
+    companies: ['amazon', 'google'],
   },
   {
     group: 'Stack',

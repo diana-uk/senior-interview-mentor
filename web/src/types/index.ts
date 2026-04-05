@@ -60,6 +60,8 @@ export interface MultiLangCode {
   python?: string;
 }
 
+export type CompanyTag = 'google' | 'meta' | 'amazon' | 'apple' | 'microsoft' | 'netflix' | 'uber' | 'stripe' | 'airbnb';
+
 export interface Problem {
   id: string;
   title: string;
@@ -70,6 +72,7 @@ export interface Problem {
   constraints: string[];
   starterCode: string | MultiLangCode;
   testCases: TestCase[];
+  companies?: CompanyTag[];
 }
 
 export interface TestCase {

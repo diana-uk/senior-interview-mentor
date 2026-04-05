@@ -54,6 +54,7 @@ export const twoPointersProblems: FullProblem[] = [
       { input: 'maxArea([1,1])', expected: '1' },
       { input: 'maxArea([4,3,2,1,4])', expected: '16' },
     ],
+    companies: ['google', 'meta', 'amazon', 'microsoft'],
   },
   {
     group: 'Two Pointers',
@@ -77,6 +78,7 @@ export const twoPointersProblems: FullProblem[] = [
       { input: 'trap([4,2,0,3,2,5])', expected: '9' },
       { input: 'trap([1,0,1])', expected: '1' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Two Pointers',
@@ -104,5 +106,6 @@ export const twoPointersProblems: FullProblem[] = [
       { input: 'threeSum([0,1,1])', expected: '[]' },
       { input: 'threeSum([0,0,0])', expected: '[[0,0,0]]' },
     ],
+    companies: ['google', 'meta', 'amazon', 'microsoft'],
   },
 ];

@@ -26,6 +26,7 @@ export const slidingWindowProblems: FullProblem[] = [
       { input: 'maxSubArray([1])', expected: '1' },
       { input: 'maxSubArray([5,4,-1,7,8])', expected: '23' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Sliding Window',
@@ -52,6 +53,7 @@ export const slidingWindowProblems: FullProblem[] = [
       { input: 'lengthOfLongestSubstring("bbbbb")', expected: '1' },
       { input: 'lengthOfLongestSubstring("pwwkew")', expected: '3' },
     ],
+    companies: ['amazon', 'meta', 'google', 'microsoft', 'uber'],
   },
   {
     group: 'Sliding Window',
@@ -78,6 +80,7 @@ export const slidingWindowProblems: FullProblem[] = [
       { input: 'minWindow("a", "a")', expected: '"a"' },
       { input: 'minWindow("a", "aa")', expected: '""' },
     ],
+    companies: ['google', 'meta', 'amazon'],
   },
   {
     group: 'Sliding Window',
@@ -104,6 +107,7 @@ export const slidingWindowProblems: FullProblem[] = [
       { input: 'maxProfit([7,6,4,3,1])', expected: '0' },
       { input: 'maxProfit([2,4,1])', expected: '2' },
     ],
+    companies: ['amazon', 'google', 'meta', 'microsoft'],
   },
   {
     group: 'Sliding Window',

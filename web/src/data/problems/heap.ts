@@ -29,6 +29,7 @@ export const heapProblems: FullProblem[] = [
       { input: 'findKthLargest([3,2,3,1,2,4,5,5,6], 4)', expected: '4' },
       { input: 'findKthLargest([1], 1)', expected: '1' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Heap',
@@ -67,6 +68,7 @@ export const heapProblems: FullProblem[] = [
       { input: 'listToArray(mergeKLists([]))', expected: '[]' },
       { input: 'listToArray(mergeKLists([buildList([])]))', expected: '[]' },
     ],
+    companies: ['amazon', 'google', 'microsoft', 'meta'],
   },
   {
     group: 'Heap',
@@ -105,6 +107,7 @@ export const heapProblems: FullProblem[] = [
         expected: '6',
       },
     ],
+    companies: ['google', 'microsoft', 'meta'],
   },
 
   // ═══════════════════════════════════════════

@@ -28,6 +28,7 @@ export const hashmapProblems: FullProblem[] = [
       { input: 'twoSum([3,2,4], 6)', expected: '[1,2]' },
       { input: 'twoSum([3,3], 6)', expected: '[0,1]' },
     ],
+    companies: ['google', 'amazon', 'meta', 'microsoft'],
   },
   {
     group: 'HashMap',
@@ -64,6 +65,7 @@ export const hashmapProblems: FullProblem[] = [
         expected: '[["a"]]',
       },
     ],
+    companies: ['meta', 'amazon', 'google'],
   },
   {
     group: 'HashMap',
@@ -87,6 +89,7 @@ export const hashmapProblems: FullProblem[] = [
       { input: 'longestConsecutive([0,3,7,2,5,8,4,6,0,1])', expected: '9' },
       { input: 'longestConsecutive([])', expected: '0' },
     ],
+    companies: ['google', 'amazon', 'microsoft'],
   },
   {
     group: 'HashMap',
@@ -114,6 +117,7 @@ export const hashmapProblems: FullProblem[] = [
       { input: 'containsDuplicate([1,2,3,4])', expected: 'false' },
       { input: 'containsDuplicate([1,1,1,3,3,4,3,2,4,2])', expected: 'true' },
     ],
+    companies: ['amazon', 'apple', 'microsoft'],
   },
   {
     group: 'HashMap',
@@ -140,6 +144,7 @@ export const hashmapProblems: FullProblem[] = [
       { input: 'isAnagram("rat", "car")', expected: 'false' },
       { input: 'isAnagram("a", "ab")', expected: 'false' },
     ],
+    companies: ['amazon', 'microsoft', 'google'],
   },
   {
     group: 'HashMap',

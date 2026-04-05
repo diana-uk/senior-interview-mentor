@@ -37,6 +37,7 @@ export const intervalProblems: FullProblem[] = [
         expected: '[[0,4]]',
       },
     ],
+    companies: ['google', 'amazon', 'microsoft', 'meta'],
   },
   {
     group: 'Intervals',
@@ -76,6 +77,7 @@ export const intervalProblems: FullProblem[] = [
         expected: '[[5,7]]',
       },
     ],
+    companies: ['google', 'amazon', 'microsoft'],
   },
   {
     group: 'Intervals',
@@ -149,6 +151,7 @@ export const intervalProblems: FullProblem[] = [
         expected: 'true',
       },
     ],
+    companies: ['google', 'amazon', 'microsoft', 'meta'],
   },
   {
     group: 'Intervals',

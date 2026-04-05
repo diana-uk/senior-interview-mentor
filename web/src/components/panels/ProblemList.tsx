@@ -4,7 +4,7 @@ import { problemsByPattern } from '../../data/problems';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
 import { useBookmarks } from '../../hooks/useBookmarks.js';
 import { showToast } from '../../utils/toast.js';
-import type { Difficulty, ProblemStatus } from '../../types';
+import type { CompanyTag, Difficulty, ProblemStatus } from '../../types';
 
 export interface RecommendedProblemEntry {
   id: string;
@@ -26,6 +26,8 @@ interface ProblemListProps {
 type SortOption = 'default' | 'difficulty' | 'status';
 type DifficultyFilter = Difficulty | 'All';
 
+const ALL_COMPANIES: CompanyTag[] = ['amazon', 'google', 'meta', 'microsoft', 'apple', 'netflix', 'uber', 'stripe', 'airbnb'];
+
 const DIFFICULTY_ORDER: Record<Difficulty, number> = { Easy: 0, Medium: 1, Hard: 2 };
 
 function StatusIndicator({ status }: { status: ProblemStatus }) {
@@ -42,6 +44,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [patternFilter, setPatternFilter] = useState<string | null>(null);
   const [showBookmarked, setShowBookmarked] = useState(false);
+  const [companyFilter, setCompanyFilter] = useState<CompanyTag | null>(null);
   const { bookmarks, toggleBookmark } = useBookmarks();
 
   const allPatterns = useMemo(() => Object.keys(problemsByPattern), []);
@@ -69,6 +72,8 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
         }
         // Difficulty filter
         if (diffFilter !== 'All' && p.difficulty !== diffFilter) return false;
+        // Company filter
+        if (companyFilter && !(p.companies ?? []).includes(companyFilter)) return false;
         return true;
       });
 
@@ -86,10 +91,10 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
       }
     }
     return result;
-  }, [search, diffFilter, sortBy, patternFilter, showBookmarked, bookmarks, getProblemStatus]);
+  }, [search, diffFilter, sortBy, patternFilter, showBookmarked, companyFilter, bookmarks, getProblemStatus]);
 
   const totalCount = Object.values(filteredGroups).reduce((sum, g) => sum + g.length, 0);
-  const hasFilters = search || diffFilter !== 'All' || patternFilter || showBookmarked;
+  const hasFilters = search || diffFilter !== 'All' || patternFilter || showBookmarked || companyFilter;
 
   return (
     <div>
@@ -160,7 +165,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
         </button>
       </div>
 
-      {/* Pattern filter (dropdown-style) */}
+      {/* Pattern + Company + Sort filters */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 10, alignItems: 'center' }}>
         <select
           className="input"
@@ -173,9 +178,18 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
         </select>
         <select
           className="input"
+          value={companyFilter ?? ''}
+          onChange={(e) => setCompanyFilter((e.target.value as CompanyTag) || null)}
+          style={{ flex: 1, padding: '5px 8px', fontSize: 11 }}
+        >
+          <option value="">All Companies</option>
+          {ALL_COMPANIES.map((c) => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+        </select>
+        <select
+          className="input"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortOption)}
-          style={{ width: 100, padding: '5px 8px', fontSize: 11 }}
+          style={{ width: 90, padding: '5px 8px', fontSize: 11 }}
         >
           <option value="default">Default</option>
           <option value="difficulty">Difficulty</option>
@@ -295,15 +309,31 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                   }}
                 >
                   <StatusIndicator status={status} />
-                  <span
-                    title={p.title}
-                    style={{
-                      flex: 1, fontSize: 13,
-                      color: currentId === p.id ? 'var(--text-bright)' : 'var(--text-primary)',
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {p.title}
+                  <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span
+                      title={p.title}
+                      style={{
+                        fontSize: 13,
+                        color: currentId === p.id ? 'var(--text-bright)' : 'var(--text-primary)',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {p.title}
+                    </span>
+                    {p.companies && p.companies.length > 0 && (
+                      <span style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+                        {p.companies.slice(0, 4).map((c) => (
+                          <span key={c} style={{
+                            fontSize: 9, padding: '1px 4px',
+                            background: 'var(--bg-overlay)', color: 'var(--text-muted)',
+                            borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)',
+                            textTransform: 'capitalize',
+                          }}>
+                            {c}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </span>
                   {status === 'solved' && getProblemProgress && (() => {
                     const progress = getProblemProgress(p.id);
@@ -369,6 +399,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                 setPatternFilter(null);
                 setSortBy('default');
                 setShowBookmarked(false);
+                setCompanyFilter(null);
               }}
               style={{ cursor: 'pointer', fontSize: 11, padding: '4px 12px' }}
             >

@@ -30,6 +30,7 @@ export const dpProblems: FullProblem[] = [
       { input: 'climbStairs(3)', expected: '3' },
       { input: 'climbStairs(5)', expected: '8' },
     ],
+    companies: ['amazon', 'google', 'microsoft'],
   },
   {
     group: 'Dynamic Programming',
@@ -111,6 +112,7 @@ export const dpProblems: FullProblem[] = [
       { input: 'coinChange([2], 3)', expected: '-1' },
       { input: 'coinChange([1], 0)', expected: '0' },
     ],
+    companies: ['amazon', 'google', 'meta', 'microsoft'],
   },
   {
     group: 'Dynamic Programming',
@@ -141,6 +143,7 @@ export const dpProblems: FullProblem[] = [
       { input: 'wordBreak("applepenapple", ["apple","pen"])', expected: 'true' },
       { input: 'wordBreak("catsandog", ["cats","dog","sand","and","cat"])', expected: 'false' },
     ],
+    companies: ['amazon', 'google', 'meta'],
   },
   {
     group: 'Dynamic Programming',
@@ -167,6 +170,7 @@ export const dpProblems: FullProblem[] = [
       { input: 'rob([2,7,9,3,1])', expected: '12' },
       { input: 'rob([2,1,1,2])', expected: '4' },
     ],
+    companies: ['amazon', 'microsoft'],
   },
   {
     group: 'Dynamic Programming',
