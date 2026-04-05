@@ -6,6 +6,7 @@ import type { MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsD
 // ── Mock lucide-react icons ──
 
 vi.mock('lucide-react', () => ({
+  Home: (props: Record<string, unknown>) => <div data-testid="icon-home" {...props} />,
   Play: (props: Record<string, unknown>) => <div data-testid="icon-play" {...props} />,
   List: (props: Record<string, unknown>) => <div data-testid="icon-list" {...props} />,
   AlertTriangle: (props: Record<string, unknown>) => <div data-testid="icon-alert" {...props} />,
@@ -40,6 +41,10 @@ vi.mock('../../panels/BehavioralPanel', () => ({
 
 vi.mock('../../panels/SettingsPanel', () => ({
   default: () => <div data-testid="settings-panel">SettingsPanel</div>,
+}));
+
+vi.mock('../../panels/DashboardPanel', () => ({
+  default: () => <div data-testid="dashboard-panel">DashboardPanel</div>,
 }));
 
 // ── Helpers ──
@@ -86,8 +91,9 @@ describe('Sidebar', () => {
   // ── Navigation icons ──
 
   describe('navigation icons', () => {
-    it('renders all 6 nav icons plus settings', () => {
+    it('renders all 7 nav icons plus settings', () => {
       renderSidebar();
+      expect(screen.getByLabelText('Home')).toBeDefined();
       expect(screen.getByLabelText('Interview')).toBeDefined();
       expect(screen.getByLabelText('Problems')).toBeDefined();
       expect(screen.getByLabelText('Behavioral')).toBeDefined();
