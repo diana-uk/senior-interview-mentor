@@ -215,13 +215,21 @@ export default function InterviewLauncher({ open, onClose, onStart }: InterviewL
           <div>
             <div className="modal-title">Configure New Session</div>
             <div className="topnav-breadcrumb" style={{ marginTop: 4 }}>
-              <span className={`topnav-breadcrumb-item ${breadcrumbStep >= 1 ? 'topnav-breadcrumb-current' : ''}`}>
+              <span
+                className={`topnav-breadcrumb-item ${breadcrumbStep >= 1 ? 'topnav-breadcrumb-current' : ''}`}
+                onClick={breadcrumbStep > 1 ? reset : undefined}
+                style={breadcrumbStep > 1 ? { cursor: 'pointer' } : undefined}
+              >
                 Type
               </span>
               <span className="topnav-breadcrumb-sep">
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_right</span>
               </span>
-              <span className={`topnav-breadcrumb-item ${breadcrumbStep >= 2 ? 'topnav-breadcrumb-current' : ''}`}>
+              <span
+                className={`topnav-breadcrumb-item ${breadcrumbStep >= 2 ? 'topnav-breadcrumb-current' : ''}`}
+                onClick={breadcrumbStep > 2 ? () => { setTopic(null); setDifficulty(null); } : undefined}
+                style={breadcrumbStep > 2 ? { cursor: 'pointer' } : undefined}
+              >
                 {showSystemDesignSection ? 'Problem' : 'Format'}
               </span>
               <span className="topnav-breadcrumb-sep">
