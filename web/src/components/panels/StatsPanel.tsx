@@ -235,7 +235,7 @@ function DifficultyChart({ getProblemStatus }: { getProblemStatus: (id: string) 
             </div>
             <div
               className="progress-bar"
-              style={{ height: 8 }}
+              style={{ height: 8, position: 'relative', background: 'var(--bg-raised)' }}
               role="progressbar"
               aria-label={`${b.difficulty} progress`}
               aria-valuenow={b.solved}
@@ -249,7 +249,7 @@ function DifficultyChart({ getProblemStatus }: { getProblemStatus: (id: string) 
               {attemptedPct > 0 && (
                 <div
                   className="progress-bar-fill"
-                  style={{ width: `${attemptedPct}%`, background: b.color, opacity: 0.3, position: 'absolute', left: `${solvedPct}%` }}
+                  style={{ width: `${attemptedPct}%`, background: b.color, opacity: 0.3, position: 'absolute', top: 0, left: `${solvedPct}%` }}
                 />
               )}
             </div>
