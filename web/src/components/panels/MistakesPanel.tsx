@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight, Undo2, BookOpen } from 'lucide-react';
+import { Trash2, RotateCcw, Plus, ChevronDown, ChevronRight, Undo2, BookOpen, Download } from 'lucide-react';
 import type { MistakeEntryFull, PatternName } from '../../types';
 import EmptyState from '../ui/EmptyState';
+import { downloadAnkiCSV } from '../../utils/ankiExport';
 
 interface MistakesPanelProps {
   mistakes: MistakeEntryFull[];
@@ -136,16 +137,27 @@ export default function MistakesPanel({
         </div>
       )}
 
-      {/* Add button */}
-      <div style={{ marginBottom: 12 }}>
+      {/* Add / Export buttons */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setShowAddForm(!showAddForm)}
-          style={{ width: '100%', gap: 6 }}
+          style={{ flex: 1, gap: 6 }}
         >
           <Plus size={14} />
           Log Mistake
+        </button>
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          onClick={() => downloadAnkiCSV(visibleMistakes)}
+          disabled={visibleMistakes.length === 0}
+          title={visibleMistakes.length === 0 ? 'No mistakes to export' : `Export ${visibleMistakes.length} card${visibleMistakes.length !== 1 ? 's' : ''} to Anki`}
+          style={{ gap: 4 }}
+        >
+          <Download size={13} />
+          Anki
         </button>
       </div>
 
