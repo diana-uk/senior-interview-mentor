@@ -447,6 +447,9 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isChatCollapsed, isEditorCollapsed, collapseChat, expandChat, collapseEditor, expandEditor]);
 
+  // ── Previous mode ref: used to revert if interview modal is dismissed without starting ──
+  const previousModeRef = useRef<Mode>('TEACHER');
+
   // ── Route sync: URL → state on initial load and popstate ──
   const routeSyncedRef = useRef(false);
   useEffect(() => {
@@ -500,6 +503,9 @@ export default function App() {
       timer.setTimerRunning(false);
     }
 
+    if (newMode === 'INTERVIEWER') {
+      previousModeRef.current = interview.mode;
+    }
     interview.setMode(newMode);
 
     if (newMode === 'INTERVIEWER') {
@@ -1138,7 +1144,14 @@ export default function App() {
         {interview.interviewModalOpen && (
           <InterviewLauncher
             open={interview.interviewModalOpen}
-            onClose={() => interview.setInterviewModalOpen(false)}
+            onClose={() => {
+              interview.setInterviewModalOpen(false);
+              // Revert mode if dismissed without starting (timer never started)
+              if (!timer.timerRunning) {
+                const revertTo = previousModeRef.current === 'INTERVIEWER' ? 'TEACHER' : (previousModeRef.current ?? 'TEACHER');
+                interview.setMode(revertTo);
+              }
+            }}
             onStart={handleStartInterview}
           />
         )}
