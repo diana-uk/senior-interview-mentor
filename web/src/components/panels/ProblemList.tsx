@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Search, CheckCircle, X, Sparkles, Zap } from 'lucide-react';
+import { Search, CheckCircle, X, Sparkles, Zap, Star } from 'lucide-react';
 import { problemsByPattern } from '../../data/problems';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
+import { useBookmarks } from '../../hooks/useBookmarks.js';
 import type { Difficulty, ProblemStatus } from '../../types';
 
 export interface RecommendedProblemEntry {
@@ -39,6 +40,8 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
   const [diffFilter, setDiffFilter] = useState<DifficultyFilter>('All');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [patternFilter, setPatternFilter] = useState<string | null>(null);
+  const [showBookmarked, setShowBookmarked] = useState(false);
+  const { bookmarks, toggleBookmark } = useBookmarks();
 
   const allPatterns = useMemo(() => Object.keys(problemsByPattern), []);
 
@@ -50,6 +53,8 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
       if (patternFilter && pattern !== patternFilter) continue;
 
       const filtered = problems.filter((p) => {
+        // Bookmark filter
+        if (showBookmarked && !bookmarks.has(p.id)) return false;
         // Search filter
         if (search) {
           const q = search.toLowerCase();
@@ -80,10 +85,10 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
       }
     }
     return result;
-  }, [search, diffFilter, sortBy, patternFilter, getProblemStatus]);
+  }, [search, diffFilter, sortBy, patternFilter, showBookmarked, bookmarks, getProblemStatus]);
 
   const totalCount = Object.values(filteredGroups).reduce((sum, g) => sum + g.length, 0);
-  const hasFilters = search || diffFilter !== 'All' || patternFilter;
+  const hasFilters = search || diffFilter !== 'All' || patternFilter || showBookmarked;
 
   return (
     <div>
@@ -136,6 +141,22 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
             {d}
           </button>
         ))}
+        <button
+          type="button"
+          aria-pressed={showBookmarked}
+          className={`badge ${showBookmarked ? 'badge-secondary' : 'badge-secondary'}`}
+          onClick={() => setShowBookmarked((v) => !v)}
+          style={{
+            cursor: 'pointer', fontSize: 10, padding: '3px 8px',
+            display: 'flex', alignItems: 'center', gap: 3,
+            background: showBookmarked ? 'var(--neon-amber-subtle, rgba(255,170,0,0.15))' : undefined,
+            borderColor: showBookmarked ? 'var(--neon-amber)' : undefined,
+            color: showBookmarked ? 'var(--neon-amber)' : undefined,
+          }}
+        >
+          <Star size={9} fill={showBookmarked ? 'currentColor' : 'none'} aria-hidden="true" />
+          Bookmarked
+        </button>
       </div>
 
       {/* Pattern filter (dropdown-style) */}
@@ -298,6 +319,18 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                       </span>
                     );
                   })()}
+                  <button
+                    type="button"
+                    aria-label={bookmarks.has(p.id) ? `Remove ${p.title} from bookmarks` : `Bookmark ${p.title}`}
+                    onClick={(e) => { e.stopPropagation(); toggleBookmark(p.id); }}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+                      display: 'flex', alignItems: 'center', flexShrink: 0,
+                      color: bookmarks.has(p.id) ? 'var(--neon-amber)' : 'var(--text-muted)',
+                    }}
+                  >
+                    <Star size={12} fill={bookmarks.has(p.id) ? 'currentColor' : 'none'} aria-hidden="true" />
+                  </button>
                   <span className={`badge badge-${p.difficulty.toLowerCase()}`}>
                     {p.difficulty}
                   </span>
@@ -310,9 +343,15 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
 
       {totalCount === 0 && (
         <div className="empty-state" role="status" style={{ padding: '24px 16px', textAlign: 'center' }}>
-          <div className="empty-state-title" style={{ fontSize: 14, marginBottom: 6 }}>No problems match your filters</div>
+          <div className="empty-state-title" style={{ fontSize: 14, marginBottom: 6 }}>
+            {showBookmarked && !search && diffFilter === 'All' && !patternFilter
+              ? 'No bookmarks yet'
+              : 'No problems match your filters'}
+          </div>
           <div className="empty-state-description" style={{ fontSize: 12, marginBottom: 12, color: 'var(--text-muted)' }}>
-            Try adjusting your search, difficulty, or pattern filters.
+            {showBookmarked && !search && diffFilter === 'All' && !patternFilter
+              ? 'Click ⭐ on any problem to save it.'
+              : 'Try adjusting your search, difficulty, or pattern filters.'}
           </div>
           {hasFilters && (
             <button
@@ -323,6 +362,7 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                 setDiffFilter('All');
                 setPatternFilter(null);
                 setSortBy('default');
+                setShowBookmarked(false);
               }}
               style={{ cursor: 'pointer', fontSize: 11, padding: '4px 12px' }}
             >
