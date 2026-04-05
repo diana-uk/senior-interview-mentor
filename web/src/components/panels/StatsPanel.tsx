@@ -276,9 +276,6 @@ export default function StatsPanel({ stats, getProblemProgress, getProblemStatus
     [stats.patternStrengths],
   );
 
-  // Latest reviews for rubric display
-  const latestReview = stats.reviews[0];
-
   return (
     <div>
       {/* Top stats grid */}
@@ -370,26 +367,45 @@ export default function StatsPanel({ stats, getProblemProgress, getProblemStatus
         </>
       )}
 
-      {/* Latest rubric scores */}
-      {latestReview && (
+      {/* Scorecard History */}
+      {stats.reviews.length > 0 && (
         <>
-          <div className="section-label" style={{ marginBottom: 8 }}>Latest Review</div>
+          <div className="section-label" style={{ marginBottom: 8 }}>Scorecard History</div>
           <div className="card stagger-enter stagger-6" style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>
-              {latestReview.problemTitle} — {latestReview.overallScore.toFixed(1)}/4.0
-            </div>
-            {latestReview.dimensions.map((r) => (
-              <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                <span style={{ flex: '0 0 100px', fontSize: 11, color: 'var(--text-secondary)' }}>{r.label}</span>
-                <div className="progress-bar" style={{ flex: 1 }}>
-                  <div
-                    className="progress-bar-fill"
-                    style={{ width: `${(r.score / r.maxScore) * 100}%` }}
-                  />
+            {stats.reviews.slice(0, 10).map((review, i) => {
+              const prev = stats.reviews[i + 1];
+              const delta = prev != null ? review.overallScore - prev.overallScore : null;
+              const trendColor = delta == null ? 'var(--text-muted)'
+                : delta > 0 ? 'var(--neon-lime)'
+                : delta < 0 ? 'var(--neon-red)'
+                : 'var(--text-muted)';
+              const trendIcon = delta == null ? '' : delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
+              return (
+                <div
+                  key={review.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '7px 0',
+                    borderBottom: i < Math.min(stats.reviews.length, 10) - 1 ? '1px solid var(--border-default)' : 'none',
+                  }}
+                >
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)', minWidth: 40 }}>
+                    {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                  <span style={{ flex: 1, fontSize: 11, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {review.problemTitle}
+                  </span>
+                  {trendIcon && (
+                    <span style={{ fontSize: 10, color: trendColor, minWidth: 12, textAlign: 'center' }}>{trendIcon}</span>
+                  )}
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-bright)', minWidth: 28, textAlign: 'right' }}>
+                    {review.overallScore.toFixed(1)}
+                  </span>
                 </div>
-                <span className="code-inline" style={{ minWidth: 28, textAlign: 'right', fontSize: 11 }}>{r.score}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}

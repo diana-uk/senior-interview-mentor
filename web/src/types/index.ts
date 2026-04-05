@@ -360,7 +360,9 @@ export type RubricDimensionId =
   | 'space-complexity'
   | 'code-quality'
   | 'edge-cases'
-  | 'communication';
+  | 'communication'
+  | 'edge-case-handling'
+  | 'time-management';
 
 export interface RubricDimension {
   id: RubricDimensionId;
