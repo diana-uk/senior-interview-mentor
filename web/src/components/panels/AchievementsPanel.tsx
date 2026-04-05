@@ -146,6 +146,24 @@ function ActivityHeatmap({ sessions }: { sessions: SessionRecord[] }) {
           {tooltip.text}
         </div>
       )}
+
+      {/* Legend */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text-muted)', justifyContent: 'flex-end', marginTop: 4 }}>
+        <span>Less</span>
+        {[0, 1, 2, 3].map((level) => (
+          <div
+            key={level}
+            style={{
+              width: 9,
+              height: 9,
+              borderRadius: 2,
+              background: getColor(level),
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          />
+        ))}
+        <span>More</span>
+      </div>
     </div>
   );
 }
