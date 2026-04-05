@@ -14,6 +14,7 @@ vi.mock('lucide-react', () => ({
   BarChart3: (props: Record<string, unknown>) => <div data-testid="icon-chart" {...props} />,
   MessageSquare: (props: Record<string, unknown>) => <div data-testid="icon-message" {...props} />,
   Trophy: (props: Record<string, unknown>) => <div data-testid="icon-trophy" {...props} />,
+  History: (props: Record<string, unknown>) => <div data-testid="icon-history" {...props} />,
   Settings: (props: Record<string, unknown>) => <div data-testid="icon-settings" {...props} />,
   X: (props: Record<string, unknown>) => <div data-testid="icon-x" {...props} />,
 }));
@@ -50,6 +51,10 @@ vi.mock('../../panels/DashboardPanel', () => ({
 
 vi.mock('../../panels/PatternQuizPanel', () => ({
   default: () => <div data-testid="quiz-panel">PatternQuizPanel</div>,
+}));
+
+vi.mock('../../panels/SessionHistoryPanel', () => ({
+  default: () => <div data-testid="history-panel">SessionHistoryPanel</div>,
 }));
 
 // ── Helpers ──
@@ -96,7 +101,7 @@ describe('Sidebar', () => {
   // ── Navigation icons ──
 
   describe('navigation icons', () => {
-    it('renders all 8 nav icons plus settings', () => {
+    it('renders all 9 nav icons plus settings', () => {
       renderSidebar();
       expect(screen.getByLabelText('Home')).toBeDefined();
       expect(screen.getByLabelText('Interview')).toBeDefined();
@@ -106,6 +111,7 @@ describe('Sidebar', () => {
       expect(screen.getByLabelText('Mistakes')).toBeDefined();
       expect(screen.getByLabelText('Stats')).toBeDefined();
       expect(screen.getByLabelText('Achievements')).toBeDefined();
+      expect(screen.getByLabelText('History')).toBeDefined();
       expect(screen.getByLabelText('Settings')).toBeDefined();
     });
 
@@ -216,6 +222,11 @@ describe('Sidebar', () => {
       expect(screen.getByTestId('settings-panel')).toBeDefined();
     });
 
+    it('renders SessionHistoryPanel when history panel is active', () => {
+      renderSidebar({ activePanel: 'history' });
+      expect(screen.getByTestId('history-panel')).toBeDefined();
+    });
+
     it('does not render panel for interview (interview opens launcher modal)', () => {
       renderSidebar({ activePanel: 'interview' });
       expect(screen.queryByTestId('problem-list')).toBeNull();
@@ -244,6 +255,11 @@ describe('Sidebar', () => {
     it('shows "Behavioral Interview" for behavioral panel', () => {
       renderSidebar({ activePanel: 'behavioral' });
       expect(screen.getByText('Behavioral Interview')).toBeDefined();
+    });
+
+    it('shows "Session History" for history panel', () => {
+      renderSidebar({ activePanel: 'history' });
+      expect(screen.getByText('Session History')).toBeDefined();
     });
 
     it('close button calls onPanelChange(null)', () => {

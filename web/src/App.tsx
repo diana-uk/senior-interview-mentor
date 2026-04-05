@@ -466,6 +466,7 @@ export default function App() {
       '/stats': 'stats',
       '/mistakes': 'mistakes',
       '/problems': 'problems',
+      '/history': 'history',
     };
 
     if (path.startsWith('/problems/')) {
@@ -988,6 +989,8 @@ export default function App() {
           unlockedCount={unlockedCount}
           totalCount={totalCount}
           getProblemProgress={getProblemProgress}
+          sessions={stats.sessions}
+          onResumeSession={handleSelectProblem}
         />
 
         <div

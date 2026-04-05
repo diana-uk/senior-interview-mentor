@@ -7,10 +7,11 @@ import {
   MessageSquare,
   Trophy,
   Brain,
+  History,
   Settings,
   X,
 } from 'lucide-react';
-import type { Achievement, MistakeEntryFull, PatternName, ProblemStatus, SidebarPanel, StatsData } from '../../types';
+import type { Achievement, MistakeEntryFull, PatternName, ProblemStatus, SessionRecord, SidebarPanel, StatsData } from '../../types';
 import Tooltip from '../ui/Tooltip';
 import DashboardPanel from '../panels/DashboardPanel';
 import PatternQuizPanel from '../panels/PatternQuizPanel';
@@ -21,6 +22,7 @@ import StatsPanel from '../panels/StatsPanel';
 import AchievementsPanel from '../panels/AchievementsPanel';
 import BehavioralPanel from '../panels/BehavioralPanel';
 import SettingsPanel from '../panels/SettingsPanel';
+import SessionHistoryPanel from '../panels/SessionHistoryPanel';
 import type { BehavioralQuestion } from '../../data/behavioral';
 
 interface SidebarProps {
@@ -54,6 +56,9 @@ interface SidebarProps {
   totalCount?: number;
   // Badge props
   getProblemProgress?: (id: string) => { bestScore: number | null; bestTime: number | null; hintsUsed: number; attempts: number } | null;
+  // History props
+  sessions?: SessionRecord[];
+  onResumeSession?: (problemId: string) => void;
 }
 
 const icons = [
@@ -65,6 +70,7 @@ const icons = [
   { id: 'mistakes' as const, icon: AlertTriangle, label: 'Mistakes' },
   { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
   { id: 'achievements' as const, icon: Trophy, label: 'Achievements' },
+  { id: 'history' as const, icon: History, label: 'History' },
 ];
 
 const panelTitles: Record<string, string> = {
@@ -75,6 +81,7 @@ const panelTitles: Record<string, string> = {
   mistakes: 'Mistake Tracker',
   stats: 'Statistics',
   achievements: 'Achievements',
+  history: 'Session History',
   settings: 'Settings',
 };
 
@@ -98,6 +105,8 @@ export default function Sidebar({
   unlockedCount,
   totalCount,
   getProblemProgress,
+  sessions = [],
+  onResumeSession,
 }: SidebarProps) {
   function handleIconClick(id: SidebarPanel) {
     if (id === 'interview') {
@@ -201,6 +210,9 @@ export default function Sidebar({
                 totalCount={totalCount ?? 0}
                 stats={stats}
               />
+            )}
+            {activePanel === 'history' && (
+              <SessionHistoryPanel sessions={sessions} onResumeSession={onResumeSession} />
             )}
             {activePanel === 'settings' && <SettingsPanel />}
           </div>
