@@ -3,6 +3,7 @@ import { Search, CheckCircle, X, Sparkles, Zap, Star } from 'lucide-react';
 import { problemsByPattern } from '../../data/problems';
 import { getBadgesForProblem } from '../../utils/solutionBadges';
 import { useBookmarks } from '../../hooks/useBookmarks.js';
+import { showToast } from '../../utils/toast.js';
 import type { Difficulty, ProblemStatus } from '../../types';
 
 export interface RecommendedProblemEntry {
@@ -322,7 +323,12 @@ export default function ProblemList({ onSelect, currentId, getProblemStatus, rec
                   <button
                     type="button"
                     aria-label={bookmarks.has(p.id) ? `Remove ${p.title} from bookmarks` : `Bookmark ${p.title}`}
-                    onClick={(e) => { e.stopPropagation(); toggleBookmark(p.id); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const adding = !bookmarks.has(p.id);
+                      toggleBookmark(p.id);
+                      showToast(adding ? 'Bookmarked' : 'Bookmark removed', 'info', 2000);
+                    }}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer', padding: 2,
                       display: 'flex', alignItems: 'center', flexShrink: 0,
