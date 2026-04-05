@@ -12,6 +12,9 @@ import {
   type BehavioralQuestion,
 } from '../../data/behavioral';
 import { safeGetItem, safeSetItem } from '../../utils/storage.js';
+import { useStarStories, type StarStory } from '../../hooks/useStarStories';
+import StarStoryList from '../behavioral/StarStoryList';
+import StarStoryEditor from '../behavioral/StarStoryEditor';
 
 interface BehavioralPanelProps {
   onStartQuestion: (question: BehavioralQuestion) => void;
@@ -111,9 +114,13 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     Object.fromEntries(COMM_DIMENSIONS.map((d) => [d.id, -1])) as Record<CommDimensionId, number>,
   );
 
-  // Story bank state
+  // Question-tied story bank state
   const [stories, setStories] = useState<StoryEntry[]>(loadStories);
   const [editingStoryId, setEditingStoryId] = useState<string | null>(null);
+
+  // Standalone STAR story bank
+  const { stories: starStories, addStory, updateStory, deleteStory: deleteStarStory } = useStarStories();
+  const [editingStarStory, setEditingStarStory] = useState<StarStory | null | 'new'>(null);
 
   const categories = useMemo(() => Object.keys(CATEGORY_META) as BehavioralCategory[], []);
   const companies = useMemo(() => Object.keys(COMPANY_META) as CompanyTag[], []);
@@ -520,14 +527,8 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     );
   }
 
-  // Stories view — saved STAR stories
+  // Stories view — standalone STAR story bank
   if (view === 'stories') {
-    const storiesByCategory = stories.reduce<Record<string, StoryEntry[]>>((acc, s) => {
-      if (!acc[s.category]) acc[s.category] = [];
-      acc[s.category].push(s);
-      return acc;
-    }, {});
-
     return (
       <div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -536,78 +537,33 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
           </button>
           <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1, gap: 6 }}>
             <BookOpen size={14} aria-hidden="true" />
-            My Stories ({stories.length})
+            My Stories ({starStories.length})
           </button>
         </div>
 
-        {stories.length === 0 ? (
-          <EmptyState
-            icon={Star}
-            title="No stories yet"
-            description="Add your first STAR story to build your answer bank."
-            action={{ label: '+ Add Story', onClick: () => setView('browse') }}
+        <StarStoryList
+          stories={starStories}
+          onAdd={() => setEditingStarStory('new')}
+          onEdit={(s) => setEditingStarStory(s)}
+          onDelete={deleteStarStory}
+        />
+
+        {editingStarStory !== null && (
+          <StarStoryEditor
+            story={editingStarStory === 'new' ? null : editingStarStory}
+            onSave={(data) => {
+              if (editingStarStory === 'new') {
+                addStory(data);
+              } else {
+                updateStory(editingStarStory.id, data);
+              }
+              setEditingStarStory(null);
+            }}
+            onClose={() => setEditingStarStory(null)}
+            onReviewWithAI={(text) => {
+              window.dispatchEvent(new CustomEvent('behavioral-submit', { detail: text }));
+            }}
           />
-        ) : (
-          Object.entries(storiesByCategory).map(([cat, catStories]) => {
-            const catMeta = CATEGORY_META[cat as BehavioralCategory];
-            return (
-              <div key={cat} className="card" style={{ marginBottom: 12 }}>
-                <div className="card-header" style={{ marginBottom: 8 }}>
-                  <span className="card-title" style={{ fontSize: 13, color: catMeta?.color ?? 'var(--text-primary)' }}>
-                    {catMeta?.label ?? cat}
-                  </span>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{catStories.length}</span>
-                </div>
-                <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {catStories.map((story) => (
-                    <div
-                      key={story.id}
-                      style={{
-                        padding: '8px 10px',
-                        background: 'var(--bg-elevated)',
-                        border: '1px solid var(--border-default)',
-                        borderRadius: 8,
-                      }}
-                    >
-                      <div style={{ fontSize: 12, color: 'var(--text-primary)', marginBottom: 6, lineHeight: 1.4 }}>
-                        {story.questionText}
-                      </div>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6 }}>
-                        {story.situation.slice(0, 80)}{story.situation.length > 80 ? '...' : ''}
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: 9, color: 'var(--text-disabled)' }}>
-                          {new Date(story.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </span>
-                        <div style={{ display: 'flex', gap: 4 }}>
-                          <button
-                            type="button"
-                            className="btn btn-ghost btn-sm"
-                            onClick={() => loadStoryIntoForm(story)}
-                            aria-label="Edit story"
-                            title="Edit story"
-                            style={{ padding: '2px 6px' }}
-                          >
-                            <Edit3 size={12} aria-hidden="true" />
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-ghost btn-sm"
-                            onClick={() => deleteStory(story.id)}
-                            aria-label="Delete story"
-                            title="Delete story"
-                            style={{ padding: '2px 6px', color: 'var(--text-muted)' }}
-                          >
-                            <Trash2 size={12} aria-hidden="true" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })
         )}
       </div>
     );
@@ -628,7 +584,7 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
           style={{ flex: 1, gap: 6 }}
         >
           <BookOpen size={14} aria-hidden="true" />
-          My Stories ({stories.length})
+          My Stories ({starStories.length})
         </button>
       </div>
 
