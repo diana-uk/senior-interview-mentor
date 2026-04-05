@@ -16,6 +16,8 @@ const DIMENSIONS: { id: RubricDimensionId; label: string; description: string }[
   { id: 'code-quality', label: 'Code Quality', description: 'Is the code clean, readable, and well-structured?' },
   { id: 'edge-cases', label: 'Edge Cases', description: 'Are edge cases identified and handled?' },
   { id: 'communication', label: 'Communication', description: 'Was the thought process clearly explained?' },
+  { id: 'edge-case-handling', label: 'Edge Case Handling', description: 'Were specific edge cases proactively identified before coding?' },
+  { id: 'time-management', label: 'Time Management', description: 'Was the problem solved within a reasonable interview time frame?' },
 ];
 
 const SCORE_LABELS = ['Missing', 'Weak', 'Adequate', 'Strong', 'Excellent'];
@@ -69,6 +71,12 @@ export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClos
           break;
         case 'communication':
           plans.push('Practice thinking aloud: state your approach, trade-offs, and complexity before coding.');
+          break;
+        case 'edge-case-handling':
+          plans.push('List edge cases before coding: empty input, single element, large input, negative/zero values.');
+          break;
+        case 'time-management':
+          plans.push('Practice with a timer. Aim to have a working solution within 30 minutes.');
           break;
       }
     }

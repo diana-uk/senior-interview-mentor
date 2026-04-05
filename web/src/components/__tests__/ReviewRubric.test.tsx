@@ -23,6 +23,8 @@ const DIMENSION_LABELS = [
   'Code Quality',
   'Edge Cases',
   'Communication',
+  'Edge Case Handling',
+  'Time Management',
 ];
 
 const SCORE_LABELS = ['Missing', 'Weak', 'Adequate', 'Strong', 'Excellent'];
@@ -36,9 +38,9 @@ function selectScore(dimensionIndex: number, score: number) {
   fireEvent.click(allButtons[dimensionIndex]);
 }
 
-/** Select all six dimensions to the same score. */
+/** Select all eight dimensions to the same score. */
 function selectAllScores(score: number) {
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 8; i++) {
     selectScore(i, score);
   }
 }
@@ -102,19 +104,19 @@ describe('ReviewRubric', () => {
   // ── Dimension rendering ──
 
   describe('dimension rendering', () => {
-    it('renders all 6 rubric dimensions with their labels', () => {
+    it('renders all 8 rubric dimensions with their labels', () => {
       renderRubric();
       for (const label of DIMENSION_LABELS) {
         expect(screen.getByText(label)).toBeDefined();
       }
     });
 
-    it('renders 5 score buttons (0-4) per dimension, totaling 30 score buttons', () => {
+    it('renders 5 score buttons (0-4) per dimension, totaling 40 score buttons', () => {
       renderRubric();
-      // Each score label appears once per dimension (6 dimensions)
+      // Each score label appears once per dimension (8 dimensions)
       for (const label of SCORE_LABELS) {
         const buttons = screen.getAllByRole('button', { name: `${label} (${SCORE_LABELS.indexOf(label)})` });
-        expect(buttons).toHaveLength(6);
+        expect(buttons).toHaveLength(8);
       }
     });
 
@@ -126,6 +128,8 @@ describe('ReviewRubric', () => {
       expect(screen.getByText('Is the code clean, readable, and well-structured?')).toBeDefined();
       expect(screen.getByText('Are edge cases identified and handled?')).toBeDefined();
       expect(screen.getByText('Was the thought process clearly explained?')).toBeDefined();
+      expect(screen.getByText('Were specific edge cases proactively identified before coding?')).toBeDefined();
+      expect(screen.getByText('Was the problem solved within a reasonable interview time frame?')).toBeDefined();
     });
 
     it('renders the feedback textarea with placeholder', () => {
@@ -167,7 +171,7 @@ describe('ReviewRubric', () => {
       expect(screen.getByText('Excellent')).toBeDefined();
     });
 
-    it('enables the Submit button when all 6 dimensions are scored', () => {
+    it('enables the Submit button when all 8 dimensions are scored', () => {
       renderRubric();
       selectAllScores(3);
       const submitBtn = screen.getByRole('button', { name: 'Submit Review' });
@@ -179,7 +183,7 @@ describe('ReviewRubric', () => {
       selectScore(0, 3);
       selectScore(1, 3);
       selectScore(2, 3);
-      // Only 3 of 6 scored
+      // Only 3 of 8 scored
       const submitBtn = screen.getByRole('button', { name: 'Submit Review' });
       expect((submitBtn as HTMLButtonElement).disabled).toBe(true);
     });
@@ -208,25 +212,29 @@ describe('ReviewRubric', () => {
 
     it('calculates overall score for mixed scores correctly', () => {
       renderRubric();
-      // 0 + 1 + 2 + 3 + 4 + 2 = 12 / 6 = 2.0
+      // 0 + 1 + 2 + 3 + 4 + 2 + 2 + 2 = 16 / 8 = 2.0
       selectScore(0, 0);
       selectScore(1, 1);
       selectScore(2, 2);
       selectScore(3, 3);
       selectScore(4, 4);
       selectScore(5, 2);
+      selectScore(6, 2);
+      selectScore(7, 2);
       expect(screen.getByText('2.0 / 4.0')).toBeDefined();
     });
 
     it('calculates a non-integer average correctly', () => {
       renderRubric();
-      // 1 + 2 + 3 + 4 + 4 + 4 = 18 / 6 = 3.0
+      // 1 + 2 + 3 + 4 + 4 + 4 + 4 + 2 = 24 / 8 = 3.0
       selectScore(0, 1);
       selectScore(1, 2);
       selectScore(2, 3);
       selectScore(3, 4);
       selectScore(4, 4);
       selectScore(5, 4);
+      selectScore(6, 4);
+      selectScore(7, 2);
       expect(screen.getByText('3.0 / 4.0')).toBeDefined();
     });
   });
@@ -244,7 +252,7 @@ describe('ReviewRubric', () => {
       const result = onSubmit.mock.calls[0][0];
       expect(result.problemTitle).toBe('Two Sum');
       expect(result.problemId).toBe('two-sum');
-      expect(result.dimensions).toHaveLength(6);
+      expect(result.dimensions).toHaveLength(8);
       expect(result.overallScore).toBe(3);
       expect(result.feedback).toBe('');
       expect(result.improvementPlan).toBeDefined();
@@ -288,7 +296,7 @@ describe('ReviewRubric', () => {
     function submitWithScores(scores: number[], onSubmit = vi.fn(), onClose = vi.fn()) {
       const props = { ...defaultProps, onSubmit, onClose };
       render(<ReviewRubric {...props} />);
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 8; i++) {
         selectScore(i, scores[i]);
       }
       fireEvent.click(screen.getByRole('button', { name: 'Submit Review' }));
@@ -296,37 +304,37 @@ describe('ReviewRubric', () => {
     }
 
     it('shows the overall numeric score', () => {
-      submitWithScores([4, 4, 4, 4, 4, 4]);
+      submitWithScores([4, 4, 4, 4, 4, 4, 4, 4]);
       expect(screen.getByText('4.0')).toBeDefined();
       expect(screen.getByText('/4.0')).toBeDefined();
     });
 
     it('shows the problem title in results', () => {
-      submitWithScores([3, 3, 3, 3, 3, 3]);
+      submitWithScores([3, 3, 3, 3, 3, 3, 3, 3]);
       expect(screen.getByText('Two Sum')).toBeDefined();
     });
 
     it('shows all dimension labels with their scores', () => {
-      submitWithScores([0, 1, 2, 3, 4, 2]);
+      submitWithScores([0, 1, 2, 3, 4, 2, 2, 2]);
       for (const label of DIMENSION_LABELS) {
         expect(screen.getByText(label)).toBeDefined();
       }
       // The numeric scores are displayed
       expect(screen.getByText('0')).toBeDefined();
       expect(screen.getByText('1')).toBeDefined();
-      // There should be two "2" scores (Space Complexity and Communication)
-      expect(screen.getAllByText('2').length).toBeGreaterThanOrEqual(2);
+      // There should be four "2" scores (Space Complexity, Communication, Edge Case Handling, Time Management)
+      expect(screen.getAllByText('2').length).toBeGreaterThanOrEqual(4);
       expect(screen.getByText('3')).toBeDefined();
       expect(screen.getByText('4')).toBeDefined();
     });
 
     it('shows the "Improvement Plan" heading', () => {
-      submitWithScores([2, 2, 2, 2, 2, 2]);
+      submitWithScores([2, 2, 2, 2, 2, 2, 2, 2]);
       expect(screen.getByText('Improvement Plan')).toBeDefined();
     });
 
     it('shows a Done button', () => {
-      submitWithScores([3, 3, 3, 3, 3, 3]);
+      submitWithScores([3, 3, 3, 3, 3, 3, 3, 3]);
       expect(screen.getByRole('button', { name: 'Done' })).toBeDefined();
     });
   });
@@ -390,7 +398,7 @@ describe('ReviewRubric', () => {
     function getImprovementPlan(scores: number[]): string[] {
       const onSubmit = vi.fn();
       render(<ReviewRubric {...defaultProps} onSubmit={onSubmit} />);
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 8; i++) {
         selectScore(i, scores[i]);
       }
       fireEvent.click(screen.getByRole('button', { name: 'Submit Review' }));
@@ -398,61 +406,71 @@ describe('ReviewRubric', () => {
     }
 
     it('returns congratulatory message when all scores are 3 or higher', () => {
-      const plan = getImprovementPlan([3, 3, 3, 3, 3, 3]);
+      const plan = getImprovementPlan([3, 3, 3, 3, 3, 3, 3, 3]);
       expect(plan).toEqual(['Great work! Focus on speed and consistency to maintain this level.']);
     });
 
     it('returns congratulatory message when all scores are 4', () => {
-      const plan = getImprovementPlan([4, 4, 4, 4, 4, 4]);
+      const plan = getImprovementPlan([4, 4, 4, 4, 4, 4, 4, 4]);
       expect(plan).toEqual(['Great work! Focus on speed and consistency to maintain this level.']);
     });
 
     it('generates correctness plan for low correctness score', () => {
-      const plan = getImprovementPlan([1, 4, 4, 4, 4, 4]);
+      const plan = getImprovementPlan([1, 4, 4, 4, 4, 4, 4, 4]);
       expect(plan).toContain('Practice writing test cases before coding to catch logic errors early.');
     });
 
     it('generates time-complexity plan for low time-complexity score', () => {
-      const plan = getImprovementPlan([4, 0, 4, 4, 4, 4]);
+      const plan = getImprovementPlan([4, 0, 4, 4, 4, 4, 4, 4]);
       expect(plan).toContain('Study pattern-to-complexity mappings. Practice identifying the optimal approach before coding.');
     });
 
     it('generates space-complexity plan for low space-complexity score', () => {
-      const plan = getImprovementPlan([4, 4, 2, 4, 4, 4]);
+      const plan = getImprovementPlan([4, 4, 2, 4, 4, 4, 4, 4]);
       expect(plan).toContain('Consider in-place algorithms and whether auxiliary data structures are necessary.');
     });
 
     it('generates code-quality plan for low code-quality score', () => {
-      const plan = getImprovementPlan([4, 4, 4, 1, 4, 4]);
+      const plan = getImprovementPlan([4, 4, 4, 1, 4, 4, 4, 4]);
       expect(plan).toContain('Use descriptive variable names and extract helper functions for repeated logic.');
     });
 
     it('generates edge-cases plan for low edge-cases score', () => {
-      const plan = getImprovementPlan([4, 4, 4, 4, 0, 4]);
+      const plan = getImprovementPlan([4, 4, 4, 4, 0, 4, 4, 4]);
       expect(plan).toContain('Build a checklist: empty input, single element, duplicates, negative numbers, overflow.');
     });
 
     it('generates communication plan for low communication score', () => {
-      const plan = getImprovementPlan([4, 4, 4, 4, 4, 2]);
+      const plan = getImprovementPlan([4, 4, 4, 4, 4, 2, 4, 4]);
       expect(plan).toContain('Practice thinking aloud: state your approach, trade-offs, and complexity before coding.');
+    });
+
+    it('generates edge-case-handling plan for low edge-case-handling score', () => {
+      const plan = getImprovementPlan([4, 4, 4, 4, 4, 4, 1, 4]);
+      expect(plan).toContain('List edge cases before coding: empty input, single element, large input, negative/zero values.');
+    });
+
+    it('generates time-management plan for low time-management score', () => {
+      const plan = getImprovementPlan([4, 4, 4, 4, 4, 4, 4, 0]);
+      expect(plan).toContain('Practice with a timer. Aim to have a working solution within 30 minutes.');
     });
 
     it('generates multiple plans when multiple dimensions are weak, sorted by lowest first', () => {
       // correctness=0, time=1, rest=4
-      const plan = getImprovementPlan([0, 1, 4, 4, 4, 4]);
+      const plan = getImprovementPlan([0, 1, 4, 4, 4, 4, 4, 4]);
       expect(plan).toHaveLength(2);
       // Sorted by score ascending: correctness(0) first, then time(1)
       expect(plan[0]).toContain('test cases before coding');
       expect(plan[1]).toContain('pattern-to-complexity');
     });
 
-    it('generates plans for all 6 dimensions when all scores are 0', () => {
-      const plan = getImprovementPlan([0, 0, 0, 0, 0, 0]);
-      expect(plan).toHaveLength(6);
+    it('generates plans for all 8 dimensions when all scores are 0', () => {
+      const plan = getImprovementPlan([0, 0, 0, 0, 0, 0, 0, 0]);
+      expect(plan).toHaveLength(8);
     });
 
     it('treats score of 2 as weak (included in improvement plan)', () => {
-      const plan = getImprovementPlan([2, 4, 4, 4, 4, 4]);
+      const plan = getImprovementPlan([2, 4, 4, 4, 4, 4, 4, 4]);
       expect(plan).toHaveLength(1);
       expect(plan[0]).toContain('test cases before coding');
     });
@@ -488,6 +506,8 @@ describe('ReviewRubric', () => {
       selectScore(3, 3);
       selectScore(4, 4);
       selectScore(5, 1);
+      selectScore(6, 3);
+      selectScore(7, 3);
       fireEvent.click(screen.getByRole('button', { name: 'Submit Review' }));
 
       const dims = onSubmit.mock.calls[0][0].dimensions;
