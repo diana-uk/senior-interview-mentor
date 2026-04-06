@@ -21,7 +21,9 @@ import { useMetaTags } from './hooks/useMetaTags';
 import { logger } from './utils/logger.js';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
 import ToastContainer from './components/ui/ToastContainer';
+import KeyboardShortcutsModal from './components/ui/KeyboardShortcutsModal';
 import { showToast } from './utils/toast.js';
+import { useKeyboardShortcutsModal } from './hooks/useKeyboardShortcutsModal';
 
 const EditorPanel = lazy(() => import('./components/editor/EditorPanel'));
 const SystemDesignRouter = lazy(() => import('./components/systemdesign/SystemDesignRouter'));
@@ -340,6 +342,7 @@ export default function App() {
   const { achievements, unlockedCount, totalCount, checkAchievements } = useAchievements();
   const dailyChallenge = useDailyChallenge(getProblemStatus);
   const layout = useWorkspaceLayout();
+  const kbShortcuts = useKeyboardShortcutsModal();
   const [achievementToast, setAchievementToast] = useState<string | null>(null);
 
   // Check achievements when stats change
@@ -1220,6 +1223,7 @@ export default function App() {
           <HintLadder hints={interview.hints} onRequestHint={handleRequestHint} />
         </div>
       )}
+      {kbShortcuts.isOpen && <KeyboardShortcutsModal onClose={kbShortcuts.close} />}
       <ToastContainer />
     </div>
   );
