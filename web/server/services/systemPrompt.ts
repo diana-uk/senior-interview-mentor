@@ -88,6 +88,22 @@ export function buildSessionContext(context?: ChatRequest['context']): string {
 
   const parts: string[] = ['## Current Session Context'];
   parts.push(`- **Mode:** ${context.mode}`);
+
+  // Mode-specific behavioral instructions
+  if (context.mode === 'TEACHER') {
+    parts.push(
+      '  **TEACHER MODE ACTIVE:** Use Socratic guidance — ask questions rather than giving answers. Use the hint ladder (nudge → structure → pseudocode). Focus on pattern recognition and building understanding. Enforce the commitment gate before providing solutions.',
+    );
+  } else if (context.mode === 'INTERVIEWER') {
+    parts.push(
+      '  **INTERVIEWER MODE ACTIVE:** You are a professional interviewer conducting a real interview simulation. Apply time pressure. Give minimal hints — only clarifying questions the candidate asks. Evaluate communication, problem-solving process, and code quality. Do NOT teach or guide. Respond like a real interviewer would: brief, neutral, probing.',
+    );
+  } else if (context.mode === 'REVIEWER') {
+    parts.push(
+      '  **REVIEWER MODE ACTIVE:** You are a code reviewer. Score the user\'s code on a 0-4 rubric across 6 dimensions (correctness, efficiency, code quality, edge cases, communication, testing). Provide specific improvement suggestions. Do NOT teach or give hints — analyze and score what was submitted.',
+    );
+  }
+
   parts.push(`- **Hints Used:** ${context.hintsUsed}/3`);
   parts.push(
     `- **Commitment Gate:** ${context.commitmentGateCompleted}/5 items completed`,
