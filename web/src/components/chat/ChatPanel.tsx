@@ -5,7 +5,9 @@ import ChatMessageItem from './ChatMessage';
 import ThinkingBubble from './ThinkingBubble';
 import VoiceButton from './VoiceButton';
 import CommandPalette, { filterCommands } from './CommandPalette';
+import OfflineBanner from './OfflineBanner';
 import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 
 interface RateLimitInfo {
   remaining: number;
@@ -27,6 +29,7 @@ interface ChatPanelProps {
 const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review', '/next', '/pattern', '/mistakes', '/continue'];
 
 export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming, rateLimitInfo, onUpgrade }: ChatPanelProps) {
+  const isOnline = useOnlineStatus();
   const [input, setInput] = useState('');
   const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
   const [liveTranscript, setLiveTranscript] = useState('');
@@ -153,6 +156,8 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
         )}
       </div>
 
+      {!isOnline && <OfflineBanner />}
+
       <div className="chat-messages" role="log" aria-live="polite" aria-label="Mentor chat conversation" aria-relevant="additions text">
         {messages.map((msg, i) => {
           // Skip empty streaming message — ThinkingBubble handles that state
@@ -165,7 +170,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="chat-input-area">
+      {isOnline && <div className="chat-input-area">
         {rateLimitInfo && rateLimitInfo.limit > 0 && rateLimitInfo.plan === 'free' && (
           <div className="chat-rate-limit" style={{
             padding: '4px 12px',
@@ -277,7 +282,7 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
           )}
         </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

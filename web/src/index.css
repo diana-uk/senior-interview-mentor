@@ -739,6 +739,21 @@ body {
 }
 
 /* ================================================
+   Offline Banner
+   ================================================ */
+.offline-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 170, 0, 0.12);
+  border-bottom: 1px solid rgba(255, 170, 0, 0.3);
+  color: var(--text-primary);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ================================================
    Mobile Tabs (visible on small screens)
    ================================================ */
 .mobile-tabs {
