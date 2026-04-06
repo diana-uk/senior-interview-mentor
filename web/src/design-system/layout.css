@@ -1416,15 +1416,93 @@
   :root {
     --sidebar-width: 48px;
     --topnav-height: 48px;
+    --mobile-nav-height: 56px;
   }
 
+  /* App shell shrinks to leave room for fixed bottom nav */
+  .app-shell {
+    height: calc(100vh - var(--mobile-nav-height));
+  }
+
+  /* Editor not viable on mobile — hide it */
+  .editor-panel {
+    display: none !important;
+  }
+
+  /* Chat panel takes full width */
+  .chat-panel {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    border-right: none;
+  }
+
+  /* Sidebar transforms to a fixed bottom navigation bar */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    height: var(--mobile-nav-height);
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid var(--border-default);
+    z-index: 50;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    gap: 0;
+    flex: 1;
+  }
+
+  .sidebar-nav-item {
+    width: auto;
+    height: var(--mobile-nav-height);
+    flex: 1;
+    border-radius: 0;
+    min-width: 44px;
+  }
+
+  /* No left-edge active indicator on mobile bottom nav */
+  .sidebar-nav-item-active::before {
+    display: none;
+  }
+
+  /* Hide secondary icons — only 5 primary shown on mobile */
+  .sidebar-nav-item--mobile-hidden {
+    display: none;
+  }
+
+  /* Settings moves into bottom nav row */
+  .sidebar-footer {
+    flex-direction: row;
+    border-top: none;
+    border-left: 1px solid var(--border-subtle);
+    padding: 0 var(--space-2);
+  }
+
+  .sidebar-footer .sidebar-nav-item {
+    height: var(--mobile-nav-height);
+    min-width: 44px;
+  }
+
+  /* Sidebar panel becomes full-width overlay above the bottom nav */
   .sidebar-panel {
     position: fixed;
-    left: var(--sidebar-width);
+    left: 0;
+    right: 0;
     top: var(--topnav-height);
-    bottom: 0;
+    bottom: var(--mobile-nav-height);
+    width: 100% !important;
     z-index: var(--z-overlay);
     box-shadow: var(--shadow-xl);
+    overflow-y: auto;
   }
 
   .topnav-brand {
@@ -1456,6 +1534,18 @@
 
   .topnav-title {
     font-size: var(--text-sm);
+  }
+
+  /* Ensure touch targets meet 44px minimum */
+  .sidebar-nav-item,
+  .sidebar-footer .sidebar-nav-item {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Compact chat input for small screens */
+  .chat-input-row {
+    padding: var(--space-2);
   }
 }
 

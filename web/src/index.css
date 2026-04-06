@@ -777,15 +777,9 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* Chat/editor switcher tabs replaced by sidebar bottom nav */
   .mobile-tabs {
-    display: flex;
-    gap: 8px;
-  }
-
-  .chat-panel,
-  .editor-panel {
-    width: 100% !important;
-    min-width: 0 !important;
+    display: none !important;
   }
 }
 

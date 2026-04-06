@@ -64,16 +64,16 @@ interface SidebarProps {
 }
 
 const icons = [
-  { id: 'dashboard' as const, icon: Home, label: 'Home' },
-  { id: 'interview' as const, icon: Play, label: 'Interview' },
-  { id: 'problems' as const, icon: List, label: 'Problems' },
-  { id: 'quiz' as const, icon: Brain, label: 'Pattern Quiz' },
-  { id: 'behavioral' as const, icon: MessageSquare, label: 'Behavioral' },
-  { id: 'mistakes' as const, icon: AlertTriangle, label: 'Mistakes' },
-  { id: 'stats' as const, icon: BarChart3, label: 'Stats' },
-  { id: 'achievements' as const, icon: Trophy, label: 'Achievements' },
-  { id: 'history' as const, icon: History, label: 'History' },
-  { id: 'study' as const, icon: CalendarDays, label: 'Study Plan' },
+  { id: 'dashboard' as const, icon: Home, label: 'Home', mobileVisible: true },
+  { id: 'interview' as const, icon: Play, label: 'Interview', mobileVisible: true },
+  { id: 'problems' as const, icon: List, label: 'Problems', mobileVisible: true },
+  { id: 'quiz' as const, icon: Brain, label: 'Pattern Quiz', mobileVisible: false },
+  { id: 'behavioral' as const, icon: MessageSquare, label: 'Behavioral', mobileVisible: true },
+  { id: 'mistakes' as const, icon: AlertTriangle, label: 'Mistakes', mobileVisible: true },
+  { id: 'stats' as const, icon: BarChart3, label: 'Stats', mobileVisible: false },
+  { id: 'achievements' as const, icon: Trophy, label: 'Achievements', mobileVisible: false },
+  { id: 'history' as const, icon: History, label: 'History', mobileVisible: false },
+  { id: 'study' as const, icon: CalendarDays, label: 'Study Plan', mobileVisible: false },
 ];
 
 const panelTitles: Record<string, string> = {
@@ -127,11 +127,11 @@ export default function Sidebar({
     <>
       <aside className="sidebar">
         <div className="sidebar-nav">
-          {icons.map(({ id, icon: Icon, label }) => (
+          {icons.map(({ id, icon: Icon, label, mobileVisible }) => (
             <Tooltip key={id} content={label} position="right">
               <button
                 type="button"
-                className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}`}
+                className={`sidebar-nav-item ${activePanel === id ? 'sidebar-nav-item-active' : ''}${!mobileVisible ? ' sidebar-nav-item--mobile-hidden' : ''}`}
                 onClick={() => handleIconClick(id)}
                 aria-label={label}
                 style={{ position: 'relative' }}
