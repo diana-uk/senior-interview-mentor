@@ -8,6 +8,7 @@ import CommandPalette, { filterCommands } from './CommandPalette';
 import OfflineBanner from './OfflineBanner';
 import { getFillerFeedback, type FillerReport } from '../../utils/fillerDetector';
 import { useOnlineStatus } from '../../hooks/useOnlineStatus';
+import { showToast } from '../../utils/toast';
 
 interface RateLimitInfo {
   remaining: number;
@@ -30,6 +31,16 @@ const slashCommands = ['/hint', '/check', '/stuck', '/recap', '/solve', '/review
 
 export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStreaming, onStopStreaming, rateLimitInfo, onUpgrade }: ChatPanelProps) {
   const isOnline = useOnlineStatus();
+  const prevOnlineRef = useRef<boolean>(true);
+
+  // Fire a toast when connection is restored (false → true)
+  useEffect(() => {
+    if (!prevOnlineRef.current && isOnline) {
+      showToast('Back online — your messages will send.', 'success');
+    }
+    prevOnlineRef.current = isOnline;
+  }, [isOnline]);
+
   const [input, setInput] = useState('');
   const [fillerReport, setFillerReport] = useState<FillerReport | null>(null);
   const [liveTranscript, setLiveTranscript] = useState('');
