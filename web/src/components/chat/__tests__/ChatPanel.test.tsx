@@ -1,7 +1,21 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import ChatPanel from '../ChatPanel';
 import type { ChatMessage, Mode } from '../../../types';
+
+// ── Hoisted: mutable state for reconnection toast tests ──
+const onlineMocks = vi.hoisted(() => ({
+  isOnline: true as boolean,
+  showToast: vi.fn(),
+}));
+
+vi.mock('../../../hooks/useOnlineStatus', () => ({
+  useOnlineStatus: () => onlineMocks.isOnline,
+}));
+
+vi.mock('../../../utils/toast', () => ({
+  showToast: onlineMocks.showToast,
+}));
 
 // ── Mock child components ──
 
@@ -41,8 +55,9 @@ vi.mock('../VoiceButton', () => ({
 }));
 
 vi.mock('lucide-react', () => ({
-  Send: (props: Record<string, unknown>) => <div data-testid="icon-send" {...props} />,
+  Send:   (props: Record<string, unknown>) => <div data-testid="icon-send" {...props} />,
   Square: (props: Record<string, unknown>) => <div data-testid="icon-square" {...props} />,
+  WifiOff: () => <span data-testid="icon-wifi-off" />,
 }));
 
 vi.mock('../CommandPalette', () => ({
@@ -599,6 +614,71 @@ describe('ChatPanel', () => {
       buttons.forEach((btn) => {
         expect(btn.getAttribute('type')).toBe('button');
       });
+    });
+  });
+
+  // ── Reconnection toast ────────────────────────────────────────────────────
+
+  describe('reconnection toast', () => {
+    afterEach(() => {
+      onlineMocks.isOnline = true;
+      onlineMocks.showToast.mockClear();
+    });
+
+    it('fires showToast when online transitions from false to true', () => {
+      onlineMocks.isOnline = false;
+      const { rerender } = renderChat();
+      onlineMocks.showToast.mockClear(); // ignore any calls during initial render
+
+      onlineMocks.isOnline = true;
+      rerender(<ChatPanel {...defaultProps} />);
+
+      expect(onlineMocks.showToast).toHaveBeenCalledWith(
+        'Back online — your messages will send.',
+        'success',
+      );
+    });
+
+    it('does not fire showToast on initial render when already online', () => {
+      onlineMocks.isOnline = true;
+      renderChat();
+      expect(onlineMocks.showToast).not.toHaveBeenCalled();
+    });
+
+    it('does not fire showToast on initial render when starting offline', () => {
+      onlineMocks.isOnline = false;
+      renderChat();
+      expect(onlineMocks.showToast).not.toHaveBeenCalled();
+    });
+
+    it('does not fire showToast when staying offline across renders', () => {
+      onlineMocks.isOnline = false;
+      const { rerender } = renderChat();
+      onlineMocks.showToast.mockClear();
+
+      rerender(<ChatPanel {...defaultProps} />);
+      expect(onlineMocks.showToast).not.toHaveBeenCalled();
+    });
+
+    it('does not fire showToast when staying online across renders', () => {
+      onlineMocks.isOnline = true;
+      const { rerender } = renderChat();
+      onlineMocks.showToast.mockClear();
+
+      rerender(<ChatPanel {...defaultProps} />);
+      expect(onlineMocks.showToast).not.toHaveBeenCalled();
+    });
+
+    it('fires showToast with type "success"', () => {
+      onlineMocks.isOnline = false;
+      const { rerender } = renderChat();
+      onlineMocks.showToast.mockClear();
+
+      onlineMocks.isOnline = true;
+      rerender(<ChatPanel {...defaultProps} />);
+
+      const call = onlineMocks.showToast.mock.calls[0];
+      expect(call[1]).toBe('success');
     });
   });
 });
