@@ -59,7 +59,8 @@ const STATIC_PAGES = [
 
 const BASE_URL = process.env.APP_URL || 'https://seniormentor.dev';
 
-sitemapRouter.get('/sitemap.xml', (_req, res) => {
+/** Build the sitemap XML string. Exported for unit testing. */
+export function buildSitemap(baseUrl: string): string {
   const today = new Date().toISOString().split('T')[0];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -68,7 +69,7 @@ sitemapRouter.get('/sitemap.xml', (_req, res) => {
   // Static pages
   for (const page of STATIC_PAGES) {
     xml += `  <url>\n`;
-    xml += `    <loc>${BASE_URL}${page.path}</loc>\n`;
+    xml += `    <loc>${baseUrl}${page.path}</loc>\n`;
     xml += `    <lastmod>${today}</lastmod>\n`;
     xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
     xml += `    <priority>${page.priority}</priority>\n`;
@@ -78,7 +79,7 @@ sitemapRouter.get('/sitemap.xml', (_req, res) => {
   // Problem pages
   for (const id of PROBLEM_IDS) {
     xml += `  <url>\n`;
-    xml += `    <loc>${BASE_URL}/problems/${id}</loc>\n`;
+    xml += `    <loc>${baseUrl}/problems/${id}</loc>\n`;
     xml += `    <lastmod>${today}</lastmod>\n`;
     xml += `    <changefreq>monthly</changefreq>\n`;
     xml += `    <priority>0.8</priority>\n`;
@@ -86,10 +87,13 @@ sitemapRouter.get('/sitemap.xml', (_req, res) => {
   }
 
   xml += `</urlset>`;
+  return xml;
+}
 
+sitemapRouter.get('/sitemap.xml', (_req, res) => {
   res.header('Content-Type', 'application/xml');
   res.header('Cache-Control', 'public, max-age=86400'); // 24h cache
-  res.send(xml);
+  res.send(buildSitemap(BASE_URL));
 });
 
 export default sitemapRouter;
