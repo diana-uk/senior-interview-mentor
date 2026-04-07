@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { getAIBackend } from '../services/ai.js';
 
 const startTime = Date.now();
 
 const router = Router();
 
-router.get('/health', (_req, res) => {
+export function handleHealth(_req: Request, res: Response): void {
   const memUsage = process.memoryUsage();
   res.json({
     status: 'ok',
@@ -19,6 +19,8 @@ router.get('/health', (_req, res) => {
     },
     nodeVersion: process.version,
   });
-});
+}
+
+router.get('/health', handleHealth);
 
 export default router;
