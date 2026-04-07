@@ -16,8 +16,8 @@ vi.mock('../../../server/config.js', () => ({
   },
 }));
 
-vi.mock('../../../server/services/systemPrompt.js', () => ({
-  buildSessionContext: vi.fn(() => ''),
+vi.mock('../../../server/utils/promptBuilder.js', () => ({
+  buildChatPrompt: vi.fn(() => 'mock-prompt'),
 }));
 
 import { stripToolCalls, extractText } from '../../../server/services/claude';
