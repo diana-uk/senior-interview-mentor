@@ -292,6 +292,15 @@ export default function ChatPanel({ mode, messages, onSendMessage, hidden, isStr
             </button>
           )}
         </div>
+        {input.length > 5000 && (
+          <div
+            className="chat-char-counter"
+            style={{ color: input.length > 9500 ? 'var(--color-error, #f87171)' : undefined }}
+            aria-live="polite"
+          >
+            {input.length.toLocaleString()} / 10,000
+          </div>
+        )}
         </div>
       </div>}
     </div>

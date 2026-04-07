@@ -557,6 +557,13 @@
   font-style: italic;
 }
 
+.chat-char-counter {
+  text-align: right;
+  font-size: 11px;
+  padding: 2px 4px 0;
+  color: var(--text-muted);
+}
+
 .chat-send-btn {
   width: 36px;
   height: 36px;

@@ -681,4 +681,66 @@ describe('ChatPanel', () => {
       expect(call[1]).toBe('success');
     });
   });
+
+  // ── Character counter ─────────────────────────────────────────────────────
+
+  describe('character counter', () => {
+    function getTextarea() {
+      return screen.getByRole('textbox') as HTMLTextAreaElement;
+    }
+
+    it('is hidden when input is empty', () => {
+      renderChat();
+      expect(document.querySelector('.chat-char-counter')).toBeNull();
+    });
+
+    it('is hidden when input is <= 5000 chars', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(5000) } });
+      expect(document.querySelector('.chat-char-counter')).toBeNull();
+    });
+
+    it('appears when input exceeds 5000 chars', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(5001) } });
+      expect(document.querySelector('.chat-char-counter')).toBeDefined();
+    });
+
+    it('shows formatted count and limit', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(6000) } });
+      const counter = document.querySelector('.chat-char-counter');
+      expect(counter?.textContent).toContain('/ 10,000');
+      expect(counter?.textContent).toContain('6,000');
+    });
+
+    it('does not apply error colour at exactly 5001 chars', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(5001) } });
+      const counter = document.querySelector('.chat-char-counter') as HTMLElement;
+      expect(counter.style.color).toBe('');
+    });
+
+    it('applies error colour when input exceeds 9500 chars', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(9501) } });
+      const counter = document.querySelector('.chat-char-counter') as HTMLElement;
+      expect(counter.style.color).toContain('f87171');
+    });
+
+    it('has aria-live="polite"', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(5001) } });
+      const counter = document.querySelector('.chat-char-counter');
+      expect(counter?.getAttribute('aria-live')).toBe('polite');
+    });
+
+    it('hides again when input is cleared below 5000', () => {
+      renderChat();
+      fireEvent.change(getTextarea(), { target: { value: 'a'.repeat(5001) } });
+      expect(document.querySelector('.chat-char-counter')).toBeDefined();
+      fireEvent.change(getTextarea(), { target: { value: '' } });
+      expect(document.querySelector('.chat-char-counter')).toBeNull();
+    });
+  });
 });
