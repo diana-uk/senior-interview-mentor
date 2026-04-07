@@ -141,3 +141,273 @@ describe('buildSessionContext — mode-specific behavioral instructions', () => 
     });
   });
 });
+
+// ─── Memory context ────────────────────────────────────────────────────────────
+
+const baseMemory = {
+  hintStyle: 'pseudocode' as const,
+  detailLevel: 'balanced' as const,
+  totalSolved: 0,
+  currentStreak: 0,
+  solvedProblems: [] as Array<{ title: string; pattern: string; difficulty: string }>,
+  strongPatterns: [] as Array<{ pattern: string; solveCount: number; avgScore: number }>,
+  weakPatterns: [] as Array<{ pattern: string; mistakeCount: number; avgScore: number }>,
+  recentMistakes: [] as Array<{ problem: string; description: string }>,
+};
+
+describe('buildSessionContext — memory context', () => {
+  describe('hint style labels', () => {
+    it('analogies → "real-world analogies"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, hintStyle: 'analogies' } });
+      expect(result).toContain('real-world analogies');
+    });
+
+    it('pseudocode → "pseudocode outlines"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, hintStyle: 'pseudocode' } });
+      expect(result).toContain('pseudocode outlines');
+    });
+
+    it('visual → "diagrams and visual examples"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, hintStyle: 'visual' } });
+      expect(result).toContain('diagrams and visual examples');
+    });
+
+    it('direct → "concise, direct explanations"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, hintStyle: 'direct' } });
+      expect(result).toContain('concise, direct explanations');
+    });
+  });
+
+  describe('detail level labels', () => {
+    it('brief → "brief (concise, essentials only)"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, detailLevel: 'brief' } });
+      expect(result).toContain('brief (concise, essentials only)');
+    });
+
+    it('balanced → "balanced (standard depth with examples)"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, detailLevel: 'balanced' } });
+      expect(result).toContain('balanced (standard depth with examples)');
+    });
+
+    it('detailed → "detailed (thorough with deep dives)"', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, detailLevel: 'detailed' } });
+      expect(result).toContain('detailed (thorough with deep dives)');
+    });
+  });
+
+  describe('progress summary', () => {
+    it('includes totalSolved count', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, totalSolved: 42 } });
+      expect(result).toContain('42 problems solved');
+    });
+
+    it('includes streak when currentStreak > 0', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, currentStreak: 5 } });
+      expect(result).toContain('5-day streak');
+    });
+
+    it('does not include streak when currentStreak is 0', () => {
+      const result = buildSessionContext({ ...baseContext, memory: { ...baseMemory, currentStreak: 0 } });
+      expect(result).not.toContain('day streak');
+    });
+  });
+
+  describe('recently solved problems', () => {
+    it('includes recently solved problems section', () => {
+      const memory = {
+        ...baseMemory,
+        solvedProblems: [{ title: 'Two Sum', pattern: 'HashMap', difficulty: 'Easy' }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).toContain('Recently Solved');
+      expect(result).toContain('Two Sum');
+    });
+
+    it('omits section when no solved problems', () => {
+      const result = buildSessionContext({ ...baseContext, memory: baseMemory });
+      expect(result).not.toContain('Recently Solved');
+    });
+  });
+
+  describe('strong patterns', () => {
+    it('includes strong patterns section', () => {
+      const memory = {
+        ...baseMemory,
+        strongPatterns: [{ pattern: 'Binary Search', solveCount: 5, avgScore: 3.8 }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).toContain('Strong Patterns');
+      expect(result).toContain('Binary Search');
+    });
+
+    it('omits section when no strong patterns', () => {
+      const result = buildSessionContext({ ...baseContext, memory: baseMemory });
+      expect(result).not.toContain('Strong Patterns');
+    });
+  });
+
+  describe('weak patterns', () => {
+    it('includes weak patterns section', () => {
+      const memory = {
+        ...baseMemory,
+        weakPatterns: [{ pattern: 'DP', mistakeCount: 3, avgScore: 1.2 }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).toContain('Weak Patterns');
+      expect(result).toContain('DP');
+    });
+
+    it('includes mistake count when > 0', () => {
+      const memory = {
+        ...baseMemory,
+        weakPatterns: [{ pattern: 'DP', mistakeCount: 3, avgScore: 1.2 }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).toContain('3 mistakes');
+    });
+
+    it('omits mistake count when 0', () => {
+      const memory = {
+        ...baseMemory,
+        weakPatterns: [{ pattern: 'DP', mistakeCount: 0, avgScore: 1.5 }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).not.toContain('0 mistakes');
+    });
+
+    it('omits section when no weak patterns', () => {
+      const result = buildSessionContext({ ...baseContext, memory: baseMemory });
+      expect(result).not.toContain('Weak Patterns');
+    });
+  });
+
+  describe('recent mistakes', () => {
+    it('includes recent mistakes section', () => {
+      const memory = {
+        ...baseMemory,
+        recentMistakes: [{ problem: 'Two Sum', description: 'Off-by-one error' }],
+      };
+      const result = buildSessionContext({ ...baseContext, memory });
+      expect(result).toContain('Recent Mistakes');
+      expect(result).toContain('Off-by-one error on Two Sum');
+    });
+
+    it('omits section when no recent mistakes', () => {
+      const result = buildSessionContext({ ...baseContext, memory: baseMemory });
+      expect(result).not.toContain('Recent Mistakes');
+    });
+  });
+
+  it('includes User Memory & Personalization header', () => {
+    const result = buildSessionContext({ ...baseContext, memory: baseMemory });
+    expect(result).toContain('User Memory & Personalization');
+  });
+});
+
+// ─── Language context ──────────────────────────────────────────────────────────
+
+describe('buildSessionContext — language', () => {
+  it('includes Language line when language is set', () => {
+    const result = buildSessionContext({ ...baseContext, language: 'python' });
+    expect(result).toContain('**Language:** python');
+  });
+
+  it('includes Python instructions when language is python', () => {
+    const result = buildSessionContext({ ...baseContext, language: 'python' });
+    expect(result).toContain('Python idioms');
+    expect(result).toContain('snake_case');
+  });
+
+  it('does not include Python instructions for typescript', () => {
+    const result = buildSessionContext({ ...baseContext, language: 'typescript' });
+    expect(result).not.toContain('Python idioms');
+  });
+
+  it('omits Language line when no language set', () => {
+    const result = buildSessionContext(baseContext);
+    expect(result).not.toContain('**Language:**');
+  });
+});
+
+// ─── Current problem context ───────────────────────────────────────────────────
+
+describe('buildSessionContext — current problem', () => {
+  const problem = {
+    title: 'Longest Substring Without Repeating Characters',
+    difficulty: 'Medium' as const,
+    pattern: 'Sliding Window',
+    description: 'Find the longest substring without repeating characters.',
+    constraints: ['0 <= s.length <= 5 * 10^4', 's consists of English letters and digits'],
+  };
+
+  it('includes problem title', () => {
+    const result = buildSessionContext({ ...baseContext, currentProblem: problem });
+    expect(result).toContain('Longest Substring Without Repeating Characters');
+  });
+
+  it('includes problem difficulty', () => {
+    const result = buildSessionContext({ ...baseContext, currentProblem: problem });
+    expect(result).toContain('Medium');
+  });
+
+  it('includes problem pattern', () => {
+    const result = buildSessionContext({ ...baseContext, currentProblem: problem });
+    expect(result).toContain('Sliding Window');
+  });
+
+  it('includes problem description', () => {
+    const result = buildSessionContext({ ...baseContext, currentProblem: problem });
+    expect(result).toContain('Find the longest substring');
+  });
+
+  it('includes constraints when present', () => {
+    const result = buildSessionContext({ ...baseContext, currentProblem: problem });
+    expect(result).toContain('0 <= s.length');
+  });
+
+  it('omits constraints when empty', () => {
+    const noProblem = { ...problem, constraints: [] };
+    const result = buildSessionContext({ ...baseContext, currentProblem: noProblem });
+    expect(result).not.toContain('Constraints');
+  });
+
+  it('omits current problem section when not provided', () => {
+    const result = buildSessionContext(baseContext);
+    expect(result).not.toContain('Current Problem');
+  });
+});
+
+// ─── Interview stage context ───────────────────────────────────────────────────
+
+describe('buildSessionContext — interview stage', () => {
+  it('includes Interview Stage header', () => {
+    const result = buildSessionContext({ ...baseContext, interviewStage: 'technical' });
+    expect(result).toContain('Interview Stage: technical');
+  });
+
+  it('describes technical-questions stage as knowledge Q&A', () => {
+    const result = buildSessionContext({ ...baseContext, interviewStage: 'technical-questions' });
+    expect(result).toContain('technical questions interview');
+    expect(result).toContain('senior engineering manager');
+  });
+
+  it('includes category for technical-questions when provided', () => {
+    const result = buildSessionContext({
+      ...baseContext,
+      interviewStage: 'technical-questions',
+      technicalQuestionCategory: 'react-frontend',
+    });
+    expect(result).toContain('react-frontend');
+  });
+
+  it('describes other stages as mock interview', () => {
+    const result = buildSessionContext({ ...baseContext, interviewStage: 'technical' });
+    expect(result).toContain('mock interview');
+    expect(result).toContain('professional interviewer');
+  });
+
+  it('omits interview stage section when not provided', () => {
+    const result = buildSessionContext(baseContext);
+    expect(result).not.toContain('Interview Stage');
+  });
+});
