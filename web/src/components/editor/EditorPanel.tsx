@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2, RotateCcw, Copy } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2, RotateCcw, Copy, Check } from 'lucide-react';
 import { showToast } from '../../utils/toast';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
@@ -107,6 +107,12 @@ export default function EditorPanel({
   const [codeLanguage, setCodeLanguage] = useState<CodeLanguage>('typescript');
   const [outputTab, setOutputTab] = useState<'tests' | 'console'>('tests');
   const [confirmReset, setConfirmReset] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Reset copied state when the active tab changes
+  useEffect(() => {
+    setCopied(false);
+  }, [activeTab]);
 
   // Auto-switch output tab: console for freeform runs, tests for structured results
   useEffect(() => {
@@ -205,14 +211,18 @@ export default function EditorPanel({
               className="btn btn-ghost btn-sm"
               onClick={() => {
                 navigator.clipboard.writeText(currentContent).then(() => {
+                  setCopied(true);
                   showToast('Code copied!', 'success', 2000);
+                  setTimeout(() => setCopied(false), 2000);
                 });
               }}
               disabled={!currentContent}
-              aria-label="Copy code to clipboard"
-              title="Copy code"
+              aria-label={copied ? 'Copied!' : 'Copy code to clipboard'}
+              title={copied ? 'Copied!' : 'Copy code'}
             >
-              <Copy size={14} aria-hidden="true" />
+              {copied
+                ? <Check size={14} aria-hidden="true" />
+                : <Copy size={14} aria-hidden="true" />}
             </button>
           )}
           {!isSystemDesign && (

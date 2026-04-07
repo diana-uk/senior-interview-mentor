@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import EditorPanel from '../EditorPanel';
 import type { EditorTab, TestCase, ConsoleMessage } from '../../../types';
 
@@ -24,6 +24,7 @@ vi.mock('lucide-react', () => ({
   Trash2:       () => <span data-testid="icon-trash2" />,
   RotateCcw:    () => <span data-testid="icon-rotate-ccw" />,
   Copy:         () => <span data-testid="icon-copy" />,
+  Check:        () => <span data-testid="icon-check" />,
 }));
 
 vi.mock('../SystemDesignEditor', () => ({
@@ -412,6 +413,63 @@ describe('EditorPanel', () => {
       render(<EditorPanel {...BASE_PROPS} activeTab="notes" />);
       const editor = screen.getByTestId('monaco-editor');
       expect(editor.getAttribute('data-language')).toBe('markdown');
+    });
+  });
+
+  // ── Copy button visual feedback ───────────────────────────────────────────
+
+  describe('Copy button visual feedback', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: vi.fn().mockResolvedValue(undefined) },
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('shows Copy icon by default', () => {
+      render(<EditorPanel {...BASE_PROPS} code="const x = 1;" />);
+      expect(screen.getByTestId('icon-copy')).toBeDefined();
+      expect(screen.queryByTestId('icon-check')).toBeNull();
+    });
+
+    it('shows Check icon after clicking Copy', async () => {
+      render(<EditorPanel {...BASE_PROPS} code="const x = 1;" />);
+      const copyBtn = screen.getByRole('button', { name: 'Copy code to clipboard' });
+      await act(async () => { fireEvent.click(copyBtn); });
+      expect(screen.getByTestId('icon-check')).toBeDefined();
+      expect(screen.queryByTestId('icon-copy')).toBeNull();
+    });
+
+    it('aria-label changes to "Copied!" after click', async () => {
+      render(<EditorPanel {...BASE_PROPS} code="const x = 1;" />);
+      const copyBtn = screen.getByRole('button', { name: 'Copy code to clipboard' });
+      await act(async () => { fireEvent.click(copyBtn); });
+      expect(screen.getByRole('button', { name: 'Copied!' })).toBeDefined();
+    });
+
+    it('reverts to Copy icon after 2 seconds', async () => {
+      render(<EditorPanel {...BASE_PROPS} code="const x = 1;" />);
+      const copyBtn = screen.getByRole('button', { name: 'Copy code to clipboard' });
+      await act(async () => { fireEvent.click(copyBtn); });
+      expect(screen.getByTestId('icon-check')).toBeDefined();
+      act(() => { vi.advanceTimersByTime(2000); });
+      expect(screen.getByTestId('icon-copy')).toBeDefined();
+      expect(screen.queryByTestId('icon-check')).toBeNull();
+    });
+
+    it('resets copied state when switching tabs', async () => {
+      const { rerender } = render(<EditorPanel {...BASE_PROPS} code="const x = 1;" />);
+      const copyBtn = screen.getByRole('button', { name: 'Copy code to clipboard' });
+      await act(async () => { fireEvent.click(copyBtn); });
+      expect(screen.getByTestId('icon-check')).toBeDefined();
+      rerender(<EditorPanel {...BASE_PROPS} code="const x = 1;" activeTab="tests" />);
+      expect(screen.getByTestId('icon-copy')).toBeDefined();
     });
   });
 });
