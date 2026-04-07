@@ -244,7 +244,7 @@ export function streamChatResponse(
  * The CLI subprocess sometimes emits tool call syntax as plain text when
  * it thinks it should read files (especially for system design reviews).
  */
-function stripToolCalls(text: string): string {
+export function stripToolCalls(text: string): string {
   if (!text) return text;
 
   // Remove <tool_call> ... </tool_call> blocks (with or without whitespace)
@@ -257,7 +257,7 @@ function stripToolCalls(text: string): string {
   return cleaned.trim();
 }
 
-function extractText(event: Record<string, unknown>): string | null {
+export function extractText(event: Record<string, unknown>): string | null {
   if (event.type === 'assistant' && event.message) {
     const msg = event.message as Record<string, unknown>;
     if (Array.isArray(msg.content)) {
