@@ -416,6 +416,46 @@ describe('EditorPanel', () => {
     });
   });
 
+  // ── Notes word count ─────────────────────────────────────────────────────
+
+  describe('notes word count', () => {
+    it('is hidden when not on notes tab', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="solution" notes="hello world" />);
+      expect(document.querySelector('.editor-word-count')).toBeNull();
+    });
+
+    it('is hidden on notes tab when notes is empty', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="" />);
+      expect(document.querySelector('.editor-word-count')).toBeNull();
+    });
+
+    it('is hidden on notes tab when notes is whitespace only', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="   " />);
+      expect(document.querySelector('.editor-word-count')).toBeNull();
+    });
+
+    it('shows word count on notes tab with content', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="hello world foo" />);
+      expect(document.querySelector('.editor-word-count')).toBeDefined();
+    });
+
+    it('displays correct word count', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="one two three four five" />);
+      expect(document.querySelector('.editor-word-count')?.textContent).toContain('5 words');
+    });
+
+    it('displays "1 words" for a single word', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="hello" />);
+      expect(document.querySelector('.editor-word-count')?.textContent).toContain('1 words');
+    });
+
+    it('has correct aria-label', () => {
+      render(<EditorPanel {...BASE_PROPS} activeTab="notes" notes="alpha beta gamma" />);
+      const counter = document.querySelector('.editor-word-count');
+      expect(counter?.getAttribute('aria-label')).toBe('3 words');
+    });
+  });
+
   // ── Copy button visual feedback ───────────────────────────────────────────
 
   describe('Copy button visual feedback', () => {

@@ -621,6 +621,14 @@
   gap: var(--space-1);
 }
 
+.editor-word-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 8px;
+  align-self: center;
+  white-space: nowrap;
+}
+
 .editor-tab {
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);

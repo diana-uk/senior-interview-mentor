@@ -144,6 +144,9 @@ export default function EditorPanel({
   const monacoTheme = getSettings().theme === 'daylight' ? 'vs' : 'vs-dark';
   const editorLanguage = activeTab === 'notes' ? 'markdown' : codeLanguage;
   const ext = codeLanguage === 'python' ? 'py' : codeLanguage === 'typescript' ? 'ts' : 'js';
+  const wordCount = activeTab === 'notes' && notes.trim().length > 0
+    ? notes.trim().split(/\s+/).filter(Boolean).length
+    : 0;
   const pid = problemId ?? 'default';
   const editorPath = activeTab === 'notes' ? `${pid}-notes.md` : `${pid}-${activeTab}.${ext}`;
 
@@ -162,6 +165,11 @@ export default function EditorPanel({
             </button>
           ))}
         </div>
+        {wordCount > 0 && (
+          <span className="editor-word-count" aria-label={`${wordCount} words`}>
+            {wordCount} words
+          </span>
+        )}
         <div className="editor-actions">
           {!isSystemDesign && activeTab !== 'notes' && (
             <select
