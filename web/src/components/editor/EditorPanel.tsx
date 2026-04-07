@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2, RotateCcw } from 'lucide-react';
+import { Play, ChevronDown, ChevronUp, CheckCircle2, XCircle, Share2, Trash2, RotateCcw, Copy } from 'lucide-react';
+import { showToast } from '../../utils/toast';
 import Editor, { type BeforeMount } from '@monaco-editor/react';
 import type { EditorTab, TestCase, ConsoleMessage, InterviewStage, SystemDesignTopicId } from '../../types';
 import { getSettings } from '../../utils/settings';
@@ -197,6 +198,22 @@ export default function EditorPanel({
                 <RotateCcw size={14} aria-hidden="true" />
               </button>
             )
+          )}
+          {!isSystemDesign && activeTab !== 'notes' && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                navigator.clipboard.writeText(currentContent).then(() => {
+                  showToast('Code copied!', 'success', 2000);
+                });
+              }}
+              disabled={!currentContent}
+              aria-label="Copy code to clipboard"
+              title="Copy code"
+            >
+              <Copy size={14} aria-hidden="true" />
+            </button>
           )}
           {!isSystemDesign && (
             <button type="button" className="btn btn-primary btn-sm" onClick={onRunTests} disabled={runningTests}>

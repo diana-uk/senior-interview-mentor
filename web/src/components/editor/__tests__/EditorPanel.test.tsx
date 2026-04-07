@@ -23,6 +23,7 @@ vi.mock('lucide-react', () => ({
   Share2:       () => <span data-testid="icon-share2" />,
   Trash2:       () => <span data-testid="icon-trash2" />,
   RotateCcw:    () => <span data-testid="icon-rotate-ccw" />,
+  Copy:         () => <span data-testid="icon-copy" />,
 }));
 
 vi.mock('../SystemDesignEditor', () => ({
@@ -31,6 +32,10 @@ vi.mock('../SystemDesignEditor', () => ({
 
 vi.mock('../../../utils/settings', () => ({
   getSettings: () => ({ theme: 'midnight' }),
+}));
+
+vi.mock('../../../utils/toast', () => ({
+  showToast: vi.fn(),
 }));
 
 function makeTestCase(overrides: Partial<TestCase> = {}): TestCase {
