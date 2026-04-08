@@ -1,6 +1,106 @@
-import { describe, it, expect } from 'vitest';
-import { getWeakAreas } from '../dashboardUtils';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { greeting, getWeeklyActivity, getWeakAreas } from '../dashboardUtils';
 import type { PatternStrength } from '../../types';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+// ─── greeting ─────────────────────────────────────────────────────────────────
+
+describe('greeting', () => {
+  it('returns "Good morning" for hours 0–11', () => {
+    for (const h of [0, 6, 11]) {
+      vi.spyOn(Date.prototype, 'getHours').mockReturnValue(h);
+      expect(greeting()).toBe('Good morning');
+    }
+  });
+
+  it('returns "Good afternoon" for hours 12–16', () => {
+    for (const h of [12, 14, 16]) {
+      vi.spyOn(Date.prototype, 'getHours').mockReturnValue(h);
+      expect(greeting()).toBe('Good afternoon');
+    }
+  });
+
+  it('returns "Good evening" for hours 17–23', () => {
+    for (const h of [17, 20, 23]) {
+      vi.spyOn(Date.prototype, 'getHours').mockReturnValue(h);
+      expect(greeting()).toBe('Good evening');
+    }
+  });
+
+  it('boundary: hour 11 is still "Good morning"', () => {
+    vi.spyOn(Date.prototype, 'getHours').mockReturnValue(11);
+    expect(greeting()).toBe('Good morning');
+  });
+
+  it('boundary: hour 12 becomes "Good afternoon"', () => {
+    vi.spyOn(Date.prototype, 'getHours').mockReturnValue(12);
+    expect(greeting()).toBe('Good afternoon');
+  });
+
+  it('boundary: hour 16 is still "Good afternoon"', () => {
+    vi.spyOn(Date.prototype, 'getHours').mockReturnValue(16);
+    expect(greeting()).toBe('Good afternoon');
+  });
+
+  it('boundary: hour 17 becomes "Good evening"', () => {
+    vi.spyOn(Date.prototype, 'getHours').mockReturnValue(17);
+    expect(greeting()).toBe('Good evening');
+  });
+});
+
+// ─── getWeeklyActivity ────────────────────────────────────────────────────────
+
+describe('getWeeklyActivity', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-10T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns exactly 7 entries', () => {
+    expect(getWeeklyActivity([])).toHaveLength(7);
+  });
+
+  it('dates run from 7 days ago to today in ascending order', () => {
+    const result = getWeeklyActivity([]);
+    expect(result[0].date).toBe('2026-01-04');
+    expect(result[6].date).toBe('2026-01-10');
+  });
+
+  it('all counts are 0 when sessions array is empty', () => {
+    const result = getWeeklyActivity([]);
+    result.forEach((d) => expect(d.count).toBe(0));
+  });
+
+  it('counts sessions matching the date', () => {
+    const sessions = [
+      { date: '2026-01-10' },
+      { date: '2026-01-10' },
+      { date: '2026-01-08' },
+    ] as any[];
+    const result = getWeeklyActivity(sessions);
+    expect(result.find((d) => d.date === '2026-01-10')!.count).toBe(2);
+    expect(result.find((d) => d.date === '2026-01-08')!.count).toBe(1);
+  });
+
+  it('ignores sessions outside the 7-day window', () => {
+    const sessions = [{ date: '2025-12-01' }, { date: '2026-02-01' }] as any[];
+    const result = getWeeklyActivity(sessions);
+    result.forEach((d) => expect(d.count).toBe(0));
+  });
+
+  it('each entry has date string in YYYY-MM-DD format', () => {
+    const result = getWeeklyActivity([]);
+    result.forEach((d) => expect(d.date).toMatch(/^\d{4}-\d{2}-\d{2}$/));
+  });
+});
+
 
 function makeStrength(pattern: string, solved: number, attempted: number): PatternStrength {
   return { pattern, solved, attempted, avgScore: attempted > 0 ? solved / attempted * 4 : 0 };

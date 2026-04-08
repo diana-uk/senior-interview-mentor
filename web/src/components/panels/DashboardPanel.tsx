@@ -1,34 +1,15 @@
 import { useMemo } from 'react';
 import { Zap, TrendingUp, Flame, BookOpen, Clock } from 'lucide-react';
 import type { RecommendedProblemEntry } from './ProblemList';
-import type { SessionRecord, StatsData } from '../../types';
+import type { StatsData } from '../../types';
 import { allProblemsList } from '../../data/problems';
 import { formatDurationCompact } from '../../utils/formatters';
-import { getWeakAreas } from '../../utils/dashboardUtils';
+import { greeting, getWeakAreas, getWeeklyActivity } from '../../utils/dashboardUtils';
 
 interface DashboardPanelProps {
   stats: StatsData;
   dailyChallenge?: RecommendedProblemEntry | null;
   onSelectProblem: (id: string) => void;
-}
-
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
-}
-
-function getWeeklyActivity(sessions: SessionRecord[]): { date: string; count: number }[] {
-  const days: { date: string; count: number }[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const date = d.toISOString().split('T')[0];
-    const count = sessions.filter((s) => s.date === date).length;
-    days.push({ date, count });
-  }
-  return days;
 }
 
 export default function DashboardPanel({ stats, dailyChallenge, onSelectProblem }: DashboardPanelProps) {
