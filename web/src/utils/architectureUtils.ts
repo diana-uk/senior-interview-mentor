@@ -36,3 +36,16 @@ export function serializeEdges(eds: Edge[]): SystemDesignState['diagramEdges'] {
     data: e.data as { edgeStyle?: 'solid' | 'dashed' | 'dotted' } | undefined,
   }));
 }
+
+// ── Node ID generation ────────────────────────────────────────────────────────
+
+let nodeIdCounter = 0;
+
+/**
+ * Generate a unique ID for a diagram node.
+ * Combines timestamp and a monotonic counter to avoid collisions
+ * when multiple nodes are dropped in quick succession.
+ */
+export function generateNodeId(): string {
+  return `node-${Date.now()}-${++nodeIdCounter}`;
+}

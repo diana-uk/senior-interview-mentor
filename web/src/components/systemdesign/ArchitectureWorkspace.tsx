@@ -31,7 +31,7 @@ import CanvasToolbar, { autoLayout } from './architecture/CanvasToolbar';
 import type { EdgeStyleType } from './architecture/CanvasToolbar';
 import { useUndoRedo } from '../../hooks/useUndoRedo';
 import { serializeDiagramToText, exportDiagramAsPng } from './architecture/diagramSerializer';
-import { serializeNodes, serializeEdges } from '../../utils/architectureUtils';
+import { serializeNodes, serializeEdges, generateNodeId } from '../../utils/architectureUtils';
 
 interface ArchitectureWorkspaceProps {
   diagramNodes: SystemDesignState['diagramNodes'];
@@ -52,10 +52,6 @@ interface ArchitectureWorkspaceProps {
 const nodeTypes = { system: SystemNode, group: GroupNode };
 const edgeTypes = { labeled: LabeledEdge };
 
-let nodeIdCounter = 0;
-function generateNodeId(): string {
-  return `node-${Date.now()}-${++nodeIdCounter}`;
-}
 
 function ArchitectureWorkspaceInner({
   diagramNodes,

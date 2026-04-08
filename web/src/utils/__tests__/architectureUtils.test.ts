@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { serializeNodes, serializeEdges } from '../architectureUtils';
+import { serializeNodes, serializeEdges, generateNodeId } from '../architectureUtils';
 import type { Node, Edge } from '@xyflow/react';
 
 // ─── serializeNodes ───────────────────────────────────────────────────────────
@@ -168,5 +168,32 @@ describe('serializeEdges', () => {
     expect(result).toHaveLength(2);
     expect(result[0].id).toBe('e1');
     expect(result[1].id).toBe('e2');
+  });
+});
+
+// ─── generateNodeId ───────────────────────────────────────────────────────────
+
+describe('generateNodeId', () => {
+  it('returns a string', () => {
+    expect(typeof generateNodeId()).toBe('string');
+  });
+
+  it('starts with "node-"', () => {
+    expect(generateNodeId()).toMatch(/^node-/);
+  });
+
+  it('returns unique ids on successive calls', () => {
+    const a = generateNodeId();
+    const b = generateNodeId();
+    expect(a).not.toBe(b);
+  });
+
+  it('contains a timestamp segment and a counter (3 parts)', () => {
+    const id = generateNodeId();
+    const parts = id.split('-');
+    // format: node-<timestamp>-<counter>
+    expect(parts.length).toBe(3);
+    expect(Number(parts[1])).toBeGreaterThan(0);
+    expect(Number(parts[2])).toBeGreaterThan(0);
   });
 });
