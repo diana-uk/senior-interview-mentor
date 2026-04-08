@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { Download } from 'lucide-react';
 import type { Achievement, AchievementCategory, SessionRecord, StatsData } from '../../types';
 import { exportProfileCard } from '../../utils/profileCard';
+import { getHeatmapColor } from '../../utils/achievementUtils';
+import { formatTime } from '../../utils/timeUtils';
 
 interface AchievementsPanelProps {
   achievements: Achievement[];
@@ -73,13 +75,6 @@ function ActivityHeatmap({ sessions }: { sessions: SessionRecord[] }) {
   const totalW = 52 * (cellSize + cellGap) + cellGap;
   const totalH = 7 * (cellSize + cellGap) + 18; // extra for month labels
 
-  function getColor(count: number): string {
-    if (count === 0) return 'rgba(255, 255, 255, 0.04)';
-    if (count === 1) return 'rgba(0, 240, 255, 0.25)';
-    if (count === 2) return 'rgba(0, 240, 255, 0.5)';
-    return 'rgba(0, 240, 255, 0.8)';
-  }
-
   return (
     <div style={{ position: 'relative' }}>
       <svg
@@ -109,7 +104,7 @@ function ActivityHeatmap({ sessions }: { sessions: SessionRecord[] }) {
             width={cellSize}
             height={cellSize}
             rx={2}
-            fill={getColor(cell.count)}
+            fill={getHeatmapColor(cell.count)}
             style={{ cursor: 'pointer' }}
             onMouseEnter={(e) => {
               const rect = (e.target as SVGRectElement).getBoundingClientRect();
@@ -157,7 +152,7 @@ function ActivityHeatmap({ sessions }: { sessions: SessionRecord[] }) {
               width: 9,
               height: 9,
               borderRadius: 2,
-              background: getColor(level),
+              background: getHeatmapColor(level),
               border: '1px solid rgba(255,255,255,0.06)',
             }}
           />
@@ -194,12 +189,6 @@ function PersonalRecords({ stats }: { stats: StatsData }) {
 
     return { mostInDay, fastest, highestReview };
   }, [stats]);
-
-  function formatTime(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${String(s).padStart(2, '0')}`;
-  }
 
   const items = [
     { label: 'Longest Streak', value: `${stats.longestStreak}d`, color: 'var(--neon-lime)' },

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { checkCondition } from '../achievementUtils';
+import { checkCondition, getHeatmapColor } from '../achievementUtils';
 import type { StatsData } from '../../types';
 
 function makeStats(overrides: Partial<StatsData> = {}): StatsData {
@@ -222,5 +222,35 @@ describe('checkCondition — mastery', () => {
   it('review-ace: false when 5 reviews exist but avg < 3.5', () => {
     const reviews = Array.from({ length: 5 }, () => makeReview({ overallScore: 3.0 }));
     expect(checkCondition('review-ace', makeStats({ reviews }))).toBe(false);
+  });
+});
+
+// ─── getHeatmapColor ──────────────────────────────────────────────────────────
+
+describe('getHeatmapColor', () => {
+  it('returns near-transparent for count 0', () => {
+    expect(getHeatmapColor(0)).toBe('rgba(255, 255, 255, 0.04)');
+  });
+
+  it('returns 25% cyan for count 1', () => {
+    expect(getHeatmapColor(1)).toBe('rgba(0, 240, 255, 0.25)');
+  });
+
+  it('returns 50% cyan for count 2', () => {
+    expect(getHeatmapColor(2)).toBe('rgba(0, 240, 255, 0.5)');
+  });
+
+  it('returns 80% cyan for count 3', () => {
+    expect(getHeatmapColor(3)).toBe('rgba(0, 240, 255, 0.8)');
+  });
+
+  it('returns 80% cyan for count > 3', () => {
+    expect(getHeatmapColor(10)).toBe('rgba(0, 240, 255, 0.8)');
+  });
+
+  it('each level is visually distinct', () => {
+    const colors = [0, 1, 2, 3].map(getHeatmapColor);
+    const unique = new Set(colors);
+    expect(unique.size).toBe(4);
   });
 });

@@ -1,6 +1,21 @@
 import type { AchievementId, StatsData } from '../types';
 
 /**
+ * Map an activity count (sessions on a day) to an RGBA colour for the
+ * activity heatmap cells.
+ *   0 → near-transparent background
+ *   1 → 25% cyan
+ *   2 → 50% cyan
+ *   3+ → 80% cyan
+ */
+export function getHeatmapColor(count: number): string {
+  if (count === 0) return 'rgba(255, 255, 255, 0.04)';
+  if (count === 1) return 'rgba(0, 240, 255, 0.25)';
+  if (count === 2) return 'rgba(0, 240, 255, 0.5)';
+  return 'rgba(0, 240, 255, 0.8)';
+}
+
+/**
  * Pure function that evaluates whether a given achievement condition is met.
  */
 export function checkCondition(id: AchievementId, stats: StatsData): boolean {
