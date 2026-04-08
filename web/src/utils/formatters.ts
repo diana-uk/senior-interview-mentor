@@ -31,3 +31,24 @@ export function formatScore(score: number | null): string {
   if (score === null) return '—';
   return `${score.toFixed(1)}/4`;
 }
+
+/**
+ * Compact duration format used in the Dashboard: "45s", "2m", "1h 30m".
+ * Returns "0s" for zero or negative values.
+ */
+export function formatDurationCompact(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${m % 60}m`;
+}
+
+/**
+ * Stats-panel duration format: hours and minutes only, no seconds.
+ * Examples: 3600 → "1h 0m", 1800 → "30m", 90 → "1m"
+ */
+export function formatDurationStats(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}

@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { Zap, TrendingUp, Flame, BookOpen, Clock } from 'lucide-react';
 import type { RecommendedProblemEntry } from './ProblemList';
-import type { PatternStrength, SessionRecord, StatsData } from '../../types';
+import type { SessionRecord, StatsData } from '../../types';
 import { allProblemsList } from '../../data/problems';
+import { formatDurationCompact } from '../../utils/formatters';
+import { getWeakAreas } from '../../utils/dashboardUtils';
 
 interface DashboardPanelProps {
   stats: StatsData;
@@ -17,12 +19,6 @@ function greeting(): string {
   return 'Good evening';
 }
 
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
-  const m = Math.floor(seconds / 60);
-  return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${m % 60}m`;
-}
-
 function getWeeklyActivity(sessions: SessionRecord[]): { date: string; count: number }[] {
   const days: { date: string; count: number }[] = [];
   for (let i = 6; i >= 0; i--) {
@@ -33,17 +29,6 @@ function getWeeklyActivity(sessions: SessionRecord[]): { date: string; count: nu
     days.push({ date, count });
   }
   return days;
-}
-
-function getWeakAreas(strengths: PatternStrength[]): PatternStrength[] {
-  return [...strengths]
-    .filter((s) => s.attempted > 0)
-    .sort((a, b) => {
-      const ratioA = a.solved / a.attempted;
-      const ratioB = b.solved / b.attempted;
-      return ratioA - ratioB;
-    })
-    .slice(0, 3);
 }
 
 export default function DashboardPanel({ stats, dailyChallenge, onSelectProblem }: DashboardPanelProps) {
@@ -217,7 +202,7 @@ export default function DashboardPanel({ stats, dailyChallenge, onSelectProblem 
                   <div style={{ fontSize: 10, color: 'var(--text-muted)', display: 'flex', gap: 6, marginTop: 1 }}>
                     <span>{s.mode}</span>
                     <span aria-hidden="true">·</span>
-                    <span>{formatDuration(s.duration)}</span>
+                    <span>{formatDurationCompact(s.duration)}</span>
                   </div>
                 </div>
                 {s.score !== null && (

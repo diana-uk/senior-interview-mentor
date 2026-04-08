@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDuration, formatDate, formatScore } from '../formatters';
+import { formatDuration, formatDate, formatScore, formatDurationCompact, formatDurationStats } from '../formatters';
 
 // ─── formatDuration ───────────────────────────────────────────────────────────
 
@@ -93,5 +93,53 @@ describe('formatScore', () => {
   it('formats whole numbers with .0 suffix', () => {
     expect(formatScore(2)).toBe('2.0/4');
     expect(formatScore(3)).toBe('3.0/4');
+  });
+});
+
+// ─── formatDurationCompact ────────────────────────────────────────────────────
+
+describe('formatDurationCompact', () => {
+  it('returns seconds string for values under 60', () => {
+    expect(formatDurationCompact(0)).toBe('0s');
+    expect(formatDurationCompact(45)).toBe('45s');
+    expect(formatDurationCompact(59)).toBe('59s');
+  });
+
+  it('returns minutes string for 60–3599 seconds', () => {
+    expect(formatDurationCompact(60)).toBe('1m');
+    expect(formatDurationCompact(90)).toBe('1m');
+    expect(formatDurationCompact(120)).toBe('2m');
+    expect(formatDurationCompact(3599)).toBe('59m');
+  });
+
+  it('returns hours and minutes for 3600+ seconds', () => {
+    expect(formatDurationCompact(3600)).toBe('1h 0m');
+    expect(formatDurationCompact(5400)).toBe('1h 30m');
+    expect(formatDurationCompact(7200)).toBe('2h 0m');
+    expect(formatDurationCompact(9000)).toBe('2h 30m');
+  });
+});
+
+// ─── formatDurationStats ──────────────────────────────────────────────────────
+
+describe('formatDurationStats', () => {
+  it('returns "0m" for 0 seconds', () => {
+    expect(formatDurationStats(0)).toBe('0m');
+  });
+
+  it('returns minutes only for values under one hour', () => {
+    expect(formatDurationStats(60)).toBe('1m');
+    expect(formatDurationStats(1800)).toBe('30m');
+    expect(formatDurationStats(3599)).toBe('59m');
+  });
+
+  it('returns hours and minutes for 3600+ seconds', () => {
+    expect(formatDurationStats(3600)).toBe('1h 0m');
+    expect(formatDurationStats(5400)).toBe('1h 30m');
+    expect(formatDurationStats(7200)).toBe('2h 0m');
+  });
+
+  it('returns "1m" for 90 seconds (rounds down to minutes)', () => {
+    expect(formatDurationStats(90)).toBe('1m');
   });
 });

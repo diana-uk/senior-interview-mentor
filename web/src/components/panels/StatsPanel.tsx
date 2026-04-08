@@ -4,6 +4,7 @@ import { getBadgesForProblem } from '../../utils/solutionBadges';
 import { computeDifficultyDistribution } from '../../utils/difficultyDistribution';
 import type { Mode, PatternStrength, ProblemStatus, SessionRecord, StatsData } from '../../types';
 import EmptyState from '../ui/EmptyState';
+import { formatDurationStats } from '../../utils/formatters';
 
 interface StatsPanelProps {
   stats: StatsData;
@@ -16,13 +17,6 @@ const modeColors: Record<Mode, string> = {
   INTERVIEWER: 'var(--neon-red)',
   REVIEWER: 'var(--neon-purple)',
 };
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
 
 // ── Activity Chart: problems solved per day (last 30 days) ──
 
@@ -315,7 +309,7 @@ export default function StatsPanel({ stats, getProblemProgress, getProblemStatus
         <div className="card stagger-enter stagger-5" style={{ marginBottom: 16, padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Total Practice Time</span>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-bright)', fontFamily: 'var(--font-mono)' }}>
-            {formatDuration(stats.totalTime)}
+            {formatDurationStats(stats.totalTime)}
           </span>
         </div>
       )}
