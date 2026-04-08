@@ -1,3 +1,15 @@
+import { behavioralQuestions } from '../data/behavioral';
+import type { BehavioralCategory } from '../data/behavioral';
+
+/**
+ * Count the number of behavioral questions that match any of the given category tags.
+ * Returns 0 when `tags` is empty.
+ */
+export function getAnswersCount(tags: BehavioralCategory[]): number {
+  if (tags.length === 0) return 0;
+  return behavioralQuestions.filter((q) => tags.includes(q.category)).length;
+}
+
 /**
  * Detect common red flags in a STAR story answer.
  * Returns an array of human-readable warning strings (empty = no issues).

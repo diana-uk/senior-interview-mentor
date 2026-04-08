@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectRedFlags } from '../behavioralUtils';
+import { detectRedFlags, getAnswersCount } from '../behavioralUtils';
 
 const FULL = {
   s: 'I was leading the team on a critical deadline project in Q3.',
@@ -79,5 +79,40 @@ describe('detectRedFlags', () => {
     // Both "no numbers" and "too brief" should fire
     const flags = detectRedFlags(FULL.s, FULL.t, FULL.a, 'Done.');
     expect(flags.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+// ─── getAnswersCount ──────────────────────────────────────────────────────────
+
+describe('getAnswersCount', () => {
+  it('returns 0 for empty tags array', () => {
+    expect(getAnswersCount([])).toBe(0);
+  });
+
+  it('returns a positive number for a known category', () => {
+    expect(getAnswersCount(['leadership'])).toBeGreaterThan(0);
+  });
+
+  it('returns more questions when multiple categories are supplied', () => {
+    const single = getAnswersCount(['leadership']);
+    const multi = getAnswersCount(['leadership', 'conflict']);
+    expect(multi).toBeGreaterThanOrEqual(single);
+  });
+
+  it('returns the same count as behavioralQuestions filtered by that category', () => {
+    // leadership has 15 questions per grep count
+    expect(getAnswersCount(['leadership'])).toBe(15);
+  });
+
+  it('does not double-count a question that matches two supplied tags (each q has one category)', () => {
+    const a = getAnswersCount(['leadership']);
+    const b = getAnswersCount(['conflict']);
+    const both = getAnswersCount(['leadership', 'conflict']);
+    expect(both).toBe(a + b);
+  });
+
+  it('returns 0 for an unrecognised category (cast)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(getAnswersCount(['nonexistent'] as any)).toBe(0);
   });
 });

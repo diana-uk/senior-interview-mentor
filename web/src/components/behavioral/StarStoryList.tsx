@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import { Plus, Edit3, Trash2, Tag } from 'lucide-react';
-import type { BehavioralCategory } from '../../data/behavioral';
-import { CATEGORY_META, behavioralQuestions } from '../../data/behavioral';
+import { CATEGORY_META } from '../../data/behavioral';
 import type { StarStory } from '../../hooks/useStarStories';
 import EmptyState from '../ui/EmptyState';
 import { Star } from 'lucide-react';
+import { getAnswersCount } from '../../utils/behavioralUtils.js';
 
 interface StarStoryListProps {
   stories: StarStory[];
   onAdd: () => void;
   onEdit: (story: StarStory) => void;
   onDelete: (id: string) => void;
-}
-
-function getAnswersCount(tags: BehavioralCategory[]): number {
-  if (tags.length === 0) return 0;
-  return behavioralQuestions.filter((q) => tags.includes(q.category)).length;
 }
 
 export default function StarStoryList({ stories, onAdd, onEdit, onDelete }: StarStoryListProps) {
