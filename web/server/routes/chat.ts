@@ -11,7 +11,7 @@ import { streamChat } from '../services/ai.js';
  * Returns the blocks (starterCode, testCode) and the cleaned text
  * with tags removed so the chat still renders normal code fences.
  */
-function extractEditorBlocks(text: string) {
+export function extractEditorBlocks(text: string) {
   const starterRe = /```typescript\s+starter-code\s*\n([\s\S]*?)```/;
   const testRe = /```typescript\s+test-code\s*\n([\s\S]*?)```/;
   const starterMatch = text.match(starterRe);
