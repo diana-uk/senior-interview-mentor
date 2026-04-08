@@ -15,6 +15,7 @@ import { safeGetItem, safeSetItem } from '../../utils/storage.js';
 import { useStarStories, type StarStory } from '../../hooks/useStarStories';
 import StarStoryList from '../behavioral/StarStoryList';
 import StarStoryEditor from '../behavioral/StarStoryEditor';
+import { detectRedFlags } from '../../utils/behavioralUtils.js';
 
 interface BehavioralPanelProps {
   onStartQuestion: (question: BehavioralQuestion) => void;
@@ -64,29 +65,6 @@ const COMM_DIMENSIONS: { id: CommDimensionId; label: string; description: string
 const COMM_SCORE_LABELS = ['Missing', 'Weak', 'Adequate', 'Strong', 'Excellent'];
 const COMM_SCORE_COLORS = ['var(--neon-red)', 'var(--neon-amber)', 'var(--neon-amber)', 'var(--neon-lime)', 'var(--neon-cyan)'];
 
-function detectRedFlags(s: string, t: string, a: string, r: string): string[] {
-  const all = `${s} ${t} ${a} ${r}`.toLowerCase();
-  const flags: string[] = [];
-  if (/\b(they|team|we)\b/.test(a) && !/\b(i|my)\b/.test(a)) {
-    flags.push('Action section uses "they/we" without "I" — focus on YOUR specific contributions');
-  }
-  if (r.length < 20 && r.length > 0) {
-    flags.push('Result is too brief — add specific metrics or measurable outcomes');
-  }
-  if (!/\d/.test(r) && r.length > 0) {
-    flags.push('No numbers in Result — quantify impact (%, time saved, users affected)');
-  }
-  if (s.length === 0 || t.length === 0 || a.length === 0 || r.length === 0) {
-    flags.push('One or more STAR sections are empty — complete all four for a strong answer');
-  }
-  if (/\b(blame|fault|their mistake)\b/.test(all)) {
-    flags.push('Avoid blaming others — focus on what you did to resolve the situation');
-  }
-  if (/\b(basically|just|kind of|sort of|like)\b/.test(all)) {
-    flags.push('Filler words detected ("basically", "just", "kind of") — be more precise');
-  }
-  return flags;
-}
 
 const LEVEL_LABELS: Record<SeniorityLevel, string> = {
   'new-grad': 'New Grad',

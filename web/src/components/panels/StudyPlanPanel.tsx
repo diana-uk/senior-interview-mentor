@@ -4,6 +4,7 @@ import { STUDY_PLAN_TEMPLATES, PACE_CONFIG } from '../../data/studyPlans';
 import type { Pace } from '../../data/studyPlans';
 import { useStudyPlan } from '../../hooks/useStudyPlan';
 import { problemsById } from '../../data/problems/index';
+import { formatDate, difficultyColor } from '../../utils/displayUtils.js';
 
 interface StudyPlanPanelProps {
   onSelectProblem?: (id: string) => void;
@@ -231,16 +232,3 @@ function ReminderSection({ reminderTime, onSave }: { reminderTime: string | null
   );
 }
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  } catch {
-    return iso;
-  }
-}
-
-function difficultyColor(difficulty: string): string {
-  if (difficulty === 'Easy') return 'var(--neon-lime)';
-  if (difficulty === 'Hard') return 'var(--neon-red)';
-  return 'var(--neon-amber)';
-}

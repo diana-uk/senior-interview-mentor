@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { Pace, StudyPlanTemplate } from '../data/studyPlans';
 import { PACE_CONFIG } from '../data/studyPlans';
-import { allFullProblems } from '../data/problems/index';
 import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/storage.js';
+import { resolveProblemIds } from '../utils/studyPlanUtils.js';
 
 const STORAGE_KEY = 'sim-study-plan';
 
@@ -38,17 +38,6 @@ function today(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-/** Pick problem IDs for the given template (stable ordering) */
-function resolveProblemIds(template: StudyPlanTemplate): string[] {
-  const filtered = template.patterns
-    ? allFullProblems.filter((p) => template.patterns!.includes(p.group))
-    : allFullProblems;
-  // Sort Easy → Medium → Hard for a nice progression
-  const order = { Easy: 0, Medium: 1, Hard: 2 } as Record<string, number>;
-  return [...filtered]
-    .sort((a, b) => (order[a.difficulty] ?? 1) - (order[b.difficulty] ?? 1))
-    .map((p) => p.id);
-}
 
 export function useStudyPlan() {
   const [activePlan, setActivePlan] = useState<ActiveStudyPlan | null>(load);

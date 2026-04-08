@@ -3,6 +3,7 @@ import { X, Send } from 'lucide-react';
 import type { BehavioralCategory } from '../../data/behavioral';
 import { CATEGORY_META } from '../../data/behavioral';
 import type { StarStory } from '../../hooks/useStarStories';
+import { countWords, getWordCountColor } from '../../utils/displayUtils.js';
 
 const WORD_TARGETS: Record<'situation' | 'task' | 'action' | 'result', { min: number; max: number }> = {
   situation: { min: 50,  max: 150 },
@@ -17,17 +18,6 @@ const SECTION_HINTS: Record<'situation' | 'task' | 'action' | 'result', string> 
   action:    'What steps did YOU take? Be specific about your contributions.',
   result:    'What was the outcome? Quantify impact with numbers.',
 };
-
-function countWords(text: string): number {
-  return text.trim() ? text.trim().split(/\s+/).length : 0;
-}
-
-function getWordCountColor(count: number, min: number, max: number): string {
-  if (count === 0) return 'var(--text-muted)';
-  if (count < min) return 'var(--neon-red)';
-  if (count > max) return 'var(--neon-amber)';
-  return 'var(--neon-lime)';
-}
 
 interface StarStoryEditorProps {
   story?: StarStory | null;

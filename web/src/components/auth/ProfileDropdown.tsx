@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { LogOut, RefreshCw, CreditCard } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import type { PlanId } from '../../config/tiers';
+import { getInitials } from '../../utils/displayUtils.js';
 
 interface ProfileDropdownProps {
   user: User;
@@ -12,11 +13,6 @@ interface ProfileDropdownProps {
   onManageSubscription?: () => void;
 }
 
-function getInitials(user: User): string {
-  const name = user.user_metadata?.full_name || user.email || '';
-  if (name.includes('@')) return name[0]?.toUpperCase() || '?';
-  return name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2) || '?';
-}
 
 export default function ProfileDropdown({ user, onSignOut, onSync, syncing, plan, onManageSubscription }: ProfileDropdownProps) {
   const [open, setOpen] = useState(false);
