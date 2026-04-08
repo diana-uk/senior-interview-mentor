@@ -5,7 +5,16 @@ import {
   problemPatternMap,
   allProblemsList,
 } from '../data/problems';
-import { daysSince, patternUrgency } from '../utils/adaptiveUtils.js';
+import {
+  daysSince,
+  patternUrgency,
+  DIFFICULTY_ORDER,
+  pickProblemFromPattern,
+  calcReadinessScore,
+  calcInterviewReadyScore,
+  type CompanyReadiness,
+  INTERVIEW_LEVEL_THRESHOLDS,
+} from '../utils/adaptiveUtils.js';
 
 interface RecommendationInput {
   patternStrengths: PatternStrength[];
@@ -21,63 +30,7 @@ export interface RecommendedProblem {
   reason: string;
 }
 
-// Difficulty ordering for progression
-const DIFFICULTY_ORDER: Record<Difficulty, number> = { Easy: 0, Medium: 1, Hard: 2 };
-
-/**
- * Pick the best unsolved problem from a pattern, favoring appropriate difficulty.
- */
-function pickProblemFromPattern(
-  pattern: string,
-  getProblemStatus: (id: string) => ProblemStatus,
-  strength: PatternStrength | undefined,
-  preferDifficulty?: Difficulty,
-): { id: string; title: string; difficulty: Difficulty } | null {
-  const problems = problemsByPattern[pattern];
-  if (!problems) return null;
-
-  // Filter to unsolved problems
-  const unsolved = problems.filter((p) => getProblemStatus(p.id) !== 'solved');
-  if (unsolved.length === 0) return null;
-
-  // Determine target difficulty
-  let targetDifficulty: Difficulty;
-  if (preferDifficulty) {
-    targetDifficulty = preferDifficulty;
-  } else if (!strength || strength.attempted === 0) {
-    targetDifficulty = 'Easy';
-  } else if (strength.avgScore >= 3.5) {
-    targetDifficulty = 'Hard';
-  } else if (strength.avgScore >= 2.0) {
-    targetDifficulty = 'Medium';
-  } else {
-    targetDifficulty = 'Easy';
-  }
-
-  // Sort by distance from target difficulty, preferring unattempted over attempted
-  const sorted = [...unsolved].sort((a, b) => {
-    const aStatus = getProblemStatus(a.id);
-    const bStatus = getProblemStatus(b.id);
-
-    // Prefer unattempted over previously-failed
-    if (aStatus === 'unseen' && bStatus !== 'unseen') return -1;
-    if (bStatus === 'unseen' && aStatus !== 'unseen') return 1;
-
-    // Then sort by difficulty proximity to target
-    const aDist = Math.abs(DIFFICULTY_ORDER[a.difficulty] - DIFFICULTY_ORDER[targetDifficulty]);
-    const bDist = Math.abs(DIFFICULTY_ORDER[b.difficulty] - DIFFICULTY_ORDER[targetDifficulty]);
-    return aDist - bDist;
-  });
-
-  return sorted[0];
-}
-
-export interface CompanyReadiness {
-  company: string;
-  score: number;
-  strongPatterns: string[];
-  weakPatterns: string[];
-}
+export type { CompanyReadiness };
 
 export interface UseAdaptiveRecommendationReturn {
   getNextProblem: (difficulty?: Difficulty) => RecommendedProblem | null;
@@ -123,7 +76,7 @@ export function useAdaptiveRecommendation(
         if (!patternGroup) continue;
 
         const problem = pickProblemFromPattern(
-          patternGroup,
+          problemsByPattern[patternGroup] ?? [],
           getProblemStatus,
           ps,
           difficulty,
@@ -171,7 +124,11 @@ export function useAdaptiveRecommendation(
         );
         if (!patternGroup || usedPatterns.has(patternGroup)) continue;
 
-        const problem = pickProblemFromPattern(patternGroup, getProblemStatus, ps);
+        const problem = pickProblemFromPattern(
+          problemsByPattern[patternGroup] ?? [],
+          getProblemStatus,
+          ps,
+        );
         if (!problem) continue;
 
         usedPatterns.add(patternGroup);
@@ -201,33 +158,10 @@ export function useAdaptiveRecommendation(
     [rankedPatterns, getProblemStatus],
   );
 
-  const getReadinessScore = useCallback((): number => {
-    const totalProblems = allProblemsList.length;
-    if (totalProblems === 0) return 0;
-
-    let score = 0;
-
-    // 40% weight: problems solved
-    const solvedCount = allProblemsList.filter(
-      (p) => getProblemStatus(p.id) === 'solved',
-    ).length;
-    score += (solvedCount / totalProblems) * 40;
-
-    // 30% weight: pattern coverage (practiced at least 1 problem in each pattern)
-    const practicedPatterns = patternStrengths.filter((ps) => ps.attempted > 0).length;
-    const totalPatterns = patternStrengths.length;
-    score += totalPatterns > 0 ? (practicedPatterns / totalPatterns) * 30 : 0;
-
-    // 30% weight: average score across patterns
-    const scoredPatterns = patternStrengths.filter((ps) => ps.attempted > 0);
-    if (scoredPatterns.length > 0) {
-      const avgPatternScore =
-        scoredPatterns.reduce((sum, ps) => sum + ps.avgScore, 0) / scoredPatterns.length;
-      score += (avgPatternScore / 4) * 30;
-    }
-
-    return Math.round(score);
-  }, [getProblemStatus, patternStrengths]);
+  const getReadinessScore = useCallback(
+    (): number => calcReadinessScore(allProblemsList, patternStrengths, getProblemStatus),
+    [getProblemStatus, patternStrengths],
+  );
 
   const getPatternCoverage = useCallback(() => {
     return Object.entries(problemsByPattern).map(([pattern, problems]) => {
@@ -286,51 +220,8 @@ export function useAdaptiveRecommendation(
    * Interview readiness score broken down by pattern strength/weakness.
    */
   const getInterviewReadyScore = useCallback(
-    (level: 'junior' | 'mid' | 'senior' | 'staff' = 'senior'): CompanyReadiness => {
-      // Define target thresholds per level
-      const thresholds: Record<string, { minPatterns: number; minSolveRate: number; minAvgScore: number }> = {
-        junior: { minPatterns: 6, minSolveRate: 0.3, minAvgScore: 2.0 },
-        mid: { minPatterns: 10, minSolveRate: 0.5, minAvgScore: 2.5 },
-        senior: { minPatterns: 13, minSolveRate: 0.6, minAvgScore: 3.0 },
-        staff: { minPatterns: 14, minSolveRate: 0.75, minAvgScore: 3.5 },
-      };
-      const target = thresholds[level];
-
-      const strongPatterns: string[] = [];
-      const weakPatterns: string[] = [];
-
-      for (const ps of patternStrengths) {
-        if (ps.attempted === 0) {
-          weakPatterns.push(ps.pattern);
-          continue;
-        }
-        const solveRate = ps.solved / Math.max(ps.attempted, 1);
-        if (solveRate >= target.minSolveRate && ps.avgScore >= target.minAvgScore) {
-          strongPatterns.push(ps.pattern);
-        } else {
-          weakPatterns.push(ps.pattern);
-        }
-      }
-
-      // Score calculation: weighted combo of pattern coverage, solve quality, breadth
-      const patternCoverageScore = Math.min(strongPatterns.length / target.minPatterns, 1) * 40;
-
-      const scoredPatterns = patternStrengths.filter((ps) => ps.attempted > 0);
-      const avgQuality = scoredPatterns.length > 0
-        ? scoredPatterns.reduce((sum, ps) => sum + ps.avgScore, 0) / scoredPatterns.length
-        : 0;
-      const qualityScore = Math.min(avgQuality / target.minAvgScore, 1) * 35;
-
-      const totalSolved = allProblemsList.filter((p) => getProblemStatus(p.id) === 'solved').length;
-      const breadthScore = Math.min(totalSolved / (allProblemsList.length * target.minSolveRate), 1) * 25;
-
-      return {
-        company: `${level.charAt(0).toUpperCase()}${level.slice(1)} Level`,
-        score: Math.round(patternCoverageScore + qualityScore + breadthScore),
-        strongPatterns,
-        weakPatterns,
-      };
-    },
+    (level: keyof typeof INTERVIEW_LEVEL_THRESHOLDS = 'senior'): CompanyReadiness =>
+      calcInterviewReadyScore(allProblemsList, patternStrengths, getProblemStatus, level),
     [patternStrengths, getProblemStatus],
   );
 
