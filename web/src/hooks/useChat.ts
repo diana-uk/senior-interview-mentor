@@ -2,10 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { streamChat } from '../services/api.js';
 import type { ChatMessage, ChatContext } from '../types/index.js';
 import { logger } from '../utils/logger.js';
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
+import { generateId } from '../utils/statsUtils.js';
 
 interface UseChatOptions {
   initialMessages: ChatMessage[];

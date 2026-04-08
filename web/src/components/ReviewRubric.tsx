@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Star, TrendingUp, X } from 'lucide-react';
 import type { RubricDimension, RubricDimensionId, ReviewResult } from '../types';
+import { generateId } from '../utils/statsUtils.js';
 
 interface ReviewRubricProps {
   problemTitle: string;
@@ -28,10 +29,6 @@ const SCORE_COLORS = [
   'var(--neon-lime)',
   'var(--neon-cyan)',
 ];
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
 
 export default function ReviewRubric({ problemTitle, problemId, onSubmit, onClose }: ReviewRubricProps) {
   const [scores, setScores] = useState<Record<RubricDimensionId, number>>(

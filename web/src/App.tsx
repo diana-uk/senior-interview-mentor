@@ -20,6 +20,7 @@ import { useDocumentTitle } from './hooks/useDocumentTitle';
 import { useMetaTags } from './hooks/useMetaTags';
 import { logger } from './utils/logger.js';
 import { safeGetItem, safeSetItem, safeRemoveItem } from './utils/storage.js';
+import { generateId } from './utils/statsUtils.js';
 import ToastContainer from './components/ui/ToastContainer';
 import KeyboardShortcutsModal from './components/ui/KeyboardShortcutsModal';
 import { showToast } from './utils/toast.js';
@@ -164,10 +165,6 @@ const initialMessages: ChatMessage[] = [
     timestamp: new Date(),
   },
 ];
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
 
 export default function App() {
   const navigate = useNavigate();

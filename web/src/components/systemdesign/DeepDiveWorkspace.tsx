@@ -4,6 +4,7 @@ import type { DeepDiveChallenge, DeepDiveApproach, ChatMessage, SystemDesignPhas
 import { serializeDeepDivesToText } from './deepdive/deepDiveSerializer';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
+import { generateId } from '../../utils/statsUtils.js';
 
 interface DeepDiveWorkspaceProps {
   challenges: DeepDiveChallenge[];
@@ -63,10 +64,6 @@ const TEMPLATES: Record<string, Template> = {
     icon: 'merge_type',
   },
 };
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
 
 function createEmptyApproach(): DeepDiveApproach {
   return { name: '', pros: '', cons: '' };

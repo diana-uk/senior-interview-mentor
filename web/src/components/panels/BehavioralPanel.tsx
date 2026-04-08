@@ -16,6 +16,7 @@ import { useStarStories, type StarStory } from '../../hooks/useStarStories';
 import StarStoryList from '../behavioral/StarStoryList';
 import StarStoryEditor from '../behavioral/StarStoryEditor';
 import { detectRedFlags } from '../../utils/behavioralUtils.js';
+import { generateId } from '../../utils/statsUtils.js';
 
 interface BehavioralPanelProps {
   onStartQuestion: (question: BehavioralQuestion) => void;
@@ -142,7 +143,7 @@ export default function BehavioralPanel({ onStartQuestion }: BehavioralPanelProp
     const existing = editingStoryId ? stories.find((s) => s.id === editingStoryId) : null;
 
     const entry: StoryEntry = {
-      id: existing?.id ?? Math.random().toString(36).substring(2, 9),
+      id: existing?.id ?? generateId(),
       questionId: activeQuestion.id,
       questionText: activeQuestion.question,
       category: activeQuestion.category,

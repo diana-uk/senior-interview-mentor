@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { BehavioralCategory } from '../data/behavioral';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
+import { generateId } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-star-stories';
 
@@ -38,7 +39,7 @@ export function useStarStories() {
       const now = new Date().toISOString();
       const entry: StarStory = {
         ...data,
-        id: Math.random().toString(36).substring(2, 9),
+        id: generateId(),
         createdAt: now,
         updatedAt: now,
       };

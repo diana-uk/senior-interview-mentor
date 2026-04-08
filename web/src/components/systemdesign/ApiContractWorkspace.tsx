@@ -4,6 +4,7 @@ import type { Endpoint, ChatMessage, SystemDesignPhase, PhaseStatus } from '../.
 import { serializeEndpointsToText } from './api/endpointSerializer';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
+import { generateId } from '../../utils/statsUtils.js';
 
 interface ApiContractWorkspaceProps {
   endpoints: Endpoint[];
@@ -18,10 +19,6 @@ interface ApiContractWorkspaceProps {
   onSendMessage: (content: string) => void;
   isStreaming: boolean;
   onStopStreaming: () => void;
-}
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
 }
 
 const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;

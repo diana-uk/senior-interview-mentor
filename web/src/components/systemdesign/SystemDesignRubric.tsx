@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Star, TrendingUp, X } from 'lucide-react';
 import { generateSDImprovementPlan } from '../../utils/systemDesignUtils.js';
+import { generateId } from '../../utils/statsUtils.js';
 
 export type SDRubricDimensionId =
   | 'scalability'
@@ -51,10 +52,6 @@ const SCORE_COLORS = [
   'var(--neon-lime)',
   'var(--neon-cyan)',
 ];
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
 
 export default function SystemDesignRubric({ topicTitle, onSubmit, onClose }: SystemDesignRubricProps) {
   const [scores, setScores] = useState<Record<SDRubricDimensionId, number>>(
