@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { parsePlan, isWithinGracePeriod, buildUpgradeHint, createEmptyRecord, maybeResetDaily, type UsageRecord } from '../utils/rateLimitUtils.js';
+import { parsePlan, isWithinGracePeriod, buildUpgradeHint, createEmptyRecord, maybeResetDaily, getNextMidnightUTC, TIER_LIMITS, type UsageRecord } from '../utils/rateLimitUtils.js';
 
 // ═══════════════════════════════════════
 // TYPES
@@ -16,34 +16,6 @@ interface RateLimitResult {
   upgradeHint?: string; // soft upgrade message, only when close to limit
 }
 
-interface TierLimits {
-  problemsPerDay: number; // -1 = unlimited
-  messagesPerProblem: number; // -1 = unlimited
-  mockInterviewsPerDay: number; // -1 = unlimited
-}
-
-// ═══════════════════════════════════════
-// CONSTANTS
-// ═══════════════════════════════════════
-
-const TIER_LIMITS: Record<PlanId, TierLimits> = {
-  free: {
-    problemsPerDay: 5,
-    messagesPerProblem: 3,
-    mockInterviewsPerDay: 2,
-  },
-  premium: {
-    problemsPerDay: -1,
-    messagesPerProblem: -1,
-    mockInterviewsPerDay: -1,
-  },
-  pro: {
-    problemsPerDay: -1,
-    messagesPerProblem: -1,
-    mockInterviewsPerDay: -1,
-  },
-};
-
 // ═══════════════════════════════════════
 // IN-MEMORY STORE (MVP; replace with Redis later)
 // ═══════════════════════════════════════
@@ -53,17 +25,6 @@ const usageStore = new Map<string, UsageRecord>();
 // ═══════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════
-
-/** Compute the next midnight UTC as an ISO datetime string */
-function getNextMidnightUTC(): string {
-  const now = new Date();
-  const tomorrow = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1,
-  ));
-  return tomorrow.toISOString();
-}
 
 /** Create a fresh usage record for today */
 

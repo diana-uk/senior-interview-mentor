@@ -1,5 +1,44 @@
 import type { PlanId } from '../middleware/rateLimit.js';
 
+// ── Tier limits ──────────────────────────────────────────────────────────────
+
+export interface TierLimits {
+  problemsPerDay: number; // -1 = unlimited
+  messagesPerProblem: number; // -1 = unlimited
+  mockInterviewsPerDay: number; // -1 = unlimited
+}
+
+export const TIER_LIMITS: Record<PlanId, TierLimits> = {
+  free: {
+    problemsPerDay: 5,
+    messagesPerProblem: 3,
+    mockInterviewsPerDay: 2,
+  },
+  premium: {
+    problemsPerDay: -1,
+    messagesPerProblem: -1,
+    mockInterviewsPerDay: -1,
+  },
+  pro: {
+    problemsPerDay: -1,
+    messagesPerProblem: -1,
+    mockInterviewsPerDay: -1,
+  },
+};
+
+// ── Date helpers ─────────────────────────────────────────────────────────────
+
+/** Compute the next midnight UTC as an ISO datetime string (used as rate-limit reset time). */
+export function getNextMidnightUTC(): string {
+  const now = new Date();
+  const tomorrow = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + 1,
+  ));
+  return tomorrow.toISOString();
+}
+
 export interface UsageRecord {
   problemsToday: number;
   messagesPerProblem: Record<string, number>; // problemId → message count

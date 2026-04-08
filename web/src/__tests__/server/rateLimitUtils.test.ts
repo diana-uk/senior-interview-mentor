@@ -5,6 +5,8 @@ import {
   buildUpgradeHint,
   createEmptyRecord,
   maybeResetDaily,
+  getNextMidnightUTC,
+  TIER_LIMITS,
   GRACE_PERIOD_DAYS,
   UPGRADE_HINT_THRESHOLD,
 } from '../../../server/utils/rateLimitUtils';
@@ -222,5 +224,76 @@ describe('maybeResetDaily', () => {
     const record = { problemsToday: 1, messagesPerProblem: {}, mockInterviewsToday: 0, lastResetDate: '2026-04-07' };
     const result = maybeResetDaily(record);
     expect(result).toBe(record);
+  });
+});
+// ─── TIER_LIMITS ──────────────────────────────────────────────────────────────
+
+describe('TIER_LIMITS', () => {
+  it('free plan has 5 problems per day', () => {
+    expect(TIER_LIMITS.free.problemsPerDay).toBe(5);
+  });
+
+  it('free plan has 3 messages per problem', () => {
+    expect(TIER_LIMITS.free.messagesPerProblem).toBe(3);
+  });
+
+  it('free plan has 2 mock interviews per day', () => {
+    expect(TIER_LIMITS.free.mockInterviewsPerDay).toBe(2);
+  });
+
+  it('premium plan is unlimited for all actions', () => {
+    expect(TIER_LIMITS.premium.problemsPerDay).toBe(-1);
+    expect(TIER_LIMITS.premium.messagesPerProblem).toBe(-1);
+    expect(TIER_LIMITS.premium.mockInterviewsPerDay).toBe(-1);
+  });
+
+  it('pro plan is unlimited for all actions', () => {
+    expect(TIER_LIMITS.pro.problemsPerDay).toBe(-1);
+    expect(TIER_LIMITS.pro.messagesPerProblem).toBe(-1);
+    expect(TIER_LIMITS.pro.mockInterviewsPerDay).toBe(-1);
+  });
+});
+
+// ─── getNextMidnightUTC ───────────────────────────────────────────────────────
+
+describe('getNextMidnightUTC', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns an ISO string', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-10T12:00:00.000Z'));
+    const result = getNextMidnightUTC();
+    expect(() => new Date(result)).not.toThrow();
+    expect(new Date(result).toISOString()).toBe(result);
+  });
+
+  it('returns midnight of the next day when called at noon', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-10T12:00:00.000Z'));
+    const result = getNextMidnightUTC();
+    expect(result).toBe('2026-01-11T00:00:00.000Z');
+  });
+
+  it('returns midnight of the next day when called just before midnight', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-10T23:59:59.999Z'));
+    const result = getNextMidnightUTC();
+    expect(result).toBe('2026-01-11T00:00:00.000Z');
+  });
+
+  it('rolls over month boundary correctly', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-31T06:00:00.000Z'));
+    const result = getNextMidnightUTC();
+    expect(result).toBe('2026-02-01T00:00:00.000Z');
+  });
+
+  it('rolls over year boundary correctly', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-12-31T06:00:00.000Z'));
+    const result = getNextMidnightUTC();
+    expect(result).toBe('2026-01-01T00:00:00.000Z');
   });
 });
