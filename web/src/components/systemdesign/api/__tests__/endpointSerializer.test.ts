@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { serializeEndpointsToText } from '../endpointSerializer';
+import { serializeEndpointsToText, isEmptyBody, formatBody } from '../endpointSerializer';
 import type { Endpoint } from '../../../../types';
 
 // ── Helpers ──
@@ -244,5 +244,64 @@ describe('serializeEndpointsToText', () => {
       const req2Idx = lines.findIndex((l, i) => i > req1Idx + 1 && l.includes('Request Body:'));
       expect(lines[req2Idx + 1].trim()).toBe('(none)');
     });
+  });
+});
+
+// ─── isEmptyBody ──────────────────────────────────────────────────────────────
+
+describe('isEmptyBody', () => {
+  it('returns true for an empty string', () => {
+    expect(isEmptyBody('')).toBe(true);
+  });
+
+  it('returns true for whitespace-only string', () => {
+    expect(isEmptyBody('   ')).toBe(true);
+  });
+
+  it('returns true for "{}"', () => {
+    expect(isEmptyBody('{}')).toBe(true);
+  });
+
+  it('returns true for "{\n}" (literal brace-newline-brace)', () => {
+    expect(isEmptyBody('{\n}')).toBe(true);
+  });
+
+  it('returns true for "{   }" (braces with spaces)', () => {
+    expect(isEmptyBody('{   }')).toBe(true);
+  });
+
+  it('returns false for a non-empty body', () => {
+    expect(isEmptyBody('{ "userId": "123" }')).toBe(false);
+  });
+
+  it('returns false for a plain string', () => {
+    expect(isEmptyBody('some content')).toBe(false);
+  });
+});
+
+// ─── formatBody ───────────────────────────────────────────────────────────────
+
+describe('formatBody', () => {
+  it('returns "(none)" for an empty body', () => {
+    expect(formatBody('')).toBe('(none)');
+  });
+
+  it('returns "(none)" for "{}"', () => {
+    expect(formatBody('{}')).toBe('(none)');
+  });
+
+  it('indents a single-line body with 3 spaces', () => {
+    expect(formatBody('{ "id": 1 }')).toBe('   { "id": 1 }');
+  });
+
+  it('indents each line of a multi-line body', () => {
+    const input = '{\n  "id": 1\n}';
+    const result = formatBody(input);
+    expect(result).toBe('   {\n     "id": 1\n   }');
+  });
+
+  it('trims trailing whitespace from the result', () => {
+    const result = formatBody('hello   ');
+    expect(result).not.toMatch(/\s+$/);
   });
 });

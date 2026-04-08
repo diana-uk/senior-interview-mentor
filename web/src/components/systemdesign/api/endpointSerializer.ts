@@ -1,11 +1,11 @@
 import type { Endpoint } from '../../../types';
 
-function isEmptyBody(body: string): boolean {
+export function isEmptyBody(body: string): boolean {
   const trimmed = body.trim();
   return trimmed === '' || trimmed === '{}' || trimmed === '{\n}' || /^\{\s*\}$/.test(trimmed);
 }
 
-function formatBody(body: string): string {
+export function formatBody(body: string): string {
   if (isEmptyBody(body)) return '(none)';
   return body
     .split('\n')
