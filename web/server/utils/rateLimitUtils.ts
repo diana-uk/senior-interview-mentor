@@ -28,6 +28,11 @@ export const TIER_LIMITS: Record<PlanId, TierLimits> = {
 
 // ── Date helpers ─────────────────────────────────────────────────────────────
 
+/** Returns today's UTC date as a YYYY-MM-DD string. */
+export function todayUTC(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
 /** Compute the next midnight UTC as an ISO datetime string (used as rate-limit reset time). */
 export function getNextMidnightUTC(): string {
   const now = new Date();

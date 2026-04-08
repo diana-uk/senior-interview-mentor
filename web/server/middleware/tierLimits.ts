@@ -3,6 +3,7 @@ import type { OptionalAuthRequest } from './auth.js';
 import { getSubscription } from '../db/queries.js';
 import { isSupabaseConfigured } from '../db/client.js';
 import type { PlanId } from '../../src/config/tiers.js';
+import { todayUTC, getNextMidnightUTC } from '../utils/rateLimitUtils.js';
 
 // ---------------------------------------------------------------------------
 // In-memory daily usage tracker
@@ -16,10 +17,6 @@ interface UsageEntry {
 
 /** userId or IP → usage entry */
 const usageMap = new Map<string, UsageEntry>();
-
-function todayUTC(): string {
-  return new Date().toISOString().split('T')[0];
-}
 
 function getUsage(key: string): UsageEntry {
   const today = todayUTC();
@@ -107,13 +104,8 @@ export async function tierLimits(req: Request, res: Response, next: NextFunction
   const usage = getUsage(key);
 
   // Calculate reset time (next midnight UTC)
-  const now = new Date();
-  const resetTime = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1,
-  ));
-  const resetEpoch = Math.floor(resetTime.getTime() / 1000);
+  const resetTimeIso = getNextMidnightUTC();
+  const resetEpoch = Math.floor(new Date(resetTimeIso).getTime() / 1000);
 
   const remaining = Math.max(0, limit - usage.count);
 
@@ -129,7 +121,7 @@ export async function tierLimits(req: Request, res: Response, next: NextFunction
       code: 'TIER_LIMIT_EXCEEDED',
       plan,
       limit,
-      resetAt: resetTime.toISOString(),
+      resetAt: resetTimeIso,
     });
     return;
   }

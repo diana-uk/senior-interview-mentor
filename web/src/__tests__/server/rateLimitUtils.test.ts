@@ -6,6 +6,7 @@ import {
   createEmptyRecord,
   maybeResetDaily,
   getNextMidnightUTC,
+  todayUTC,
   TIER_LIMITS,
   GRACE_PERIOD_DAYS,
   UPGRADE_HINT_THRESHOLD,
@@ -295,5 +296,36 @@ describe('getNextMidnightUTC', () => {
     vi.setSystemTime(new Date('2025-12-31T06:00:00.000Z'));
     const result = getNextMidnightUTC();
     expect(result).toBe('2026-01-01T00:00:00.000Z');
+  });
+});
+
+// ─── todayUTC ────────────────────────────────────────────────────────────────
+
+describe('todayUTC', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('returns a YYYY-MM-DD string', () => {
+    vi.setSystemTime(new Date('2026-04-08T10:00:00.000Z'));
+    expect(todayUTC()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('returns the correct UTC date at noon', () => {
+    vi.setSystemTime(new Date('2026-04-08T12:00:00.000Z'));
+    expect(todayUTC()).toBe('2026-04-08');
+  });
+
+  it('returns the date just before midnight UTC', () => {
+    vi.setSystemTime(new Date('2026-04-08T23:59:59.000Z'));
+    expect(todayUTC()).toBe('2026-04-08');
+  });
+
+  it('advances at midnight UTC', () => {
+    vi.setSystemTime(new Date('2026-04-08T23:59:59.999Z'));
+    const before = todayUTC();
+    vi.setSystemTime(new Date('2026-04-09T00:00:00.000Z'));
+    const after = todayUTC();
+    expect(before).toBe('2026-04-08');
+    expect(after).toBe('2026-04-09');
   });
 });
