@@ -1,5 +1,6 @@
 import { Check, Lock, Circle, ChevronRight } from 'lucide-react';
 import type { SystemDesignPhase, PhaseStatus } from '../../types';
+import { formatTime } from '../../utils/timeUtils.js';
 
 const PHASE_META: Record<SystemDesignPhase, { label: string; shortLabel: string; icon: string }> = {
   overview: { label: 'Plan Overview', shortLabel: 'Overview', icon: 'map' },
@@ -19,11 +20,6 @@ interface PhaseProgressSidebarProps {
   timerSeconds: number;
 }
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2, '0')}`;
-}
 
 export default function PhaseProgressSidebar({
   currentPhase,

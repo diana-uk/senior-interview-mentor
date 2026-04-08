@@ -1,5 +1,6 @@
 import { Check, Lock, ArrowRight, Clock } from 'lucide-react';
 import type { SystemDesignPhase, PhaseStatus } from '../../types';
+import { formatTime } from '../../utils/timeUtils.js';
 
 const PHASE_STEPS: {
   phase: SystemDesignPhase;
@@ -67,11 +68,6 @@ interface SystemDesignPlanOverviewProps {
   timerSeconds?: number;
 }
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2, '0')}`;
-}
 
 export default function SystemDesignPlanOverview({
   topicTitle,
