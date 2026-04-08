@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-function findGitBash(): string | undefined {
+export function findGitBash(): string | undefined {
   // Already set
   if (process.env.CLAUDE_CODE_GIT_BASH_PATH) {
     return process.env.CLAUDE_CODE_GIT_BASH_PATH;
@@ -34,7 +34,7 @@ function findGitBash(): string | undefined {
   return undefined;
 }
 
-function findClaudeCliPath(): string | undefined {
+export function findClaudeCliPath(): string | undefined {
   // 1. npm global install (Node.js script)
   const npmGlobal = process.env.APPDATA
     ? path.join(process.env.APPDATA, 'npm', 'node_modules', '@anthropic-ai', 'claude-code', 'cli.js')
