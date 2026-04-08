@@ -10,6 +10,7 @@ import type {
   StatsData,
 } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
+import { updateStreak } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-stats';
 
@@ -74,31 +75,6 @@ function loadStats(): StatsData {
 
 function saveStats(data: StatsData): void {
   safeSetItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function updateStreak(data: StatsData): StatsData {
-  const t = today();
-  if (data.lastActiveDate === t) return data;
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-  let newStreak: number;
-  if (data.lastActiveDate === yesterdayStr) {
-    newStreak = data.currentStreak + 1;
-  } else if (data.lastActiveDate === '') {
-    newStreak = 1;
-  } else {
-    newStreak = 1; // streak broken
-  }
-
-  return {
-    ...data,
-    currentStreak: newStreak,
-    longestStreak: Math.max(data.longestStreak, newStreak),
-    lastActiveDate: t,
-  };
 }
 
 export interface UseStatsReturn {
