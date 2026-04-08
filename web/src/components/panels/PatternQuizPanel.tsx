@@ -3,17 +3,13 @@ import { CheckCircle, XCircle, SkipForward, Play, Brain } from 'lucide-react';
 import { usePatternQuiz } from '../../hooks/usePatternQuiz';
 import { allFullProblems } from '../../data/problems';
 import type { PatternName } from '../../types';
+import { pickRandom, buildChoices, ALL_QUIZ_PATTERNS } from '../../utils/quizUtils.js';
+
+const ALL_PATTERNS = ALL_QUIZ_PATTERNS;
 
 interface PatternQuizPanelProps {
   onSelectProblem: (id: string) => void;
 }
-
-const ALL_PATTERNS: PatternName[] = [
-  'Sliding Window', 'Two Pointers', 'HashMap', 'Prefix Sum',
-  'BFS/DFS', 'Topological Sort', 'Union-Find', 'Binary Search',
-  'Heap', 'Intervals', 'Greedy', 'Dynamic Programming',
-  'Backtracking', 'Trees',
-];
 
 const PATTERN_HINTS: Partial<Record<PatternName, string>> = {
   'Sliding Window': 'Maintains a window of elements that expands/contracts to meet constraints.',
@@ -32,27 +28,6 @@ const PATTERN_HINTS: Partial<Record<PatternName, string>> = {
   'Union-Find': 'Efficiently groups elements and queries connectivity.',
   'Prefix Sum': 'Precomputes cumulative sums for O(1) range queries.',
 };
-
-function pickRandom<T>(arr: T[], exclude?: T, n = 1): T[] {
-  const pool = exclude != null ? arr.filter((x) => x !== exclude) : [...arr];
-  const result: T[] = [];
-  while (result.length < n && pool.length > 0) {
-    const idx = Math.floor(Math.random() * pool.length);
-    result.push(pool.splice(idx, 1)[0]);
-  }
-  return result;
-}
-
-function buildChoices(correct: PatternName): PatternName[] {
-  const wrongs = pickRandom(ALL_PATTERNS, correct, 3);
-  const choices = [correct, ...wrongs];
-  // Fisher-Yates shuffle
-  for (let i = choices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [choices[i], choices[j]] = [choices[j], choices[i]];
-  }
-  return choices;
-}
 
 type QuizState = 'answering' | 'correct' | 'wrong';
 

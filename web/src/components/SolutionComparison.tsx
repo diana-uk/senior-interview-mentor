@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { GitCompare, Zap, Clock, HardDrive, AlertTriangle, CheckCircle, TrendingUp, X } from 'lucide-react';
+import { getOverallGrade } from '../utils/interviewUtils.js';
 
 export interface SolutionApproach {
   name: string;              // e.g., "Brute Force", "Two Pointer"
@@ -29,19 +30,6 @@ interface SolutionComparisonProps {
 }
 
 type ActiveTab = 'overview' | 'code';
-
-function getOverallGrade(comparison: ComparisonResult): { label: string; color: string } {
-  if (comparison.isOptimal && comparison.missedEdgeCases.length === 0 && comparison.missedOptimizations.length === 0) {
-    return { label: 'Optimal', color: 'var(--neon-lime)' };
-  }
-  if (comparison.isOptimal) {
-    return { label: 'Good', color: 'var(--neon-cyan)' };
-  }
-  if (comparison.missedOptimizations.length <= 1 && comparison.missedEdgeCases.length <= 1) {
-    return { label: 'Good', color: 'var(--neon-amber)' };
-  }
-  return { label: 'Needs Improvement', color: 'var(--neon-red)' };
-}
 
 function ComplexityBar({ label, userValue, optimalValue, icon }: {
   label: string;

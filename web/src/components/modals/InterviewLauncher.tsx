@@ -8,6 +8,7 @@ import type {
   TechnicalQuestionCategory,
   TopicName,
 } from '../../types';
+import { getEstimatedDuration } from '../../utils/interviewUtils.js';
 
 interface InterviewLauncherProps {
   open: boolean;
@@ -101,16 +102,6 @@ const difficulties: { id: Difficulty; color: string }[] = [
   { id: 'Medium', color: 'var(--neon-amber)' },
   { id: 'Hard', color: 'var(--neon-red)' },
 ];
-
-function getEstimatedDuration(stage: InterviewStage | null, format: TechnicalFormat | null): string {
-  if (!stage) return '~45 Minutes';
-  if (stage === 'technical') {
-    if (format === 'project') return '~60 Minutes';
-    return '~45 Minutes';
-  }
-  if (stage === 'system-design') return '~45 Minutes';
-  return '~30 Minutes';
-}
 
 export default function InterviewLauncher({ open, onClose, onStart }: InterviewLauncherProps) {
   const [stage, setStage] = useState<InterviewStage | null>(null);
