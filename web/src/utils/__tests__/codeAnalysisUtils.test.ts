@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fingerprint, estimateComplexity, analyzeCode } from '../codeAnalysisUtils';
+import { fingerprint, estimateComplexity, analyzeCode, generateInsightId } from '../codeAnalysisUtils';
 
 // ─── fingerprint ──────────────────────────────────────────────────────────────
 
@@ -292,5 +292,32 @@ describe('analyzeCode', () => {
     // No nested loops, no includes-in-loop, no sort+search, no recursion
     const antiPatterns = insights.filter((i) => i.type === 'anti-pattern');
     expect(antiPatterns).toHaveLength(0);
+  });
+});
+
+// ─── generateInsightId ────────────────────────────────────────────────────────
+
+describe('generateInsightId', () => {
+  it('returns a string', () => {
+    expect(typeof generateInsightId()).toBe('string');
+  });
+
+  it('starts with "insight-"', () => {
+    expect(generateInsightId()).toMatch(/^insight-/);
+  });
+
+  it('returns unique ids on successive calls', () => {
+    const a = generateInsightId();
+    const b = generateInsightId();
+    expect(a).not.toBe(b);
+  });
+
+  it('contains a timestamp segment (numeric)', () => {
+    const id = generateInsightId();
+    const parts = id.split('-');
+    // format: insight-<timestamp>-<counter>
+    expect(parts.length).toBe(3);
+    expect(Number(parts[1])).toBeGreaterThan(0);
+    expect(Number(parts[2])).toBeGreaterThan(0);
   });
 });

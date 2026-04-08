@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   fingerprint,
   analyzeCode,
+  generateInsightId,
   type CodeInsight,
   type ComplexityEstimate,
 } from '../utils/codeAnalysisUtils.js';
@@ -15,15 +16,6 @@ export interface UseCodeAnalysisReturn {
   dismissInsight: (id: string) => void;
   clearDismissed: () => void;
   isAnalyzing: boolean;
-}
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-let insightCounter = 0;
-
-function generateInsightId(): string {
-  insightCounter += 1;
-  return `insight-${Date.now()}-${insightCounter}`;
 }
 
 // ── Hook ───────────────────────────────────────────────────────────────────

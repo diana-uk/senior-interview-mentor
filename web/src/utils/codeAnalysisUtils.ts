@@ -546,3 +546,17 @@ export function analyzeCode(code: string): {
 
   return { insights, complexity };
 }
+
+// ── Insight ID generation ─────────────────────────────────────────────────────
+
+let insightCounter = 0;
+
+/**
+ * Generate a unique ID for a code insight.
+ * Combines timestamp and a monotonic counter to avoid collisions during rapid
+ * re-analysis within the same session.
+ */
+export function generateInsightId(): string {
+  insightCounter += 1;
+  return `insight-${Date.now()}-${insightCounter}`;
+}
