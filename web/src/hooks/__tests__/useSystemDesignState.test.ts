@@ -196,6 +196,61 @@ describe('useSystemDesignState', () => {
     expect(result.current.sdState.topicTitle).toBe('Restored Topic');
   });
 
+  it('UPDATE_JUSTIFICATION stores dbJustification', () => {
+    const { result } = renderHook(() => useSystemDesignState());
+    act(() => {
+      result.current.sdDispatch({ type: 'UPDATE_JUSTIFICATION', justification: 'PostgreSQL for ACID compliance' });
+    });
+    expect(result.current.sdState.dbJustification).toBe('PostgreSQL for ACID compliance');
+  });
+
+  it('UPDATE_DIAGRAM stores diagramNodes and diagramEdges', () => {
+    const { result } = renderHook(() => useSystemDesignState());
+    const nodes = [{ id: 'n1', type: 'system', position: { x: 0, y: 0 }, data: { label: 'API' } }];
+    const edges = [{ id: 'e1', source: 'n1', target: 'n2', type: 'default' }];
+    act(() => {
+      result.current.sdDispatch({ type: 'UPDATE_DIAGRAM', nodes, edges });
+    });
+    expect(result.current.sdState.diagramNodes).toEqual(nodes);
+    expect(result.current.sdState.diagramEdges).toEqual(edges);
+  });
+
+  it('UPDATE_DEEP_DIVES stores deepDiveChallenges', () => {
+    const { result } = renderHook(() => useSystemDesignState());
+    const challenges = [{ id: 'c1', title: 'Rate Limiting', content: 'Use token bucket', chosen: false }];
+    act(() => {
+      result.current.sdDispatch({ type: 'UPDATE_DEEP_DIVES', challenges });
+    });
+    expect(result.current.sdState.deepDiveChallenges).toEqual(challenges);
+  });
+
+  it('UPDATE_SCALING stores scaling state', () => {
+    const { result } = renderHook(() => useSystemDesignState());
+    const scaling = {
+      capacity: { readQps: '10000', writeQps: '1000', storageDayGb: '50', storageGrowthTbYr: '18', bandwidthMbS: '500', cacheMemGb: '128' },
+      computeStrategy: 'horizontal' as const,
+      computeDetails: '',
+      dbReplication: 'primary-replica' as const,
+      dbSharding: '' as const,
+      dbShardKey: '',
+      dbDetails: '',
+      cachePattern: 'cache-aside' as const,
+      evictionPolicy: 'lru' as const,
+      cacheTtl: '3600',
+      cacheDetails: '',
+      lbAlgorithm: 'round-robin' as const,
+      useCdn: true,
+      lbDetails: '',
+      reliabilityChecks: ['circuit-breakers'],
+      metrics: ['P99 latency'],
+      alertingDetails: '',
+    };
+    act(() => {
+      result.current.sdDispatch({ type: 'UPDATE_SCALING', scaling });
+    });
+    expect(result.current.sdState.scaling).toEqual(scaling);
+  });
+
   it('PHASE_ORDER is exported and has 7 phases', () => {
     const { result } = renderHook(() => useSystemDesignState());
     expect(result.current.PHASE_ORDER).toHaveLength(7);

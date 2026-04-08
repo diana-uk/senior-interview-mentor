@@ -14,6 +14,7 @@ import type {
   PhaseStatus,
 } from '../../types';
 import { serializeScalingPlanToText } from './scaling/scalingSerializer';
+import { isSectionFilled } from '../../utils/scalingUtils.js';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
 
@@ -66,22 +67,6 @@ const CAP_FIELDS: { key: keyof CapacityEstimation; label: string; unit: string; 
   { key: 'cacheMemGb', label: 'Cache Memory', unit: 'GB', placeholder: '128' },
 ];
 
-function isSectionFilled(section: SectionId, s: ScalingState): boolean {
-  switch (section) {
-    case 'capacity':
-      return Object.values(s.capacity).some((v) => v.trim() !== '');
-    case 'compute':
-      return s.computeStrategy !== '';
-    case 'database':
-      return s.dbReplication !== '' || s.dbSharding !== '';
-    case 'caching':
-      return s.cachePattern !== '';
-    case 'loadbalancing':
-      return s.lbAlgorithm !== '' || s.useCdn;
-    case 'reliability':
-      return s.reliabilityChecks.length > 0 || s.metrics.length > 0;
-  }
-}
 
 export default function ScalingWorkspace({
   scaling,
