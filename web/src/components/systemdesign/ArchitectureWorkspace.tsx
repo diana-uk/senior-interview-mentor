@@ -31,6 +31,7 @@ import CanvasToolbar, { autoLayout } from './architecture/CanvasToolbar';
 import type { EdgeStyleType } from './architecture/CanvasToolbar';
 import { useUndoRedo } from '../../hooks/useUndoRedo';
 import { serializeDiagramToText, exportDiagramAsPng } from './architecture/diagramSerializer';
+import { serializeNodes, serializeEdges } from '../../utils/architectureUtils';
 
 interface ArchitectureWorkspaceProps {
   diagramNodes: SystemDesignState['diagramNodes'];
@@ -54,32 +55,6 @@ const edgeTypes = { labeled: LabeledEdge };
 let nodeIdCounter = 0;
 function generateNodeId(): string {
   return `node-${Date.now()}-${++nodeIdCounter}`;
-}
-
-function serializeNodes(nds: Node[]): SystemDesignState['diagramNodes'] {
-  return nds.map(n => ({
-    id: n.id,
-    type: n.type ?? 'system',
-    position: n.position,
-    data: n.data as DiagramNodeData,
-    ...(n.style ? { style: n.style } : {}),
-    ...(n.width != null ? { width: n.width } : {}),
-    ...(n.height != null ? { height: n.height } : {}),
-  }));
-}
-
-function serializeEdges(eds: Edge[]): SystemDesignState['diagramEdges'] {
-  return eds.map(e => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    sourceHandle: e.sourceHandle ?? undefined,
-    targetHandle: e.targetHandle ?? undefined,
-    label: typeof e.label === 'string' ? e.label : undefined,
-    animated: e.animated,
-    type: e.type,
-    data: e.data as { edgeStyle?: 'solid' | 'dashed' | 'dotted' } | undefined,
-  }));
 }
 
 function ArchitectureWorkspaceInner({
