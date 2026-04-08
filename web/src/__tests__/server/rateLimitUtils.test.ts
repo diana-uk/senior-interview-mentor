@@ -3,6 +3,8 @@ import {
   parsePlan,
   isWithinGracePeriod,
   buildUpgradeHint,
+  createEmptyRecord,
+  maybeResetDaily,
   GRACE_PERIOD_DAYS,
   UPGRADE_HINT_THRESHOLD,
 } from '../../../server/utils/rateLimitUtils';
@@ -155,5 +157,70 @@ describe('buildUpgradeHint', () => {
 
   it('returns undefined for 0/5 usage', () => {
     expect(buildUpgradeHint('problem', 0, 5)).toBeUndefined();
+  });
+});
+
+// ─── createEmptyRecord ───────────────────────────────────────────────────────
+
+describe('createEmptyRecord', () => {
+  it('returns problemsToday of 0', () => {
+    expect(createEmptyRecord().problemsToday).toBe(0);
+  });
+
+  it('returns mockInterviewsToday of 0', () => {
+    expect(createEmptyRecord().mockInterviewsToday).toBe(0);
+  });
+
+  it('returns empty messagesPerProblem', () => {
+    expect(createEmptyRecord().messagesPerProblem).toEqual({});
+  });
+
+  it('sets lastResetDate to today YYYY-MM-DD', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-08T10:00:00Z'));
+    expect(createEmptyRecord().lastResetDate).toBe('2026-04-08');
+    vi.useRealTimers();
+  });
+});
+
+// ─── maybeResetDaily ─────────────────────────────────────────────────────────
+
+describe('maybeResetDaily', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('returns same record unchanged when date matches today', () => {
+    vi.setSystemTime(new Date('2026-04-08T12:00:00Z'));
+    const record = {
+      problemsToday: 3,
+      messagesPerProblem: { p1: 5 },
+      mockInterviewsToday: 1,
+      lastResetDate: '2026-04-08',
+    };
+    const result = maybeResetDaily(record);
+    expect(result.problemsToday).toBe(3);
+    expect(result.lastResetDate).toBe('2026-04-08');
+  });
+
+  it('resets counters when date is stale', () => {
+    vi.setSystemTime(new Date('2026-04-09T00:00:00Z'));
+    const record = {
+      problemsToday: 5,
+      messagesPerProblem: { p1: 10 },
+      mockInterviewsToday: 2,
+      lastResetDate: '2026-04-08',
+    };
+    maybeResetDaily(record);
+    expect(record.problemsToday).toBe(0);
+    expect(record.mockInterviewsToday).toBe(0);
+    expect(record.messagesPerProblem).toEqual({});
+    expect(record.lastResetDate).toBe('2026-04-09');
+  });
+
+  it('returns the same object reference (mutates in place)', () => {
+    vi.setSystemTime(new Date('2026-04-08T12:00:00Z'));
+    const record = { problemsToday: 1, messagesPerProblem: {}, mockInterviewsToday: 0, lastResetDate: '2026-04-07' };
+    const result = maybeResetDaily(record);
+    expect(result).toBe(record);
   });
 });

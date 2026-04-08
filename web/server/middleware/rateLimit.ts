@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { parsePlan, isWithinGracePeriod, buildUpgradeHint } from '../utils/rateLimitUtils.js';
+import { parsePlan, isWithinGracePeriod, buildUpgradeHint, createEmptyRecord, maybeResetDaily, type UsageRecord } from '../utils/rateLimitUtils.js';
 
 // ═══════════════════════════════════════
 // TYPES
@@ -7,12 +7,6 @@ import { parsePlan, isWithinGracePeriod, buildUpgradeHint } from '../utils/rateL
 
 export type PlanId = 'free' | 'premium' | 'pro';
 
-interface UsageRecord {
-  problemsToday: number;
-  messagesPerProblem: Record<string, number>; // problemId → message count
-  mockInterviewsToday: number;
-  lastResetDate: string; // YYYY-MM-DD, resets daily
-}
 
 interface RateLimitResult {
   allowed: boolean;
@@ -72,14 +66,6 @@ function getNextMidnightUTC(): string {
 }
 
 /** Create a fresh usage record for today */
-function createEmptyRecord(): UsageRecord {
-  return {
-    problemsToday: 0,
-    messagesPerProblem: {},
-    mockInterviewsToday: 0,
-    lastResetDate: new Date().toISOString().slice(0, 10),
-  };
-}
 
 // ═══════════════════════════════════════
 // CORE FUNCTIONS
@@ -94,18 +80,6 @@ function getUsage(userId: string): UsageRecord {
     return record;
   }
   return maybeResetDaily(record);
-}
-
-/** Reset usage counters if the stored date is not today */
-function maybeResetDaily(record: UsageRecord): UsageRecord {
-  const today = new Date().toISOString().slice(0, 10);
-  if (record.lastResetDate !== today) {
-    record.problemsToday = 0;
-    record.messagesPerProblem = {};
-    record.mockInterviewsToday = 0;
-    record.lastResetDate = today;
-  }
-  return record;
 }
 
 /**

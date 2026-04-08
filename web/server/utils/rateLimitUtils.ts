@@ -1,5 +1,37 @@
 import type { PlanId } from '../middleware/rateLimit.js';
 
+export interface UsageRecord {
+  problemsToday: number;
+  messagesPerProblem: Record<string, number>; // problemId → message count
+  mockInterviewsToday: number;
+  lastResetDate: string; // YYYY-MM-DD, resets daily
+}
+
+/** Create a fresh usage record for today. */
+export function createEmptyRecord(): UsageRecord {
+  return {
+    problemsToday: 0,
+    messagesPerProblem: {},
+    mockInterviewsToday: 0,
+    lastResetDate: new Date().toISOString().slice(0, 10),
+  };
+}
+
+/**
+ * Reset daily counters if the stored date differs from today's UTC date.
+ * Mutates and returns the same record object.
+ */
+export function maybeResetDaily(record: UsageRecord): UsageRecord {
+  const today = new Date().toISOString().slice(0, 10);
+  if (record.lastResetDate !== today) {
+    record.problemsToday = 0;
+    record.messagesPerProblem = {};
+    record.mockInterviewsToday = 0;
+    record.lastResetDate = today;
+  }
+  return record;
+}
+
 /** Grace period in days for expired subscriptions (mirrors rateLimit.ts constant) */
 export const GRACE_PERIOD_DAYS = 7;
 
