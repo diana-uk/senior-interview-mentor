@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js';
 import ProfileDropdown from '../auth/ProfileDropdown';
 import type { Difficulty, Mode, Problem } from '../../types';
 import type { PlanId } from '../../config/tiers';
+import { formatTime, getTimerClass, getDifficultyClass } from '../../utils/timerUtils';
 
 const MODE_CONFIG: { mode: Mode; label: string; icon: typeof BookOpen }[] = [
   { mode: 'TEACHER', label: 'Teacher', icon: BookOpen },
@@ -24,23 +25,6 @@ interface TopNavProps {
   plan?: PlanId;
   onManageSubscription?: () => void;
   onModeChange?: (mode: Mode) => void;
-}
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
-function getTimerClass(seconds: number, running: boolean): string {
-  if (!running) return '';
-  if (seconds > 600) return 'interview-timer-safe';
-  if (seconds > 120) return 'interview-timer-warning';
-  return 'interview-timer-danger';
-}
-
-function getDifficultyClass(d: Difficulty): string {
-  return `badge badge-${d.toLowerCase()}`;
 }
 
 export default function TopNav({ mode, problem, timerSeconds, timerRunning, hintsUsed, progressPercent, user, onSignOut, onSync, syncing, plan, onManageSubscription, onModeChange }: TopNavProps) {

@@ -2,32 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, Clock, Target, Lightbulb } from 'lucide-react';
 import type { SessionRecord } from '../../types';
 import EmptyState from '../ui/EmptyState';
-
-interface SessionHistoryPanelProps {
-  sessions: SessionRecord[];
-  onResumeSession?: (problemId: string) => void;
-}
-
-function formatDuration(seconds: number): string {
-  if (seconds <= 0) return '—';
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return m > 0 ? `${m}m ${s}s` : `${s}s`;
-}
-
-function formatDate(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch {
-    return iso;
-  }
-}
-
-function formatScore(score: number | null): string {
-  if (score === null) return '—';
-  return `${score.toFixed(1)}/4`;
-}
+import { formatDuration, formatDate, formatScore } from '../../utils/formatters';
 
 const MODE_LABEL: Record<string, string> = {
   TEACHER: 'Teacher',
