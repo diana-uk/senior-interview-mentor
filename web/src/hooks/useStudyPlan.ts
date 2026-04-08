@@ -3,6 +3,7 @@ import type { Pace, StudyPlanTemplate } from '../data/studyPlans';
 import { PACE_CONFIG } from '../data/studyPlans';
 import { safeGetItem, safeSetItem, safeRemoveItem } from '../utils/storage.js';
 import { resolveProblemIds } from '../utils/studyPlanUtils.js';
+import { todayString } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-study-plan';
 
@@ -33,11 +34,6 @@ function save(plan: ActiveStudyPlan | null) {
   }
 }
 
-/** Returns today's date as YYYY-MM-DD */
-function today(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
 
 export function useStudyPlan() {
   const [activePlan, setActivePlan] = useState<ActiveStudyPlan | null>(load);
@@ -46,7 +42,7 @@ export function useStudyPlan() {
     const plan: ActiveStudyPlan = {
       templateId: template.id,
       name: template.name,
-      startDate: today(),
+      startDate: todayString(),
       pace,
       problemIds: resolveProblemIds(template),
       completedIds: [],

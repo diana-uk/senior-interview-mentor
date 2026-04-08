@@ -3,16 +3,9 @@ import type { MistakeEntryFull, PatternName } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
 import { sm2, addDays } from '../utils/sm2.js';
 import { groupMistakesByPattern, computeWeakPatterns } from '../utils/mistakeUtils.js';
+import { todayString, generateId } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-mistakes';
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
-
-function today(): string {
-  return new Date().toISOString().split('T')[0];
-}
 
 function loadMistakes(): MistakeEntryFull[] {
   try {
@@ -58,7 +51,7 @@ export function useMistakeTracker(): UseMistakeTrackerReturn {
       problemTitle: string;
       description: string;
     }) => {
-      const now = today();
+      const now = todayString();
       const entry: MistakeEntryFull = {
         id: generateId(),
         pattern: params.pattern,
@@ -86,7 +79,7 @@ export function useMistakeTracker(): UseMistakeTrackerReturn {
         return {
           ...m,
           ...result,
-          nextReview: addDays(today(), result.interval),
+          nextReview: addDays(todayString(), result.interval),
           streak: quality >= 3 ? m.streak + 1 : 0,
         };
       });
@@ -106,7 +99,7 @@ export function useMistakeTracker(): UseMistakeTrackerReturn {
     persist([]);
   }, [persist]);
 
-  const dueForReview = mistakes.filter((m) => m.nextReview <= today());
+  const dueForReview = mistakes.filter((m) => m.nextReview <= todayString());
 
   const getMistakesByPattern = useCallback(
     () => groupMistakesByPattern(mistakes),

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../statsUtils';
+import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore, todayString, generateId } from '../statsUtils';
 import type { SessionRecord, StatsData } from '../../types';
 
 afterEach(() => {
@@ -219,5 +219,58 @@ describe('calcSessionAvgScore', () => {
     // 1+2+3 = 6 / 3 = 2.0 exactly — test uneven: 1+2+4 = 7/3 ≈ 2.333 → 2.3
     const sessions = [makeSession({ score: 1 }), makeSession({ score: 2 }), makeSession({ score: 4 })];
     expect(calcSessionAvgScore(sessions)).toBe(2.3);
+  });
+});
+
+// ─── todayString ─────────────────────────────────────────────────────────────
+
+describe('todayString', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('returns a string in YYYY-MM-DD format', () => {
+    vi.setSystemTime(new Date('2026-01-10T12:00:00.000Z'));
+    expect(todayString()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('returns the correct UTC date at noon', () => {
+    vi.setSystemTime(new Date('2026-04-08T12:00:00.000Z'));
+    expect(todayString()).toBe('2026-04-08');
+  });
+
+  it('returns the correct UTC date just before midnight', () => {
+    vi.setSystemTime(new Date('2026-04-08T23:59:59.000Z'));
+    expect(todayString()).toBe('2026-04-08');
+  });
+
+  it('advances to next day at midnight UTC', () => {
+    vi.setSystemTime(new Date('2026-01-10T00:00:00.000Z'));
+    const day1 = todayString();
+    vi.setSystemTime(new Date('2026-01-11T00:00:00.000Z'));
+    const day2 = todayString();
+    expect(day1).not.toBe(day2);
+    expect(day2).toBe('2026-01-11');
+  });
+});
+
+// ─── generateId ───────────────────────────────────────────────────────────────
+
+describe('generateId', () => {
+  it('returns a non-empty string', () => {
+    expect(generateId()).toBeTruthy();
+    expect(typeof generateId()).toBe('string');
+  });
+
+  it('returns a string of exactly 7 characters', () => {
+    expect(generateId()).toHaveLength(7);
+  });
+
+  it('returns only lowercase alphanumeric characters', () => {
+    expect(generateId()).toMatch(/^[a-z0-9]+$/);
+  });
+
+  it('returns different values on successive calls', () => {
+    const ids = new Set(Array.from({ length: 20 }, () => generateId()));
+    expect(ids.size).toBeGreaterThan(15);
   });
 });

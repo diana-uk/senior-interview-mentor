@@ -1,5 +1,15 @@
 import type { PatternName, SessionRecord, StatsData } from '../types';
 
+/** Returns today's UTC date as a YYYY-MM-DD string. */
+export function todayString(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
+/** Generate a short random alphanumeric ID (7 characters). */
+export function generateId(): string {
+  return Math.random().toString(36).substring(2, 9);
+}
+
 export const ALL_PATTERNS: PatternName[] = [
   'Sliding Window', 'Two Pointers', 'HashMap', 'Prefix Sum',
   'BFS/DFS', 'Topological Sort', 'Union-Find', 'Binary Search',
@@ -69,7 +79,7 @@ export function calcSessionAvgScore(sessions: SessionRecord[]): number {
  * Also updates longestStreak and lastActiveDate.
  */
 export function updateStreak(data: StatsData): StatsData {
-  const t = new Date().toISOString().split('T')[0];
+  const t = todayString();
   if (data.lastActiveDate === t) return data;
 
   const yesterday = new Date();

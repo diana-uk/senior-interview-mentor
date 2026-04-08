@@ -10,17 +10,9 @@ import type {
   StatsData,
 } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
-import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../utils/statsUtils.js';
+import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore, todayString, generateId } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-stats';
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
-}
-
-function today(): string {
-  return new Date().toISOString().split('T')[0];
-}
 
 function loadStats(): StatsData {
   try {
@@ -97,7 +89,7 @@ export function useStats(): UseStatsReturn {
       const current = loadStats();
       const session: SessionRecord = {
         id: generateId(),
-        date: today(),
+        date: todayString(),
         problemId: params.problemId,
         problemTitle: params.problemTitle,
         mode: params.mode,
@@ -149,7 +141,7 @@ export function useStats(): UseStatsReturn {
           params.time !== null
             ? Math.min(existing?.bestTime ?? Infinity, params.time)
             : existing?.bestTime ?? null,
-        lastAttempted: today(),
+        lastAttempted: todayString(),
         hintsUsed: params.hintsUsed,
         code: params.code,
       };
@@ -192,7 +184,7 @@ export function useStats(): UseStatsReturn {
           attempted: newAttempted,
           solved: newSolved,
           avgScore: calcNewAvgScore(ps.avgScore ?? 0, ps.attempted ?? 0, score),
-          lastPracticed: today(),
+          lastPracticed: todayString(),
         };
       });
       persist({ ...current, patternStrengths: strengths });
