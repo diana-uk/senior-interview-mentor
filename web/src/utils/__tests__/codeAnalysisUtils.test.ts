@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fingerprint, estimateComplexity } from '../codeAnalysisUtils';
+import { fingerprint, estimateComplexity, analyzeCode } from '../codeAnalysisUtils';
 
 // ─── fingerprint ──────────────────────────────────────────────────────────────
 
@@ -180,5 +180,117 @@ describe('estimateComplexity', () => {
     expect(result).toHaveProperty('time');
     expect(result).toHaveProperty('space');
     expect(result).toHaveProperty('confidence');
+  });
+});
+
+// ─── analyzeCode ──────────────────────────────────────────────────────────────
+
+describe('analyzeCode', () => {
+  it('returns empty insights and null complexity for very short code', () => {
+    const result = analyzeCode('x = 1');
+    expect(result.insights).toEqual([]);
+    expect(result.complexity).toBeNull();
+  });
+
+  it('returns empty insights and null complexity for empty string', () => {
+    const result = analyzeCode('');
+    expect(result.insights).toEqual([]);
+    expect(result.complexity).toBeNull();
+  });
+
+  it('detects nested loops (anti-pattern)', () => {
+    const code = [
+      'function foo(arr) {',
+      '  for (let i = 0; i < arr.length; i++) {',
+      '    for (let j = 0; j < arr.length; j++) {',
+      '      console.log(arr[i] + arr[j]);',
+      '    }',
+      '  }',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    const nested = insights.find((i) => i.type === 'anti-pattern' && i.message.includes('Nested loop'));
+    expect(nested).toBeDefined();
+  });
+
+  it('detects Array.includes inside a loop (optimization)', () => {
+    const code = [
+      'function check(arr, vals) {',
+      '  for (const v of arr) {',
+      '    if (vals.includes(v)) return true;',
+      '  }',
+      '  return false;',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    const inc = insights.find((i) => i.message.includes('includes'));
+    expect(inc).toBeDefined();
+    expect(inc?.severity).toBe('suggestion');
+  });
+
+  it('detects sort-then-search pattern (optimization)', () => {
+    const code = [
+      'function find(arr, target) {',
+      '  arr.sort((a, b) => a - b);',
+      '  return arr.find(x => x === target);',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    const opt = insights.find((i) => i.message.includes('Sorting then linear search'));
+    expect(opt).toBeDefined();
+  });
+
+  it('detects multiple-passes pattern (optimization info)', () => {
+    const code = [
+      'function triple(arr) {',
+      '  const a = arr.filter(x => x > 0);',
+      '  const b = a.map(x => x * 2);',
+      '  const c = b.reduce((s, x) => s + x, 0);',
+      '  return c;',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    const passes = insights.find((i) => i.message.includes('Multiple array passes'));
+    expect(passes).toBeDefined();
+    expect(passes?.severity).toBe('info');
+  });
+
+  it('detects recursive function without memoization', () => {
+    const code = [
+      'function fib(n) {',
+      '  if (n <= 1) return n;',
+      '  return fib(n - 1) + fib(n - 2);',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    const rec = insights.find((i) => i.message.includes('without memoization'));
+    expect(rec).toBeDefined();
+    expect(rec?.type).toBe('anti-pattern');
+  });
+
+  it('returns a complexity estimate for analysable code', () => {
+    const code = [
+      'function sumAll(arr) {',
+      '  let total = 0;',
+      '  for (const x of arr) total += x;',
+      '  return total;',
+      '}',
+    ].join('\n');
+    const { complexity } = analyzeCode(code);
+    expect(complexity).not.toBeNull();
+    expect(complexity?.time).toBe('O(n)');
+  });
+
+  it('returns no insights for simple, clean code', () => {
+    const code = [
+      'function add(a, b) {',
+      '  if (a == null || b == null) return 0;',
+      '  return a + b;',
+      '}',
+    ].join('\n');
+    const { insights } = analyzeCode(code);
+    // No nested loops, no includes-in-loop, no sort+search, no recursion
+    const antiPatterns = insights.filter((i) => i.type === 'anti-pattern');
+    expect(antiPatterns).toHaveLength(0);
   });
 });
