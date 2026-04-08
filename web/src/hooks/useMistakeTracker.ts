@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { MistakeEntryFull, PatternName } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
 import { sm2, addDays } from '../utils/sm2.js';
+import { groupMistakesByPattern, computeWeakPatterns } from '../utils/mistakeUtils.js';
 
 const STORAGE_KEY = 'sim-mistakes';
 
@@ -107,26 +108,15 @@ export function useMistakeTracker(): UseMistakeTrackerReturn {
 
   const dueForReview = mistakes.filter((m) => m.nextReview <= today());
 
-  const getMistakesByPattern = useCallback(() => {
-    const grouped: Record<string, MistakeEntryFull[]> = {};
-    for (const m of mistakes) {
-      if (!grouped[m.pattern]) grouped[m.pattern] = [];
-      grouped[m.pattern].push(m);
-    }
-    return grouped;
-  }, [mistakes]);
+  const getMistakesByPattern = useCallback(
+    () => groupMistakesByPattern(mistakes),
+    [mistakes],
+  );
 
-  const getWeakPatterns = useCallback(() => {
-    const byPattern = getMistakesByPattern();
-    return Object.entries(byPattern)
-      .map(([pattern, entries]) => ({
-        pattern: pattern as PatternName,
-        count: entries.length,
-        avgStreak:
-          entries.reduce((sum, e) => sum + e.streak, 0) / entries.length,
-      }))
-      .sort((a, b) => a.avgStreak - b.avgStreak); // weakest first
-  }, [getMistakesByPattern]);
+  const getWeakPatterns = useCallback(
+    () => computeWeakPatterns(getMistakesByPattern()),
+    [getMistakesByPattern],
+  );
 
   return {
     mistakes,

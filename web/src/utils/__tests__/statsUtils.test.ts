@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { updateStreak } from '../statsUtils';
-import type { StatsData } from '../../types';
+import { updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../statsUtils';
+import type { SessionRecord, StatsData } from '../../types';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -73,5 +73,85 @@ describe('updateStreak', () => {
     const stats = makeStats({ lastActiveDate: '2026-01-09' });
     const result = updateStreak(stats);
     expect(result.lastActiveDate).toBe('2026-01-10');
+  });
+});
+
+// ─── calcNewAvgScore ──────────────────────────────────────────────────────────
+
+describe('calcNewAvgScore', () => {
+  it('returns newScore when existingAttempted is 0 (first observation)', () => {
+    expect(calcNewAvgScore(0, 0, 3.0)).toBe(3.0);
+  });
+
+  it('computes correct rolling average for second observation', () => {
+    // existing: avg=2.0 over 1 attempt, new score=4.0 → (2+4)/2 = 3.0
+    expect(calcNewAvgScore(2.0, 1, 4.0)).toBe(3.0);
+  });
+
+  it('rounds result to 1 decimal place', () => {
+    // avg=2.5 over 2 attempts, new=3.0 → (2.5*2+3)/3 = 8/3 ≈ 2.667 → 2.7
+    expect(calcNewAvgScore(2.5, 2, 3.0)).toBe(2.7);
+  });
+
+  it('handles all-zero inputs', () => {
+    expect(calcNewAvgScore(0, 0, 0)).toBe(0);
+  });
+
+  it('handles perfect scores accumulating to 4.0', () => {
+    expect(calcNewAvgScore(4.0, 5, 4.0)).toBe(4.0);
+  });
+
+  it('returns 0 (not NaN) when score is 0 and existingAttempted is 0', () => {
+    const result = calcNewAvgScore(0, 0, 0);
+    expect(Number.isFinite(result)).toBe(true);
+    expect(result).toBe(0);
+  });
+});
+
+// ─── calcSessionAvgScore ─────────────────────────────────────────────────────
+
+function makeSession(overrides: Partial<SessionRecord> = {}): SessionRecord {
+  return {
+    id: 's1',
+    date: '2026-01-10',
+    problemId: 'p1',
+    problemTitle: 'Test',
+    mode: 'TEACHER',
+    duration: 300,
+    hintsUsed: 0,
+    score: null,
+    patterns: [],
+    ...overrides,
+  };
+}
+
+describe('calcSessionAvgScore', () => {
+  it('returns 0 for an empty session array', () => {
+    expect(calcSessionAvgScore([])).toBe(0);
+  });
+
+  it('returns 0 when no sessions have scores', () => {
+    const sessions = [makeSession({ score: null }), makeSession({ score: null })];
+    expect(calcSessionAvgScore(sessions)).toBe(0);
+  });
+
+  it('returns the score when only one session has a score', () => {
+    const sessions = [makeSession({ score: 3.0 })];
+    expect(calcSessionAvgScore(sessions)).toBe(3.0);
+  });
+
+  it('averages only scored sessions (ignores nulls)', () => {
+    const sessions = [
+      makeSession({ score: 2.0 }),
+      makeSession({ score: null }),
+      makeSession({ score: 4.0 }),
+    ];
+    expect(calcSessionAvgScore(sessions)).toBe(3.0);
+  });
+
+  it('rounds to 1 decimal place', () => {
+    // 1+2+3 = 6 / 3 = 2.0 exactly — test uneven: 1+2+4 = 7/3 ≈ 2.333 → 2.3
+    const sessions = [makeSession({ score: 1 }), makeSession({ score: 2 }), makeSession({ score: 4 })];
+    expect(calcSessionAvgScore(sessions)).toBe(2.3);
   });
 });

@@ -1,4 +1,32 @@
-import type { StatsData } from '../types';
+import type { SessionRecord, StatsData } from '../types';
+
+/**
+ * Compute a new running average after one additional score observation.
+ * Rounds to 1 decimal place; guards against NaN/Infinity.
+ */
+export function calcNewAvgScore(
+  existingAvg: number,
+  existingAttempted: number,
+  newScore: number,
+): number {
+  const newAttempted = existingAttempted + 1;
+  const rawAvg =
+    existingAttempted > 0
+      ? (existingAvg * existingAttempted + newScore) / newAttempted
+      : newScore;
+  return Number.isFinite(rawAvg) ? Math.round(rawAvg * 10) / 10 : 0;
+}
+
+/**
+ * Compute the average score across all sessions that have a non-null score.
+ * Returns 0 when no scored sessions exist.
+ */
+export function calcSessionAvgScore(sessions: SessionRecord[]): number {
+  const scored = sessions.filter((s) => s.score !== null);
+  if (scored.length === 0) return 0;
+  const raw = scored.reduce((sum, s) => sum + (s.score ?? 0), 0) / scored.length;
+  return Number.isFinite(raw) ? Math.round(raw * 10) / 10 : 0;
+}
 
 /**
  * Updates streak fields based on today's date vs the last active date.
