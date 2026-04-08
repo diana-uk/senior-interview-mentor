@@ -1,4 +1,37 @@
-import type { SessionRecord, StatsData } from '../types';
+import type { PatternName, SessionRecord, StatsData } from '../types';
+
+export const ALL_PATTERNS: PatternName[] = [
+  'Sliding Window', 'Two Pointers', 'HashMap', 'Prefix Sum',
+  'BFS/DFS', 'Topological Sort', 'Union-Find', 'Binary Search',
+  'Heap', 'Intervals', 'Greedy', 'Dynamic Programming',
+  'Backtracking', 'Trees',
+];
+
+/**
+ * Create an empty stats object with zeroed counters and default pattern strengths.
+ */
+export function emptyStats(): StatsData {
+  return {
+    problemsSolved: 0,
+    totalAttempts: 0,
+    totalTime: 0,
+    hintsUsed: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActiveDate: '',
+    avgScore: 0,
+    patternStrengths: ALL_PATTERNS.map((p) => ({
+      pattern: p,
+      solved: 0,
+      attempted: 0,
+      avgScore: 0,
+      lastPracticed: null,
+    })),
+    sessions: [],
+    problemProgress: {},
+    reviews: [],
+  };
+}
 
 /**
  * Compute a new running average after one additional score observation.

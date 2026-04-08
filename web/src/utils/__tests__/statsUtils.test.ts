@@ -1,9 +1,75 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../statsUtils';
+import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../statsUtils';
 import type { SessionRecord, StatsData } from '../../types';
 
 afterEach(() => {
   vi.useRealTimers();
+});
+
+// ─── ALL_PATTERNS ─────────────────────────────────────────────────────────────
+
+describe('ALL_PATTERNS', () => {
+  it('contains 14 patterns', () => {
+    expect(ALL_PATTERNS).toHaveLength(14);
+  });
+
+  it('includes Sliding Window', () => {
+    expect(ALL_PATTERNS).toContain('Sliding Window');
+  });
+
+  it('includes Dynamic Programming', () => {
+    expect(ALL_PATTERNS).toContain('Dynamic Programming');
+  });
+});
+
+// ─── emptyStats ───────────────────────────────────────────────────────────────
+
+describe('emptyStats', () => {
+  it('returns zero numeric counters', () => {
+    const s = emptyStats();
+    expect(s.problemsSolved).toBe(0);
+    expect(s.totalAttempts).toBe(0);
+    expect(s.totalTime).toBe(0);
+    expect(s.hintsUsed).toBe(0);
+    expect(s.currentStreak).toBe(0);
+    expect(s.longestStreak).toBe(0);
+    expect(s.avgScore).toBe(0);
+  });
+
+  it('returns empty lastActiveDate', () => {
+    expect(emptyStats().lastActiveDate).toBe('');
+  });
+
+  it('returns one patternStrength entry per pattern', () => {
+    expect(emptyStats().patternStrengths).toHaveLength(ALL_PATTERNS.length);
+  });
+
+  it('each patternStrength has zeroed solved/attempted/avgScore', () => {
+    for (const ps of emptyStats().patternStrengths) {
+      expect(ps.solved).toBe(0);
+      expect(ps.attempted).toBe(0);
+      expect(ps.avgScore).toBe(0);
+      expect(ps.lastPracticed).toBeNull();
+    }
+  });
+
+  it('returns empty sessions, problemProgress, reviews', () => {
+    const s = emptyStats();
+    expect(s.sessions).toEqual([]);
+    expect(s.problemProgress).toEqual({});
+    expect(s.reviews).toEqual([]);
+  });
+
+  it('returns a new object on each call', () => {
+    expect(emptyStats()).not.toBe(emptyStats());
+  });
+
+  it('patternStrengths array contains all ALL_PATTERNS entries', () => {
+    const names = emptyStats().patternStrengths.map((ps) => ps.pattern);
+    for (const p of ALL_PATTERNS) {
+      expect(names).toContain(p);
+    }
+  });
 });
 
 function makeStats(overrides: Partial<StatsData> = {}): StatsData {

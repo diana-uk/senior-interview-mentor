@@ -10,7 +10,7 @@ import type {
   StatsData,
 } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
-import { updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../utils/statsUtils.js';
+import { ALL_PATTERNS, emptyStats, updateStreak, calcNewAvgScore, calcSessionAvgScore } from '../utils/statsUtils.js';
 
 const STORAGE_KEY = 'sim-stats';
 
@@ -20,36 +20,6 @@ function generateId(): string {
 
 function today(): string {
   return new Date().toISOString().split('T')[0];
-}
-
-const ALL_PATTERNS: PatternName[] = [
-  'Sliding Window', 'Two Pointers', 'HashMap', 'Prefix Sum',
-  'BFS/DFS', 'Topological Sort', 'Union-Find', 'Binary Search',
-  'Heap', 'Intervals', 'Greedy', 'Dynamic Programming',
-  'Backtracking', 'Trees',
-];
-
-function emptyStats(): StatsData {
-  return {
-    problemsSolved: 0,
-    totalAttempts: 0,
-    totalTime: 0,
-    hintsUsed: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    lastActiveDate: '',
-    avgScore: 0,
-    patternStrengths: ALL_PATTERNS.map((p) => ({
-      pattern: p,
-      solved: 0,
-      attempted: 0,
-      avgScore: 0,
-      lastPracticed: null,
-    })),
-    sessions: [],
-    problemProgress: {},
-    reviews: [],
-  };
 }
 
 function loadStats(): StatsData {
