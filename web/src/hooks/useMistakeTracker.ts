@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { MistakeEntryFull, PatternName } from '../types';
 import { safeGetItem, safeSetItem } from '../utils/storage.js';
+import { sm2, addDays } from '../utils/sm2.js';
 
 const STORAGE_KEY = 'sim-mistakes';
 
@@ -10,39 +11,6 @@ function generateId(): string {
 
 function today(): string {
   return new Date().toISOString().split('T')[0];
-}
-
-function addDays(dateStr: string, days: number): string {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
-}
-
-/** SM-2 spaced repetition algorithm */
-function sm2(
-  quality: number, // 0-5 (0-2 = fail, 3-5 = pass)
-  repetitions: number,
-  easeFactor: number,
-  interval: number,
-): { repetitions: number; easeFactor: number; interval: number } {
-  let newEF = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  if (newEF < 1.3) newEF = 1.3;
-
-  if (quality < 3) {
-    // Failed: reset
-    return { repetitions: 0, easeFactor: newEF, interval: 1 };
-  }
-
-  let newInterval: number;
-  if (repetitions === 0) {
-    newInterval = 1;
-  } else if (repetitions === 1) {
-    newInterval = 6;
-  } else {
-    newInterval = Math.round(interval * newEF);
-  }
-
-  return { repetitions: repetitions + 1, easeFactor: newEF, interval: newInterval };
 }
 
 function loadMistakes(): MistakeEntryFull[] {
