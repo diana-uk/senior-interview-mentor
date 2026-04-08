@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { serializeDiagramToText } from '../diagramSerializer';
+import { serializeDiagramToText, getEdgeArrow, getEdgeStyleLabel } from '../diagramSerializer';
 import type { SystemDesignState } from '../../../../types';
 
 type DiagramNode = SystemDesignState['diagramNodes'][number];
@@ -379,5 +379,55 @@ describe('serializeDiagramToText', () => {
     expect(result).toContain('Browser → Load Balancer [HTTPS]');
     expect(result).toContain('Load Balancer → Auth Service');
     expect(result).toContain('Auth Service ⇢ Redis [session] (async)');
+  });
+});
+
+// ─── getEdgeArrow ─────────────────────────────────────────────────────────────
+
+describe('getEdgeArrow', () => {
+  it('returns "→" for a solid edge', () => {
+    expect(getEdgeArrow({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'solid' } })).toBe('→');
+  });
+
+  it('returns "⇢" for a dashed edge', () => {
+    expect(getEdgeArrow({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'dashed' } })).toBe('⇢');
+  });
+
+  it('returns "···>" for a dotted edge', () => {
+    expect(getEdgeArrow({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'dotted' } })).toBe('···>');
+  });
+
+  it('defaults to "→" when edgeStyle is undefined', () => {
+    expect(getEdgeArrow({ id: 'e1', source: 'a', target: 'b', data: undefined })).toBe('→');
+  });
+
+  it('defaults to "→" for an unknown edgeStyle', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(getEdgeArrow({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'wavy' as any } })).toBe('→');
+  });
+});
+
+// ─── getEdgeStyleLabel ────────────────────────────────────────────────────────
+
+describe('getEdgeStyleLabel', () => {
+  it('returns empty string for solid edge', () => {
+    expect(getEdgeStyleLabel({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'solid' } })).toBe('');
+  });
+
+  it('returns " (async)" for dashed edge', () => {
+    expect(getEdgeStyleLabel({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'dashed' } })).toBe(' (async)');
+  });
+
+  it('returns " (optional)" for dotted edge', () => {
+    expect(getEdgeStyleLabel({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'dotted' } })).toBe(' (optional)');
+  });
+
+  it('returns empty string when data is undefined', () => {
+    expect(getEdgeStyleLabel({ id: 'e1', source: 'a', target: 'b', data: undefined })).toBe('');
+  });
+
+  it('returns empty string for an unrecognised style', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(getEdgeStyleLabel({ id: 'e1', source: 'a', target: 'b', data: { edgeStyle: 'wavy' as any } })).toBe('');
   });
 });

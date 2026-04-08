@@ -28,12 +28,12 @@ const STYLE_ARROWS: Record<string, { left: string; right: string }> = {
   dotted: { left: '···>', right: '···>' },
 };
 
-function getEdgeArrow(edge: DiagramEdge): string {
+export function getEdgeArrow(edge: DiagramEdge): string {
   const style = edge.data?.edgeStyle ?? 'solid';
   return STYLE_ARROWS[style]?.right ?? '→';
 }
 
-function getEdgeStyleLabel(edge: DiagramEdge): string {
+export function getEdgeStyleLabel(edge: DiagramEdge): string {
   const style = edge.data?.edgeStyle;
   if (!style || style === 'solid') return '';
   if (style === 'dashed') return ' (async)';
