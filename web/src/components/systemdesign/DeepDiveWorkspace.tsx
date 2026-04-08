@@ -5,6 +5,7 @@ import { serializeDeepDivesToText } from './deepdive/deepDiveSerializer';
 import PhaseProgressSidebar from './PhaseProgressSidebar';
 import MentorPanel from './MentorPanel';
 import { generateId } from '../../utils/statsUtils.js';
+import { createEmptyApproach } from '../../utils/systemDesignUtils.js';
 
 interface DeepDiveWorkspaceProps {
   challenges: DeepDiveChallenge[];
@@ -64,10 +65,6 @@ const TEMPLATES: Record<string, Template> = {
     icon: 'merge_type',
   },
 };
-
-function createEmptyApproach(): DeepDiveApproach {
-  return { name: '', pros: '', cons: '' };
-}
 
 export default function DeepDiveWorkspace({
   challenges,

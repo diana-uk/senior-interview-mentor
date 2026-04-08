@@ -1,4 +1,10 @@
 import type { SDRubricDimension } from '../components/systemdesign/SystemDesignRubric';
+import type { DeepDiveApproach } from '../types/index.js';
+
+/** Create a blank DeepDiveApproach entry. */
+export function createEmptyApproach(): DeepDiveApproach {
+  return { name: '', pros: '', cons: '' };
+}
 
 /**
  * Generate an improvement plan for a system design review.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateSDImprovementPlan } from '../systemDesignUtils';
+import { generateSDImprovementPlan, createEmptyApproach } from '../systemDesignUtils';
 import type { SDRubricDimension } from '../../components/systemdesign/SystemDesignRubric';
 
 function makeDim(id: SDRubricDimension['id'], score: number): SDRubricDimension {
@@ -82,5 +82,34 @@ describe('generateSDImprovementPlan', () => {
     const result = generateSDImprovementPlan(dims);
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('circuit breakers');
+  });
+});
+
+// ─── createEmptyApproach ──────────────────────────────────────────────────────
+
+describe('createEmptyApproach', () => {
+  it('returns an object with name, pros, and cons', () => {
+    const a = createEmptyApproach();
+    expect(a).toHaveProperty('name');
+    expect(a).toHaveProperty('pros');
+    expect(a).toHaveProperty('cons');
+  });
+
+  it('sets name to empty string', () => {
+    expect(createEmptyApproach().name).toBe('');
+  });
+
+  it('sets pros to empty string', () => {
+    expect(createEmptyApproach().pros).toBe('');
+  });
+
+  it('sets cons to empty string', () => {
+    expect(createEmptyApproach().cons).toBe('');
+  });
+
+  it('returns a new object on each call', () => {
+    const a = createEmptyApproach();
+    const b = createEmptyApproach();
+    expect(a).not.toBe(b);
   });
 });
