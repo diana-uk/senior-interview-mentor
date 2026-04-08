@@ -36,7 +36,7 @@ export function extractEditorBlocks(text: string) {
  * Drip-feed text to the SSE response in word-sized chunks.
  * Creates a typing effect since `claude -p` returns the full response at once.
  */
-async function simulateStream(
+export async function simulateStream(
   text: string,
   write: (chunk: string) => void,
   signal: AbortSignal,
